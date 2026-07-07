@@ -1,0 +1,8 @@
+.NET 10 LTS
+ASP.NET Core MVC
+Entity Framework Core
+SQL Server Express or SQL Server Developer
+ASP.NET Core Identity
+xUnit
+Bootstrap
+Git and GitHub
