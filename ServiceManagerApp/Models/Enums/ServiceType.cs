@@ -1,6 +1,6 @@
 ﻿namespace ServiceManagerApp.Models.Enums
 {
-    public enum ServiceType
+    public enum ServiceRequestType
     {
         NewService,
         ReDo,

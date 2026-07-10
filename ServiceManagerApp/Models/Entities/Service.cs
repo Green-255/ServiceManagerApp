@@ -8,7 +8,7 @@ namespace ServiceManagerApp.Models.Entities
         public int ServiceRequestId { get; set; }
         public ServiceRequest ServiceRequest { get; set; } = null!;
         public string ReferenceNumber { get; set; } = string.Empty;
-        public ServiceType ServiceType { get; set; }
+        public ServiceRequestType ServiceType { get; set; }
         public ServiceStatus Status { get; set; }
         public DateTime? DueAtUtc { get; set; }
         public TimeSpan? Duration { get; set; }

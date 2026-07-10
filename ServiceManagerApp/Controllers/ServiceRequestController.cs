@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServiceManagerApp.Data;
+using ServiceManagerApp.Models;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 
@@ -18,15 +19,22 @@ public class ServiceRequestController : Controller
         return View();
     }
 
-    public async Task<IActionResult> Create(RequestType request)
+    [HttpGet]
+    public async Task<IActionResult> Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateServiceRequestViewModel request)
     {
         var NewRequest = new ServiceRequest
         {
-            ServiceType = (ServiceType) request.ServiceType,
+            ServiceType = request.ServiceType,
             Description = request.Description,
-            DueAt       = (DateTime) request.DueAt, // GetDateTimeType(request.DueAt)
+            RequestedDueUtc = request.RequestedDueUtc, // GetDateTimeType(request.DueAt)
         };
-        _context.ServiceRequest.Add(NewRequest);
+        _context.ServiceRequests.Add(NewRequest);
         await _context.SaveChangesAsync();
 
         CreateServiceFromRequest(NewRequest);
@@ -35,15 +43,15 @@ public class ServiceRequestController : Controller
     }
 
 
-    private async CreateServiceFromRequest(ServiceRequest NewRequest)
+    private async Task CreateServiceFromRequest(ServiceRequest NewRequest)
     {
         var NewService = new Service
         {
             ServiceRequestId = NewRequest.Id,
-            //ServiceRequestId = 
-            ServiseType = NewRequest.ServiceType,
-            ServiceStatus = ServiceStatus.Inactive,
-            DueAt = NewRequest.DueAt,
+            ServiceRequest = NewRequest,
+            ServiceType = NewRequest.ServiceType,
+            Status = ServiceStatus.Inactive,
+            DueAtUtc = NewRequest.RequestedDueUtc,
             //Duration = 
             //Location = 
         };
@@ -51,7 +59,7 @@ public class ServiceRequestController : Controller
         //string[] Comments = ParseServiceRequestComments(NewRequest.Description);
         //NewService.Comments = Comments;
 
-        _context.Service.AddAsync(NewService);
+        _context.Services.Add(NewService);
         await _context.SaveChangesAsync();
     }
 }
