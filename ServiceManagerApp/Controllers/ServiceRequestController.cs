@@ -14,6 +14,7 @@ public class ServiceRequestController : Controller
         _context = context;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         return View();
@@ -26,40 +27,45 @@ public class ServiceRequestController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateServiceRequestViewModel request)
     {
-        var NewRequest = new ServiceRequest
+        if (!ModelState.IsValid)
         {
-            ServiceType = request.ServiceType,
-            Description = request.Description,
+            return View(request);
+        }
+
+        var newRequest = new ServiceRequest
+        {
+            ServiceType     = request.ServiceType,
+            Description     = request.Description,
             RequestedDueUtc = request.RequestedDueUtc, // GetDateTimeType(request.DueAt)
         };
-        _context.ServiceRequests.Add(NewRequest);
+        _context.ServiceRequests.Add(newRequest);
+        _context.Services.Add(CreateServiceFromRequest(newRequest));
+
         await _context.SaveChangesAsync();
 
-        CreateServiceFromRequest(NewRequest);
-
-        return View();
+        return RedirectToAction(nameof(Index));
     }
 
 
-    private async Task CreateServiceFromRequest(ServiceRequest NewRequest)
+    private Service CreateServiceFromRequest(ServiceRequest newRequest)
     {
-        var NewService = new Service
+        var newService = new Service
         {
-            ServiceRequestId = NewRequest.Id,
-            ServiceRequest = NewRequest,
-            ServiceType = NewRequest.ServiceType,
-            Status = ServiceStatus.Inactive,
-            DueAtUtc = NewRequest.RequestedDueUtc,
+            //ServiceRequestId = newRequest.Id, // Id is not created, 'cause Changes not saved yet.
+            ServiceRequest = newRequest,
+            ServiceType    = newRequest.ServiceType,
+            Status         = ServiceStatus.Draft,
+            DueAtUtc       = newRequest.RequestedDueUtc,
             //Duration = 
             //Location = 
         };
 
-        //string[] Comments = ParseServiceRequestComments(NewRequest.Description);
-        //NewService.Comments = Comments;
+        //string[] Comments = ParseServiceRequestComments(newRequest.Description);
+        //newService.Comments = Comments;
 
-        _context.Services.Add(NewService);
-        await _context.SaveChangesAsync();
+        return newService;
     }
 }
