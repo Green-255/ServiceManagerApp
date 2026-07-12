@@ -1,0 +1,17 @@
+﻿@model ServiceRequestDetailsViewModel
+
+<h1> @Model.ServiceRequestType <strong> @Model.Title </strong> </h1>
+
+<p>
+    <strong>Status:</strong> @Model.RequestStatus
+</p>
+<h3> <strong>Description:</strong> </h3>
+<p>
+    @Model.Description
+    <p>
+        <strong>Due to:</strong> @Model.RequestedDueUtc
+    </p>
+    <p>
+        <weak>Request created:</weak> @Model.CreatedAtUtc
+    </p>
+

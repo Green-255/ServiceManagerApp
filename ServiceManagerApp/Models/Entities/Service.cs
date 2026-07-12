@@ -6,13 +6,17 @@ namespace ServiceManagerApp.Models.Entities
     {
         public int Id { get; set; }
         public int ServiceRequestId { get; set; }
+        public ServiceRequest ServiceRequest { get; set; } = null!;
         public string ReferenceNumber { get; set; } = string.Empty;
-        public ServiceType ServiseType { get; set; }
-        public ServiceStatus ServiceStatus { get; set; }
-        public DateTime DueAt { get; set; }
-        public TimeSpan Duration { get; set; }
+        public ServiceRequestType ServiceRequestType { get; set; }
+        public ServiceStatus Status { get; set; }
+        public DateTime? DueAtUtc { get; set; }
+        public TimeSpan? Duration { get; set; }
         public string Location { get; set; } = string.Empty;
-        public int? WorkerId { get; set; }
+        public ICollection<Worker> Workers { get; set; } = [];
+
+        // assigned time | role | who assigned the worker | whether the worker accepted | completion status
+        //public ICollection<ServiceAssignment> Assignments { get; set; } = [];
         public ICollection<string> Comments { get; set; } = [];
 
 

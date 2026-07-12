@@ -1,0 +1,22 @@
+﻿@model ServiceRequestCreateViewModel
+@{
+    ViewData["Title"] = "Create service request";
+}
+
+<title>@ViewData["Title"] - ServiceManagerApp</title>
+<h1> Create new request </h1>
+
+<form asp-action="Create" method="post">
+    <select asp-for="ServiceRequestType"></select>
+
+    <label asp-for="Description"> Describe the service needed </label>
+    <input asp-for="Description" />
+    <span asp-validation-for="Description" />
+
+    <input asp-for="RequestedDueUtc" />
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
