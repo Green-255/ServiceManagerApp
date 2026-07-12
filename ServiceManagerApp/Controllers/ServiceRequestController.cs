@@ -17,7 +17,7 @@ public class ServiceRequestController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        return View();
+        return View(_context.ServiceRequests);
     }
 
     [HttpGet]
@@ -28,7 +28,7 @@ public class ServiceRequestController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateServiceRequestViewModel request)
+    public async Task<IActionResult> Create(ServiceRequestCreateViewModel request)
     {
         if (!ModelState.IsValid)
         {
@@ -37,7 +37,7 @@ public class ServiceRequestController : Controller
 
         var newRequest = new ServiceRequest
         {
-            ServiceType     = request.ServiceType,
+            ServiceRequestType     = request.ServiceRequestType,
             Description     = request.Description,
             RequestedDueUtc = request.RequestedDueUtc, // GetDateTimeType(request.DueAt)
         };
@@ -56,7 +56,7 @@ public class ServiceRequestController : Controller
         {
             //ServiceRequestId = newRequest.Id, // Id is not created, 'cause Changes not saved yet.
             ServiceRequest = newRequest,
-            ServiceType    = newRequest.ServiceType,
+            ServiceRequestType = newRequest.ServiceRequestType,
             Status         = ServiceStatus.Draft,
             DueAtUtc       = newRequest.RequestedDueUtc,
             //Duration = 
@@ -67,5 +67,28 @@ public class ServiceRequestController : Controller
         //newService.Comments = Comments;
 
         return newService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        var serviceRequest = await _context.ServiceRequests.FindAsync(id);
+
+        if (serviceRequest == null)
+        {
+            return NotFound();
+        }
+
+        var serviceRequestDetailsViewModel = new ServiceRequestDetailsViewModel
+        {
+            ServiceRequestType = serviceRequest.ServiceRequestType,
+            Title = serviceRequest.Title,
+            Description = serviceRequest.Description,
+            RequestStatus = serviceRequest.Status,
+            CreatedAtUtc = serviceRequest.CreatedAtUtc,
+            RequestedDueUtc = (DateTime) serviceRequest.RequestedDueUtc
+        };
+
+        return View();
     }
 }

@@ -7,10 +7,10 @@ namespace ServiceManagerApp.Models.Entities
     {
         public int Id { get; set; }
         public string ReferenceNumber { get; set; } = string.Empty;
-        public ServiceRequestType ServiceType { get; set; } = ServiceRequestType.NewService;
+        public ServiceRequestType ServiceRequestType { get; set; } = ServiceRequestType.NewService;
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public RequestStatus Status { get; set; } = RequestStatus.Pending;
+        public ServiceRequestStatus Status { get; set; } = ServiceRequestStatus.Pending;
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
         public DateTime? RequestedDueUtc { get; set; }
     }

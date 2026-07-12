@@ -4,11 +4,10 @@ using ServiceManagerApp.Models.Enums;
 
 namespace ServiceManagerApp.Models
 {
-    public class CreateServiceRequestViewModel
+    public class ServiceRequestCreateViewModel
     {
-        public ServiceRequestType ServiceType { get; set; } = ServiceRequestType.NewService;
+        public ServiceRequestType ServiceRequestType { get; set; } = ServiceRequestType.NewService;
         public string Description { get; set; } = string.Empty;
         public DateTime RequestedDueUtc { get; set; }
-
     }
 }

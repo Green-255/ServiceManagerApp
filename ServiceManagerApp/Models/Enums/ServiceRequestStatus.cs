@@ -1,6 +1,6 @@
 ﻿namespace ServiceManagerApp.Models.Enums
 {
-    public enum RequestStatus
+    public enum ServiceRequestStatus
     {
         Pending,
         Accepted,
