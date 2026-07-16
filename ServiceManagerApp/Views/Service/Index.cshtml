@@ -1,0 +1,32 @@
+﻿@page
+@model ServiceManagerApp.Models.Entities.Service
+@{
+}
+
+<h1> Services </h1>
+
+<a asp-action="Create" method="get"> <strong> Add service </strong></a>
+
+<table>
+    <thead>
+        <tr>
+            <th> Service Name </th>
+            <th> Service Description </th>
+            <th> Service Type </th>
+            <th> Service Cost </th>
+            <th> Service Duration </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var service in Model)
+        {
+            <tr>
+                <td> @service.Name </td>
+                <td> @service.Description </td>
+                <td> @service.Type </td>
+                <td> @service.Cost </td>
+                <td> @service.Duration </td>
+            </tr>
+        }
+    </tbody>
+</table>
