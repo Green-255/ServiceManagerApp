@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models;
 using ServiceManagerApp.Models.Entities;
@@ -15,7 +16,7 @@ namespace ServiceManagerApp.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var servicesList = PopulateServiceList();
+            var servicesList = await _context.Services.OrderByDescending(s => s.DueAtUtc).ToListAsync();
             return View(servicesList);
         }
 
@@ -46,20 +47,63 @@ namespace ServiceManagerApp.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Edit(Service serviceToEdit)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View(serviceToEdit);
+            var serviceToEdit = await _context.Services.FirstOrDefaultAsync(s => s.Id == id);
+
+            if (serviceToEdit == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new ServiceCreateViewModel
+            {
+                Id = id,
+                ServiceRequest = serviceToEdit.ServiceRequest,
+                ServiceRequestType = serviceToEdit.ServiceRequestType,
+                Status = serviceToEdit.Status,
+                DueAtUtc = serviceToEdit.DueAtUtc,
+                Duration = serviceToEdit.Duration,
+                Location = serviceToEdit.Location,
+                Workers = serviceToEdit.Workers,
+                Comments = serviceToEdit.Comments
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(ServiceCreateViewModel unhandledRequest)
+        public async Task<IActionResult> Edit(ServiceCreateViewModel serviceEdited)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(serviceEdited);
+            }
 
-            return View();
+            var serviceToUpdate = await _context.Services
+                .FirstOrDefaultAsync(s => s.Id == serviceEdited.Id);
+
+            if(serviceToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            serviceToUpdate.ServiceRequest = serviceEdited.ServiceRequest;
+            serviceToUpdate.ServiceRequestType = serviceEdited.ServiceRequestType;
+            serviceToUpdate.Status = serviceEdited.Status;
+            serviceToUpdate.DueAtUtc = serviceEdited.DueAtUtc;
+            serviceToUpdate.Duration = serviceEdited.Duration;
+            serviceToUpdate.Location = serviceEdited.Location;
+            serviceToUpdate.Workers = serviceEdited.Workers;
+            serviceToUpdate.Comments = serviceEdited.Comments;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public async Task<IActionResult> IndexFromRequest()
+        public async Task<IActionResult> NeedsReview()
         {
             var serviceList = await PopulateServicesFromRequests();
             return View(serviceList);
@@ -73,17 +117,18 @@ namespace ServiceManagerApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> delete(Service serviceToDelete)
+        public async Task<IActionResult> delete(int id)
         {
-            _context.Services.Remove(serviceToDelete);
-            await _context.SaveChangesAsync();
-            return View(); // redirect to index, cause Services are listed there?
-        }
+            var serviceToRemove = await _context.Services.FirstOrDefaultAsync(s => s.Id == id);
+            if(serviceToRemove == null)
+            {
+                return NotFound();
+            }
 
-        private List<Service> PopulateServiceList()
-        {
-            var services = _context.Services.ToList();
-            return services;
+            _context.Services.Remove(serviceToRemove);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
 
         private async Task<List<Service>> PopulateServicesFromRequests()
@@ -101,9 +146,9 @@ namespace ServiceManagerApp.Controllers
 
         private async Task<List<Service>> PopulateServicesInProgress()
         {
-            return _context.Services
+            return await _context.Services
                 .Where(s => s.Status == ServiceStatus.InProgress)
-                .ToList();
+                .ToListAsync();
         }
     }
 }

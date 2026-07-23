@@ -5,6 +5,7 @@ namespace ServiceManagerApp.Models
 {
     public class ServiceCreateViewModel
     {
+        public int Id { get; set; }
         public ServiceRequest ServiceRequest { get; set; } = null!;
         public ServiceRequestType ServiceRequestType { get; set; }
         public ServiceStatus Status { get; set; }

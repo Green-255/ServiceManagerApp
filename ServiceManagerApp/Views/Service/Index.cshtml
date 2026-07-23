@@ -1,20 +1,21 @@
-﻿@page
-@model ServiceManagerApp.Models.Entities.Service
+﻿@model IReadOnlyList<ServiceManagerApp.Models.Entities.Service>
 @{
+    ViewData["Title"] = "Services";
 }
 
 <h1> Services </h1>
 
-<a asp-action="Create" method="get"> <strong> Add service </strong></a>
+<a asp-action="Create"> <strong> Add service </strong></a>
 
 <table>
     <thead>
         <tr>
-            <th> Service Name </th>
-            <th> Service Description </th>
-            <th> Service Type </th>
-            <th> Service Cost </th>
-            <th> Service Duration </th>
+            <th> Name </th>
+            <th> Description </th>
+            <th> Type </th>
+            <th> Cost </th>
+            <th> Duration </th>
+            <th/>
         </tr>
     </thead>
     <tbody>
@@ -26,6 +27,10 @@
                 <td> @service.Type </td>
                 <td> @service.Cost </td>
                 <td> @service.Duration </td>
+                <td> 
+                    <a asp-action="Edit" asp-route-id="@service.Id">Edit</a> | 
+                    <a asp-action="Delete" asp-route-id="@service.Id">Delete</a> 
+                </td>
             </tr>
         }
     </tbody>
