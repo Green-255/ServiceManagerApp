@@ -1,37 +1,86 @@
-﻿@model IReadOnlyList<ServiceManagerApp.Models.Entities.Service>
+﻿@model ServiceManagerApp.Models.ServiceIndexViewModel
 @{
     ViewData["Title"] = "Services";
 }
 
-<h1> Services </h1>
+<h1>Services</h1>
+
+<h2>Services needing review</h2>
+
+@if (!Model.ServicesNeedingReview.Any())
+{
+    <p>No services currently need review.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Reference number</th>
+                <th>Status</th>
+                <th>Due At</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var service in Model.ServicesNeedingReview)
+            {
+                <tr>
+                    <td>@service.ServiceRequestType</td>
+                    <td>@service.ReferenceNumber</td>
+                    <td>@service.Status</td>
+                    <td>@service.DueAtUtc</td>  
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@service.Id">Review</a>
+                        <a asp-action="Delete" asp-route-id="@service.Id">Delete</a>
+                    </td>
+                </tr>   
+            }
+        </tbody>
+    </table>
+}
+
 
 <a asp-action="Create"> <strong> Add service </strong></a>
 
-<table>
-    <thead>
-        <tr>
-            <th> Name </th>
-            <th> Description </th>
-            <th> Type </th>
-            <th> Cost </th>
-            <th> Duration </th>
-            <th/>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var service in Model)
-        {
+<h1> Services </h1>
+
+@if (!Model.AllServices.Any())
+{
+    <p>No services found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td> @service.Name </td>
-                <td> @service.Description </td>
-                <td> @service.Type </td>
-                <td> @service.Cost </td>
-                <td> @service.Duration </td>
-                <td> 
-                    <a asp-action="Edit" asp-route-id="@service.Id">Edit</a> | 
-                    <a asp-action="Delete" asp-route-id="@service.Id">Delete</a> 
-                </td>
+                <th>Type</th>
+                <th>Reference number</th>
+                <th>Status</th>
+                <th>Due At</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+
+        <tbody>
+            @foreach (var service in Model.AllServices)
+            {
+                <tr>
+                    <td>@service.ServiceRequestType</td>
+                    <td>@service.ReferenceNumber</td>
+                    <td>@service.Status</td>
+                    <td>@service.DueAtUtc</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@service.Id">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@service.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+

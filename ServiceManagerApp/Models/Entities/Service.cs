@@ -5,7 +5,7 @@ namespace ServiceManagerApp.Models.Entities
     public class Service
     {
         public int Id { get; set; }
-        public int ServiceRequestId { get; set; }
+        public int? ServiceRequestId { get; set; }
         public ServiceRequest ServiceRequest { get; set; } = null!;
         public string ReferenceNumber { get; set; } = string.Empty;
         public ServiceRequestType ServiceRequestType { get; set; }
