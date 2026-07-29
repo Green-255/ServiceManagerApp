@@ -1,5 +1,5 @@
 ﻿@page
-@model IReadOnlyList<ServiceRequestCreateViewModel>
+@model IReadOnlyList<ServiceRequestListViewModel>
 
 <h1> Service Requests </h1>
 <a asp-action="Create"> New request </a>
@@ -10,10 +10,15 @@
     <tbody>
         @foreach (var request in Model)
         {
-            @* request.Description;
-            request.RequestedDueUtc;
-            request.ServiceRequestType;
-            request.ServiceRequestStatus; *@
+            <p>request.Title</p>
+            <p>request.ServiceRequestType</p>
+            <p>request.Description</p>
+            <p>request.Status</p>
+            if(request.RequestedDueUtc != null)
+            {
+                <p>request.RequestedDueUtc</p>
+            }
+            <p>request.ReferenceNumber</p>
         }
     </tbody>
 </table>
