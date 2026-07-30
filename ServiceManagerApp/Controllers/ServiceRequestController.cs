@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models;
 using ServiceManagerApp.Models.Entities;
@@ -17,7 +18,28 @@ public class ServiceRequestController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        return View(_context.ServiceRequests);
+        var serviceRequests = await _context.ServiceRequests
+            .OrderByDescending(sr => sr.CreatedAtUtc).ToListAsync();
+
+        var serviceRequestsList = new List<ServiceRequestIndexViewModel>();
+
+        foreach (var sr in serviceRequests)
+        {
+            var srViewModel = new ServiceRequestIndexViewModel
+            {
+                Id = sr.Id,
+                ServiceRequestType = sr.ServiceRequestType,
+                Title = sr.Title,
+                Description = sr.Description,
+                Status = sr.Status,
+                RequestedDueUtc = sr.RequestedDueUtc,
+                ReferenceNumber = sr.ReferenceNumber
+            };
+
+            serviceRequestsList.Add(srViewModel);
+        };
+
+        return View(serviceRequestsList);
     }
 
     [HttpGet]

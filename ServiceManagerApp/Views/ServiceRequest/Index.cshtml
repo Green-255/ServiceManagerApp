@@ -1,25 +1,45 @@
-﻿@page
-@model IReadOnlyList<ServiceRequestListViewModel>
+﻿@model IReadOnlyList<ServiceRequestIndexViewModel>
 
 <h1> Service Requests </h1>
 <a asp-action="Create"> New request </a>
 <table>
-    <thead>
-            
-    </thead>
-    <tbody>
-        @foreach (var request in Model)
+    @{
+        if (!Model.Any())
         {
-            <p>request.Title</p>
-            <p>request.ServiceRequestType</p>
-            <p>request.Description</p>
-            <p>request.Status</p>
-            if(request.RequestedDueUtc != null)
-            {
-                <p>request.RequestedDueUtc</p>
-            }
-            <p>request.ReferenceNumber</p>
+            <p>No service requests</p>
         }
-    </tbody>
+
+        else
+        {
+            <thead>
+            
+            </thead>
+            <tbody>
+                @foreach (var request in Model)
+                {
+                    // request.Title;
+                    // request.ServiceRequestType;
+                    // request.Description;
+                    // request.Status;
+                    // if(request.RequestedDueUtc != null)
+                    // {
+                    //     request.RequestedDueUtc;
+                    // }
+                    // request.ReferenceNumber;
+
+                    <p>request.Title</p>
+                    <p>request.ServiceRequestType</p>
+                    <p>request.Description</p>
+                    <p>request.Status</p>
+                    if(request.RequestedDueUtc != null)
+                    {
+                        <p>request.RequestedDueUtc</p>
+                    }
+                    <p>request.ReferenceNumber</p>
+                }
+            </tbody>
+            
+        }
+    }
 </table>
 
