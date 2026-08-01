@@ -7,16 +7,20 @@
 <h1> Create new request </h1>
 
 <form asp-action="Create" method="post">
+    <label asp-for="ServiceRequestType"></label>
     <select asp-for="ServiceRequestType"></select>
 
     <label asp-for="Description"> Describe the service needed </label>
     <input asp-for="Description" />
     <span asp-validation-for="Description" />
 
+    <label asp-for="RequestedDueUtc"></label>
     <input asp-for="RequestedDueUtc" />
+
+    <button type="submit">Add</button>
 </form>
 
 
-@section Scripts {
+@* @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-}
+} *@

@@ -17,25 +17,17 @@
             <tbody>
                 @foreach (var request in Model)
                 {
-                    // request.Title;
-                    // request.ServiceRequestType;
-                    // request.Description;
-                    // request.Status;
-                    // if(request.RequestedDueUtc != null)
-                    // {
-                    //     request.RequestedDueUtc;
-                    // }
-                    // request.ReferenceNumber;
-
-                    <p>request.Title</p>
-                    <p>request.ServiceRequestType</p>
-                    <p>request.Description</p>
-                    <p>request.Status</p>
-                    if(request.RequestedDueUtc != null)
-                    {
-                        <p>request.RequestedDueUtc</p>
-                    }
-                    <p>request.ReferenceNumber</p>
+                    <tr>
+                        <td>@request.Title</td>
+                        <td>@request.ServiceRequestType</td>
+                        <td>@request.Description</td>
+                        <td>@request.Status</td>
+                        @if(request.RequestedDueUtc != null)
+                        {
+                            <td>@request.RequestedDueUtc</td>
+                        }
+                        <td>@request.ReferenceNumber</td>
+                    </tr>
                 }
             </tbody>
             

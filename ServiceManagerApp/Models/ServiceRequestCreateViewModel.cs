@@ -9,6 +9,6 @@ namespace ServiceManagerApp.Models
         public ServiceRequestType ServiceRequestType { get; set; } = ServiceRequestType.NewService;
         public string Description { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
-        public DateTime RequestedDueUtc { get; set; }
+        public DateTime RequestedDueUtc { get; set; } = DateTime.UtcNow;
     }
 }
