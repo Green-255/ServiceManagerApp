@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
-using ServiceManagerApp.Models;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
+using ServiceManagerApp.Models.ViewModels.ServiceRequests;
 
 namespace ServiceManagerApp.Controllers;
 
@@ -52,6 +52,8 @@ public class ServiceRequestController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ServiceRequestCreateViewModel request)
     {
+        var createdAtUtc = DateTime.UtcNow;
+        
         if (!ModelState.IsValid)
         {
             return View(request);
@@ -62,12 +64,18 @@ public class ServiceRequestController : Controller
             ServiceRequestType     = request.ServiceRequestType,
             Description     = request.Description,
             RequestedDueUtc = request.RequestedDueUtc, // GetDateTimeType(request.DueAt)
+            CreatedAtUtc    = createdAtUtc
         };
         _context.ServiceRequests.Add(newRequest);
         _context.Services.Add(CreateServiceFromRequest(newRequest));
 
         await _context.SaveChangesAsync();
 
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Cancel()
+    {
         return RedirectToAction(nameof(Index));
     }
 

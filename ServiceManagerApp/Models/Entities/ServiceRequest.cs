@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Server.HttpSys;
-using ServiceManagerApp.Models.Enums;
+﻿using ServiceManagerApp.Models.Enums;
 
 namespace ServiceManagerApp.Models.Entities
 {

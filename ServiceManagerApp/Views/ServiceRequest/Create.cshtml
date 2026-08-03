@@ -1,26 +1,27 @@
-﻿@model ServiceRequestCreateViewModel
-@{
+﻿@using ServiceManagerApp.Models.Enums
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model ServiceManagerApp.Models.ViewModels.ServiceRequests.ServiceRequestCreateViewModel
+@* @{
     ViewData["Title"] = "Create service request";
-}
+} *@
 
 <title>@ViewData["Title"] - ServiceManagerApp</title>
 <h1> Create new request </h1>
 
 <form asp-action="Create" method="post">
     <label asp-for="ServiceRequestType"></label>
-    <select asp-for="ServiceRequestType"></select>
+    <select asp-for="ServiceRequestType"
+        asp-items="Html.GetEnumSelectList<ServiceRequestType>()"
+        class="form-select">
+    </select>
 
     <label asp-for="Description"> Describe the service needed </label>
     <input asp-for="Description" />
-    <span asp-validation-for="Description" />
+    @* <span asp-validation-for="Description" /> *@
 
     <label asp-for="RequestedDueUtc"></label>
     <input asp-for="RequestedDueUtc" />
 
     <button type="submit">Add</button>
+    <button asp-action="">Cancel</button>
 </form>
-
-
-@* @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-} *@

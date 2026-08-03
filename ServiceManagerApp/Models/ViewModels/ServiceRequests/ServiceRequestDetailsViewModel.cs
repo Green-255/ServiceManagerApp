@@ -1,6 +1,6 @@
 ﻿using ServiceManagerApp.Models.Enums;
 
-namespace ServiceManagerApp.Models
+namespace ServiceManagerApp.Models.ViewModels.ServiceRequests
 {
     public class ServiceRequestDetailsViewModel
     {
