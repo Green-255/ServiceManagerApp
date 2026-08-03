@@ -98,13 +98,16 @@ namespace ServiceManagerApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ServiceCreateViewModel newService)
         {
+            var duration = TimeSpan.FromMinutes(
+                (newService.DurationHours ?? 0) * 60 + (newService.DurationMinutes ?? 0));
+            
             var serviceToAdd = new Service
             {
                 ServiceRequest = newService.ServiceRequest,
                 ServiceRequestType = newService.ServiceRequestType,
                 Status = ServiceStatus.NeedsReview,
                 DueAtUtc = newService.DueAtUtc,
-                Duration = newService.Duration,
+                Duration = duration,
                 Location = newService.Location,
                 //Workers = await GetWorkers(newService.WorkersIds),
                 Comments = ParseComments(newService.Comments)

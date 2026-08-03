@@ -9,9 +9,17 @@
     <label asp-for="DueAtUtc"></label>
     <input asp-for="DueAtUtc" />
     <div asp-validation-summary="All"></div>
+    
+    <label asp-for="DurationHours"></label>
+    <input asp-for="DurationHours"
+        type="number" min="0"
+        class="form-control" /> @* nz ka reiskia step="15" ir class="form-control*@
+    <div asp-validation-summary="All"></div>
 
-    <label asp-for="Duration"></label>
-    <input asp-for="Duration" />
+    <label asp-for="DurationMinutes"></label>
+    <input asp-for="DurationMinutes"
+        type="number" min="0" step="15"
+        class="form-control" />
     <div asp-validation-summary="All"></div>
 
     <label asp-for="Location"></label>
