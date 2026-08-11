@@ -61,7 +61,8 @@ public class ServiceRequestController : Controller
 
         var newRequest = new ServiceRequest
         {
-            ServiceRequestType     = request.ServiceRequestType,
+            ServiceRequestType = request.ServiceRequestType,
+            Title           = request.Title,
             Description     = request.Description,
             RequestedDueUtc = request.RequestedDueUtc, // GetDateTimeType(request.DueAt)
             CreatedAtUtc    = createdAtUtc
@@ -111,14 +112,30 @@ public class ServiceRequestController : Controller
 
         var serviceRequestDetailsViewModel = new ServiceRequestDetailsViewModel
         {
+            Id = id,
             ServiceRequestType = serviceRequest.ServiceRequestType,
             Title = serviceRequest.Title,
             Description = serviceRequest.Description,
             RequestStatus = serviceRequest.Status,
             CreatedAtUtc = serviceRequest.CreatedAtUtc,
-            RequestedDueUtc = (DateTime) serviceRequest.RequestedDueUtc
+            RequestedDueUtc = serviceRequest.RequestedDueUtc 
         };
 
-        return View();
+        return View(serviceRequestDetailsViewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var serviceRequestToDetele = await _context.ServiceRequests.FindAsync(id);
+        if(serviceRequestToDetele == null)
+        {
+            //return NotFound();
+            return RedirectToAction(nameof(Index));
+        }
+        _context.ServiceRequests.Remove(serviceRequestToDetele);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
     }
 }
