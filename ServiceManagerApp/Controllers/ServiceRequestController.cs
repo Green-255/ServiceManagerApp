@@ -113,17 +113,17 @@ public class ServiceRequestController : Controller
 
         var serviceRequestDetailsViewModel = new ServiceRequestDetailsViewModel
         {
-            Id = id,
+            Id                 = id,
             ServiceRequestType = serviceRequest.ServiceRequestType,
-            Title = serviceRequest.Title,
-            Description = serviceRequest.Description,
-            RequestStatus = serviceRequest.Status,
-            CreatedAtUtc = serviceRequest.CreatedAtUtc,
-            RequestedDueUtc = serviceRequest.RequestedDueUtc 
+            Title              = serviceRequest.Title,
+            Description        = serviceRequest.Description,
+            RequestStatus      = serviceRequest.Status,
+            CreatedAtUtc       = serviceRequest.CreatedAtUtc,
+            RequestedDueUtc    = serviceRequest.RequestedDueUtc 
         };
 
         return View(serviceRequestDetailsViewModel);
-    }
+    }   
 
     [HttpGet]
     public async Task<IActionResult> Delete (int? id)
@@ -159,4 +159,50 @@ public class ServiceRequestController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+
+    public async Task<IActionResult> Edit (int id)
+    {
+        var serviceRequest = await _context.ServiceRequests.FindAsync(id);
+        if (serviceRequest == null)
+        {
+            return NotFound();
+        }
+        var serviceRequestEditViewModel = new ServiceRequestEditViewModel
+        {
+            Id                 = serviceRequest.Id,
+            ReferenceNumber    = serviceRequest.ReferenceNumber,
+            ServiceRequestType = serviceRequest.ServiceRequestType,
+            Title              = serviceRequest.Title,
+            Description        = serviceRequest.Description,
+            RequestedDueUtc    = serviceRequest.RequestedDueUtc,
+            //Status = ServiceRequestStatus.Pending,
+        };
+        return View(serviceRequestEditViewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit (ServiceRequestEditViewModel newRequest)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(newRequest);
+        }
+
+        var requestToUpdate = await _context.ServiceRequests.FindAsync(newRequest.Id);
+        if (requestToUpdate == null)
+        {
+            return NotFound();
+        }
+
+        requestToUpdate.ServiceRequestType = requestToUpdate.ServiceRequestType;
+        requestToUpdate.Title              = requestToUpdate.Title;
+        requestToUpdate.Description        = requestToUpdate.Description;
+        requestToUpdate.RequestedDueUtc    = requestToUpdate.RequestedDueUtc;
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
 }
