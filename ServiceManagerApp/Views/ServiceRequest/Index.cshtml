@@ -36,7 +36,7 @@
                         <td>@request.ReferenceNumber</td>
                         <td>
                             <a asp-action="Details" asp-route-id="@request.Id">Details</a>
-                            <form asp-action="Delete" method="post">
+                            <form asp-action="Delete" asp-route-id="@request.Id" method="post">
                                 <button type="submit">Delete</button>
                             </form>
                         </td>

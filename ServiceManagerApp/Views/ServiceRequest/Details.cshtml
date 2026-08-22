@@ -16,6 +16,8 @@
         <weak>Request created:</weak> @Model.CreatedAtUtc
     </p>
 
-<a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit">Delete</button>
+</form>
 
 

@@ -4,6 +4,7 @@ using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.ServiceRequests;
+using System.Net;
 
 namespace ServiceManagerApp.Controllers;
 
@@ -124,14 +125,34 @@ public class ServiceRequestController : Controller
         return View(serviceRequestDetailsViewModel);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Delete(int id)
+    [HttpGet]
+    public async Task<IActionResult> Delete (int? id)
     {
-        var serviceRequestToDetele = await _context.ServiceRequests.FindAsync(id);
-        if(serviceRequestToDetele == null)
+        if (id == null)
         {
-            //return NotFound();
-            return RedirectToAction(nameof(Index));
+            return BadRequest();
+        }
+
+        var serviceRequest = await _context.ServiceRequests.FindAsync(id);
+
+        if (serviceRequest == null)
+        {
+            return NotFound();
+        }
+
+        return View(serviceRequest);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        //var serviceRequestToDetele = await _context.ServiceRequests.FindAsync(id);
+        var serviceRequestToDetele = _context.ServiceRequests.Find(id);
+        if (serviceRequestToDetele == null)
+        {
+            return NotFound();
+            //return RedirectToAction(nameof(Index));
         }
         _context.ServiceRequests.Remove(serviceRequestToDetele);
         await _context.SaveChangesAsync();
