@@ -1,0 +1,32 @@
+﻿@model ServiceManagerApp.Models.ViewModels.Services.ServiceDetailsViewModel
+@{
+}
+
+<h3>Service @Model.ReferenceNumber details</h3>
+
+<p>
+    <Strong>@Model.ServiceRequestType</Strong>
+</p>
+
+<p>
+    <strong>Status: </strong>@Model.Status
+</p>
+
+<p>
+    <weak>Due Date:</weak> @Model.DueAtUtc
+</p>
+<p>
+    <weak>Duration:</weak> @Model.Duration
+</p>
+<p>
+    <weak>Location:</weak> @Model.Location
+</p>
+<p>
+    <strong>Cost:</strong> @Model.Cost
+</p>
+
+<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit">Delete</button>
+</form>

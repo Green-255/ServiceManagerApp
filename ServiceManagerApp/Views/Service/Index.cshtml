@@ -1,4 +1,4 @@
-﻿@model ServiceManagerApp.Models.ServiceIndexViewModel
+﻿@model ServiceManagerApp.Models.ViewModels.Services.ServiceIndexViewModel
 @{
     ViewData["Title"] = "Services";
 }
@@ -34,7 +34,6 @@ else
                     <td>@service.DueAtUtc</td>  
                     <td>
                         <a asp-action="Edit" asp-route-id="@service.Id">Review</a>
-                        <a asp-action="Delete" asp-route-id="@service.Id">Delete</a>
                     </td>
                 </tr>   
             }
@@ -73,8 +72,10 @@ else
                     <td>@service.Status</td>
                     <td>@service.DueAtUtc</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@service.Id">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@service.Id">Delete</a>
+                        <a asp-action="Details" asp-route-id="@service.Id">Details</a>
+                        <form asp-action="Delete" asp-route-id="@service.Id" method="post">
+                            <button type="submit">Delete</button>
+                        </form>
                     </td>
                 </tr>
             }

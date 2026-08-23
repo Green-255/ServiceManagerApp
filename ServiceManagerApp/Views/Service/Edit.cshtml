@@ -1,4 +1,37 @@
-﻿@page
-@model ServiceManagerApp.Views.Service.EditModel
+﻿@model ServiceManagerApp.Models.ViewModels.Services.ServiceEditViewModel
 @{
 }
+
+<h3> Edit @Model.ReferenceNumber Service </h3>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    @*<label asp-for="ServiceRequestType">Service Request Type:</label>
+    <input asp-for="ServiceRequestType" />*@
+
+    @*<label asp-for="Status">Status:</label>
+    <input asp-for="Status" />*@
+
+    <label asp-for="DueAtUtc">Due At (UTC):</label>
+    <input asp-for="DueAtUtc" />
+
+
+    <label asp-for="DurationHours">Duration (Hours):</label>
+    <input asp-for="DurationHours" />
+
+    <label asp-for="DurationMinutes">Duration (Minutes):</label>
+    <input asp-for="DurationMinutes" />
+
+    <label asp-for="Location">Location:</label>
+    <input asp-for="Location" />
+
+    <label asp-for="Comments">Comments:</label>
+    <input asp-for="Comments" />
+
+    <label asp-for="Cost">Cost:</label>
+    <input asp-for="Cost" />
+
+    <button type="submit">Save Changes</button>
+    @* <button type="">Cancel</button> *@
+</form>
