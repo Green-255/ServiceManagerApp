@@ -182,6 +182,7 @@ public class ServiceRequestController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit (ServiceRequestEditViewModel newRequest)
     {
         if (!ModelState.IsValid)
@@ -195,10 +196,10 @@ public class ServiceRequestController : Controller
             return NotFound();
         }
 
-        requestToUpdate.ServiceRequestType = requestToUpdate.ServiceRequestType;
-        requestToUpdate.Title              = requestToUpdate.Title;
-        requestToUpdate.Description        = requestToUpdate.Description;
-        requestToUpdate.RequestedDueUtc    = requestToUpdate.RequestedDueUtc;
+        requestToUpdate.ServiceRequestType = newRequest.ServiceRequestType;
+        requestToUpdate.Title              = newRequest.Title;
+        requestToUpdate.Description        = newRequest.Description;
+        requestToUpdate.RequestedDueUtc    = newRequest.RequestedDueUtc;
 
         await _context.SaveChangesAsync();
 

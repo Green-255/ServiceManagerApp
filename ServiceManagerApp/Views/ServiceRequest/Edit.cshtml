@@ -6,6 +6,8 @@
 <h3> Edit @Model.ReferenceNumber request. </h3>
 
 <form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
     <label asp-for="ServiceRequestType"></label>
     <select asp-for="ServiceRequestType"
         asp-items="Html.GetEnumSelectList<ServiceRequestType>()"
@@ -14,18 +16,15 @@
 
     <label asp-for="Title"> Title </label>
     <input asp-for="Title"
-        class="ServiceRequest-Title">
-            @Model.Title</input>
+        class="ServiceRequest-Title"/>
 
     <label asp-for="Description"> Description </label>
     <input asp-for="Description" 
-        class="ServiceRequest-Description">
-            @Model.Description</input>
+        class="ServiceRequest-Description"/>
 
     <label asp-for="RequestedDueUtc"> Due Date </label>
     <input asp-for="RequestedDueUtc"
-        class="ServiceRequest-RequestedDueUtc" type="datetime-local">
-            @Model.RequestedDueUtc</input>
+        class="ServiceRequest-RequestedDueUtc" type="datetime-local"/>
 
     <button type="submit">Save</button>
 </form>
