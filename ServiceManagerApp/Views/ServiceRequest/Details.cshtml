@@ -1,6 +1,6 @@
-﻿@model ServiceRequestDetailsViewModel
+﻿@model ServiceManagerApp.Models.ViewModels.ServiceRequests.ServiceRequestDetailsViewModel
 
-<h1> @Model.ServiceRequestType <strong> @Model.Title </strong> </h1>
+<h3> @Model.ServiceRequestType <strong> @Model.Title </strong> </h3>
 
 <p>
     <strong>Status:</strong> @Model.RequestStatus
@@ -8,10 +8,19 @@
 <h3> <strong>Description:</strong> </h3>
 <p>
     @Model.Description
-    <p>
-        <strong>Due to:</strong> @Model.RequestedDueUtc
-    </p>
-    <p>
-        <weak>Request created:</weak> @Model.CreatedAtUtc
-    </p>
+</p>
+<p>
+    <strong>Due to:</strong> @Model.RequestedDueUtc
+</p>
+<p>
+    <weak>Request created:</weak> @Model.CreatedAtUtc
+</p>
+
+<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit">Delete</button>
+</form>
+
 

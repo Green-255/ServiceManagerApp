@@ -1,20 +1,50 @@
-﻿@page
-@model IReadOnlyList<ServiceRequestCreateViewModel>
+﻿@model IReadOnlyList<ServiceManagerApp.Models.ViewModels.ServiceRequests.ServiceRequestIndexViewModel>
 
 <h1> Service Requests </h1>
 <a asp-action="Create"> New request </a>
-<table>
-    <thead>
-            
-    </thead>
-    <tbody>
-        @foreach (var request in Model)
+    @{
+        if (!Model.Any())
         {
-            @* request.Description;
-            request.RequestedDueUtc;
-            request.ServiceRequestType;
-            request.ServiceRequestStatus; *@
+            <p>No service requests</p>
         }
-    </tbody>
-</table>
+
+        else
+        {
+
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th></th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Requested date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var request in Model)
+                {
+                    <tr>
+                        <td>@request.Title</td>
+                        <td>@request.ServiceRequestType</td>
+                        <td>@request.Description</td>
+                        <td>@request.Status</td>
+                        @if(request.RequestedDueUtc != null)
+                        {
+                            <td>@request.RequestedDueUtc</td>
+                        }
+                        <td>@request.ReferenceNumber</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@request.Id">Details</a>
+                            <form asp-action="Delete" asp-route-id="@request.Id" method="post">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            </table>
+        }
+    }
+
 

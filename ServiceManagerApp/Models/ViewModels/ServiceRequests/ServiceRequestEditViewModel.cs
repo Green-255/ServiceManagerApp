@@ -1,14 +1,14 @@
 ﻿using ServiceManagerApp.Models.Enums;
 
-namespace ServiceManagerApp.Models
+namespace ServiceManagerApp.Models.ViewModels.ServiceRequests
 {
-    public class ServiceRequestDetailsViewModel
+    public class ServiceRequestEditViewModel
     {
+        public int Id { get; init; }
+        public string ReferenceNumber { get; set; } = string.Empty;
         public ServiceRequestType ServiceRequestType { get; set; } = ServiceRequestType.NewService;
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public ServiceRequestStatus RequestStatus { get; set; }
-        public DateTime CreatedAtUtc { get; set; }
-        public DateTime RequestedDueUtc { get; set; }
+        public DateTime? RequestedDueUtc { get; set; }
     }
 }
