@@ -1,14 +1,15 @@
 ﻿using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 
-namespace ServiceManagerApp.Models
+namespace ServiceManagerApp.Models.ViewModels.Services
 {
     public class ServiceCreateViewModel
     {
         public ServiceRequest ServiceRequest { get; set; } = null!;
         public ServiceRequestType ServiceRequestType { get; set; }
         public DateTime? DueAtUtc { get; set; }
-        public TimeSpan? Duration { get; set; }
+        public int? DurationHours { get; set; }
+        public int? DurationMinutes { get; set; }
         public string Location { get; set; } = string.Empty;
         public string Comments { get; set; } = string.Empty;
         public float Cost { get; set; }
