@@ -68,9 +68,16 @@ public class ServiceRequestController : Controller
             RequestedDueUtc = request.RequestedDueUtc, // GetDateTimeType(request.DueAt)
             CreatedAtUtc    = createdAtUtc
         };
-        _context.ServiceRequests.Add(newRequest);
-        _context.Services.Add(CreateServiceFromRequest(newRequest));
 
+        var newService = CreateServiceFromRequest(newRequest);
+
+        _context.ServiceRequests.Add(newRequest);
+        _context.Services.Add(newService);
+
+        await _context.SaveChangesAsync();
+        
+        newRequest.ReferenceNumber = GenerateServiceRequestReferenceNumber(newRequest.Id);
+        newService.ReferenceNumber = GenerateServiceReferenceNumber(newService.Id);
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
@@ -99,6 +106,24 @@ public class ServiceRequestController : Controller
         //newService.Comments = Comments;
 
         return newService;
+    }
+
+    private static string GenerateReferenceNumber(string tag, int id)
+    {
+        return $"{tag}-{DateTime.UtcNow.Year}-{id:D6}";
+    }
+
+    private static string GenerateServiceReferenceNumber(int id)
+    {
+        // WO = Work Order
+        return GenerateReferenceNumber("WO", id);
+    }
+
+    private static string GenerateServiceRequestReferenceNumber(int id)
+    {
+        // REQ = Request
+        return GenerateReferenceNumber("REQ", id);
+
     }
 
     [HttpGet]
