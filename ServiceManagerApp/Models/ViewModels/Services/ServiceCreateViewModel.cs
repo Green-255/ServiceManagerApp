@@ -1,7 +1,7 @@
 ﻿using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 
-namespace ServiceManagerApp.Models
+namespace ServiceManagerApp.Models.ViewModels.Services
 {
     public class ServiceCreateViewModel
     {

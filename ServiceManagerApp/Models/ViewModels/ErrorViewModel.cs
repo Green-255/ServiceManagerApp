@@ -1,4 +1,4 @@
-namespace ServiceManagerApp.Models
+namespace ServiceManagerApp.Models.ViewModels
 {
     public class ErrorViewModel
     {
