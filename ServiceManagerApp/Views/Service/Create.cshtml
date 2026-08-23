@@ -1,0 +1,34 @@
+﻿@model ServiceManagerApp.Models.ServiceCreateViewModel
+@* @{
+    ViewData["Title"] = "Services";
+} *@
+
+<h1> Add new service</h1>
+
+<form asp-action="Create", method="post">
+    <label asp-for="DueAtUtc"></label>
+    <input asp-for="DueAtUtc" />
+    <div asp-validation-summary="All"></div>
+
+    <label asp-for="Duration"></label>
+    <input asp-for="Duration" />
+    <div asp-validation-summary="All"></div>
+
+    <label asp-for="Location"></label>
+    <input asp-for="Location" />
+    <div asp-validation-summary="All"></div>
+
+    <label asp-for="Comments"></label>
+    <input asp-for="Comments" />
+    <div asp-validation-summary="All"></div>
+
+    <label asp-for="ServiceRequest"></label>
+    <input asp-for="ServiceRequest" />
+    <div asp-validation-summary="All"></div>
+
+    <label asp-for="Cost"></label>
+    <input asp-for="Cost" />
+    <div asp-validation-summary="All"></div>
+
+    <button type="submit">Add</button>
+</form>

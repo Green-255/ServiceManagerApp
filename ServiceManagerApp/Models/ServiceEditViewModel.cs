@@ -1,12 +1,13 @@
-﻿using ServiceManagerApp.Models.Enums;
+﻿using ServiceManagerApp.Models.Entities;
+using ServiceManagerApp.Models.Enums;
 
-namespace ServiceManagerApp.Models.Entities
+namespace ServiceManagerApp.Models
 {
-    public class Service
+    public class ServiceEditViewModel
     {
         public int Id { get; set; }
-        public int? ServiceRequestId { get; set; }
-        public ServiceRequest? ServiceRequest { get; set; }
+        public int ServiceRequestId { get; set; }
+        public ServiceRequest ServiceRequest { get; set; } = null!;
         public string ReferenceNumber { get; set; } = string.Empty;
         public ServiceRequestType ServiceRequestType { get; set; }
         public ServiceStatus Status { get; set; }
@@ -14,11 +15,7 @@ namespace ServiceManagerApp.Models.Entities
         public TimeSpan? Duration { get; set; }
         public string Location { get; set; } = string.Empty;
         public ICollection<Worker> Workers { get; set; } = [];
-
-        // assigned time | role | who assigned the worker | whether the worker accepted | completion status
-        //public ICollection<ServiceAssignment> Assignments { get; set; } = [];
         public ICollection<string> Comments { get; set; } = [];
         public float Cost { get; set; } = 0.0f;
-
     }
 }

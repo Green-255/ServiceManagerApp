@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServiceManagerApp.Data;
 
@@ -11,9 +12,11 @@ using ServiceManagerApp.Data;
 namespace ServiceManagerApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260728101848_AddServiceManagementEntities")]
+    partial class AddServiceManagementEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,7 +256,7 @@ namespace ServiceManagerApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ServiceRequestId")
+                    b.Property<int>("ServiceRequestId")
                         .HasColumnType("int");
 
                     b.Property<int>("ServiceRequestType")
@@ -401,7 +404,8 @@ namespace ServiceManagerApp.Data.Migrations
                     b.HasOne("ServiceManagerApp.Models.Entities.ServiceRequest", "ServiceRequest")
                         .WithMany()
                         .HasForeignKey("ServiceRequestId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ServiceRequest");
                 });
