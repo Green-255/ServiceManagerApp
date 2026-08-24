@@ -5,7 +5,7 @@ namespace ServiceManagerApp.Models.Entities
     public class Worker
     {
         public int Id { get; set; }
-        public string ReferenceCode { get; set; } = string.Empty; // unique code for each worker, maybe use a GUID or a combination of name and ID
+        public string ReferenceNumber { get; set; } = string.Empty; // unique code for each worker, maybe use a GUID or a combination of name and ID
         public string Name { get; set; } = string.Empty;
         public AvailabilityStatus AvailabilityStatus { get; set; } = AvailabilityStatus.Available;
         public string? PhoneNumber { get; set; }
