@@ -14,6 +14,7 @@ namespace ServiceManagerApp.Models.Entities
         public TimeSpan? Duration { get; set; }
         public string Location { get; set; } = string.Empty;
         public ICollection<Worker> Workers { get; set; } = [];
+        public SkillLevel? SkillLevel { get; set; }
 
         // assigned time | role | who assigned the worker | whether the worker accepted | completion status
         //public ICollection<ServiceAssignment> Assignments { get; set; } = [];
