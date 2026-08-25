@@ -19,7 +19,7 @@ namespace ServiceManagerApp.Controllers
             var workersList = await _context.Workers.Select(w => new WorkerIndexViewModel
             {
                 Id              = w.Id,
-                ReferenceCode   = w.ReferenceCode,
+                ReferenceNumber = w.ReferenceNumber,
                 Name            = w.Name,
                 Departament     = w.Departament,
                 SkillLevel      = w.SkillLevel,
@@ -53,7 +53,9 @@ namespace ServiceManagerApp.Controllers
             await _context.AddAsync(workerToAdd);
             await _context.SaveChangesAsync();
 
-            workerToAdd.ReferenceNumber = GenerateWorkerReferenceNumber(workerToAdd.Id);
+            workerToAdd.ReferenceNumber = GenerateWorkerReferenceNumber(workerToAdd.Id, workerToAdd.Departament);
+
+            return RedirectToAction(nameof(Index));
         }
 
         private static string GenerateReferenceNumber(string tag, int id, string? middleTag = null)
@@ -63,10 +65,123 @@ namespace ServiceManagerApp.Controllers
             return $"{tag}-{middleTag}-{id:D6}";
         }
 
-        private static string GenerateWorkerReferenceNumber(int id)
+        private static string GenerateWorkerReferenceNumber(int id, Departament departament)
         {
             // WIT = Worker Identity Tag
-            return GenerateReferenceNumber("WIT", id);
+            return GenerateReferenceNumber("WIT", id, departament.Name);
+        }
+
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) {
+                return BadRequest();
+            }
+
+            var workerToEdit = await _context.Workers.FindAsync(id);
+
+            if (workerToEdit == null) {
+                return NotFound();
+            }
+
+            var workerVM = new WorkerViewModel
+            {
+                Id = workerToEdit.Id,
+                ReferenceNumber = workerToEdit.ReferenceNumber,
+                Name = workerToEdit.Name,
+                AvailabilityStatus = workerToEdit.AvailabilityStatus,
+                PhoneNumber = workerToEdit.PhoneNumber,
+                Email = workerToEdit.Email,
+                Departament = workerToEdit.Departament,
+                JobRole = workerToEdit.JobRole,
+                SkillLevel = workerToEdit.SkillLevel,
+                Services = workerToEdit.Services,
+            };
+
+            return View(workerVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(WorkerViewModel workerVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(workerVM);
+            }
+
+            var workerToEdit = await _context.Workers.FindAsync(workerVM.Id);
+
+            if (workerToEdit == null)
+            {
+                return NotFound();
+            }
+
+            workerToEdit.Name = workerVM.Name;
+            workerToEdit.AvailabilityStatus = workerVM.AvailabilityStatus;
+            workerToEdit.PhoneNumber = workerVM.PhoneNumber;
+            workerToEdit.Email = workerVM.Email;
+            workerToEdit.Departament = workerVM.Departament;
+            workerToEdit.JobRole = workerVM.JobRole;
+            workerToEdit.SkillLevel = workerVM.SkillLevel;
+            workerToEdit.Services = workerVM.Services;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var worker = await _context.Workers.FindAsync(id);
+
+            if (worker == null)
+            {
+                return NotFound();
+            }
+
+            var workerVM = new WorkerViewModel
+            {
+                ReferenceNumber = worker.ReferenceNumber,
+                Name = worker.Name,
+                AvailabilityStatus = worker.AvailabilityStatus,
+                PhoneNumber = worker.PhoneNumber,
+                Email = worker.Email,
+                Departament = worker.Departament,
+                JobRole = worker.JobRole,
+                SkillLevel = worker.SkillLevel,
+                Services = worker.Services,
+            };
+
+            return View(workerVM);
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if(id == null)
+            {
+                return BadRequest();
+            }
+
+            return View();
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var deletedRows = await _context.Workers.Where(w => w.Id == id).ExecuteDeleteAsync();
+            if (deletedRows == 0)
+            {
+                return NotFound();
+            }
+
+            //return Ok(deletedRows);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
