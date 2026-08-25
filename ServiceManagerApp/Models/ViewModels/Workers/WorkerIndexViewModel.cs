@@ -12,9 +12,9 @@ namespace ServiceManagerApp.Models.ViewModels.Workers
         //public string? PhoneNumber { get; set; }
         //public string Email { get; set; } = null!;
         //public int? DepartamentId { get; set; }
-        public Departament? Departament { get; set; }
+        //public Departament? Departament { get; set; }
         //public int? JobRoleId { get; set; }
-        //public JobRole? JobRole { get; set; }
+        public JobRole? JobRole { get; set; }
         public SkillLevel? SkillLevel { get; set; }
         //public ICollection<Service> Services { get; set; } = [];
     }

@@ -1,0 +1,21 @@
+﻿@model ServiceManagerApp.Models.ViewModels.Workers.WorkerViewModel
+
+<h3>
+    Worker <strong>@Model.ReferenceNumber</strong>
+</h3>
+
+<p>@Model.Name | @Model.Email | @Model.PhoneNumber</p>
+
+@{
+    string role = Model.JobRole == null ? string.Empty : Model.JobRole.Name;
+    string departament = Model.Departament == null ? string.Empty : Model.Departament.Name;
+
+    <p>@role at @departament</p>
+}
+<p>Skill level: @Model.SkillLevel</p>
+
+<a asp-action="Edit" asp-route-id="@Model.Id">
+    Edit worker's information
+</a>
+
+<a asp-action="Delete" asp-route-id="@Model.Id">Delete worker</a>

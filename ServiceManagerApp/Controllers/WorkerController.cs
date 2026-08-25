@@ -21,7 +21,7 @@ namespace ServiceManagerApp.Controllers
                 Id              = w.Id,
                 ReferenceNumber = w.ReferenceNumber,
                 Name            = w.Name,
-                Departament     = w.Departament,
+                JobRole         = w.JobRole,
                 SkillLevel      = w.SkillLevel,
             })
             .ToListAsync();
@@ -53,7 +53,10 @@ namespace ServiceManagerApp.Controllers
             await _context.AddAsync(workerToAdd);
             await _context.SaveChangesAsync();
 
-            workerToAdd.ReferenceNumber = GenerateWorkerReferenceNumber(workerToAdd.Id, workerToAdd.Departament);
+            workerToAdd.ReferenceNumber =
+                GenerateWorkerReferenceNumber(workerToAdd.Id, workerToAdd.Departament);
+
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -65,10 +68,11 @@ namespace ServiceManagerApp.Controllers
             return $"{tag}-{middleTag}-{id:D6}";
         }
 
-        private static string GenerateWorkerReferenceNumber(int id, Departament departament)
+        private static string GenerateWorkerReferenceNumber(int id, Departament? departament)
         {
+            string name = departament != null ? departament.Name : "Unemployed";
             // WIT = Worker Identity Tag
-            return GenerateReferenceNumber("WIT", id, departament.Name);
+            return GenerateReferenceNumber("WIT", id, name);
         }
 
 

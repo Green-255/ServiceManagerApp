@@ -1,0 +1,36 @@
+﻿@model IReadOnlyList<ServiceManagerApp.Models.ViewModels.Workers.WorkerIndexViewModel>
+@{
+}
+
+<h2>Workers</h2>
+
+<a asp-action="Create">Add new Worker</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <td>Reference Nr.</td>
+            <td>Name</td>
+            <td>Job role</td>
+            <td>Skill</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach(var worker in Model)
+        {
+            <tr>
+                <td>@worker.ReferenceNumber</td>
+                <td>@worker.Name</td>
+                <td>@worker.JobRole</td>
+                <td>@worker.SkillLevel</td>
+                <td>@worker.AvailabilityStatus</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@worker.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

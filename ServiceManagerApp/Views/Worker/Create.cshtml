@@ -1,0 +1,27 @@
+﻿@model ServiceManagerApp.Models.ViewModels.Workers.WorkerCreateViewModel
+<h1> Add new worker</h1>
+
+<form asp-action="Create" , method="post">
+    <label asp-for="Name"></label>
+    <input asp-for="Name"
+           type="text" />
+
+    <label asp-for="PhoneNumber"></label>
+    <input asp-for="PhoneNumber"
+           type="tel"/>
+
+    <label asp-for="Email"></label>
+    <input asp-for="Email"
+           type="email"/>
+
+    <label asp-for="Departament"></label>
+    <input asp-for="Departament" />
+
+    <label asp-for="JobRole"></label>
+    <input asp-for="JobRole" />
+
+    <label asp-for="SkillLevel"></label>
+    <input asp-for="SkillLevel" />
+
+    <button type="submit">Add</button>
+</form>
