@@ -10,6 +10,8 @@ namespace ServiceManagerApp.Data
         public DbSet<ServiceRequest> ServiceRequests { get; set; } = default!;
         public DbSet<Service> Services { get; set; } = default!;
         public DbSet<Worker> Workers { get; set; } = default!;
+        public DbSet<Departament> Departaments { get; set; } = default!;
+        public DbSet<JobRole> JobRole { get; set; } = default!;
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
