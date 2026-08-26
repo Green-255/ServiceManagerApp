@@ -151,6 +151,7 @@ namespace ServiceManagerApp.Controllers
 
             var workerVM = new WorkerViewModel
             {
+                Id = worker.Id,
                 ReferenceNumber = worker.ReferenceNumber,
                 Name = worker.Name,
                 AvailabilityStatus = worker.AvailabilityStatus,
@@ -165,6 +166,7 @@ namespace ServiceManagerApp.Controllers
             return View(workerVM);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if(id == null)
@@ -176,6 +178,7 @@ namespace ServiceManagerApp.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var deletedRows = await _context.Workers.Where(w => w.Id == id).ExecuteDeleteAsync();
@@ -184,7 +187,15 @@ namespace ServiceManagerApp.Controllers
                 return NotFound();
             }
 
-            //return Ok(deletedRows);
+            //var workerToDetele = _context.Workers.Find(id);
+            //if (workerToDetele == null)
+            //{
+            //    return NotFound();
+            //}
+            //_context.Workers.Remove(workerToDetele);
+            //await _context.SaveChangesAsync();
+
+            //retu1`rn Ok(deletedRows);
             return RedirectToAction(nameof(Index));
         }
     }
