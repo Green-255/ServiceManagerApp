@@ -1,0 +1,20 @@
+﻿@model ServiceManagerApp.Models.Entities.JobRole
+<h2> Add new job role</h2>
+
+<form asp-action="Create" , method="post">
+    <label asp-for="Name"></label>
+    <input asp-for="Name"
+           type="text" />
+
+    <label asp-for="Description"></label>
+    <input asp-for="Description"
+           type="text" />
+
+    @* <label asp-for="Departament"></label>
+    <input asp-for="Departament" />
+
+    <label asp-for="Workers"></label>
+    <input asp-for="Workers" /> *@
+
+    <button type="submit">Add</button>
+</form>

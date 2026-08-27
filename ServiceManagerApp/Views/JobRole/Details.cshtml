@@ -1,0 +1,37 @@
+﻿@model ServiceManagerApp.Models.Entities.JobRole
+@using ServiceManagerApp.Models.Entities
+
+<h3>
+    <strong>@Model.Name</strong>
+</h3>
+@{
+    string departamentName = @Model.Departament != null ?
+        @Model.Departament.Name :
+        "This job role has not been assigned to any departamanet.";
+
+    <p>Departament: @departamentName</p>
+}
+
+<h5>Description:</h5>
+<p>@Model.Description</p>
+
+<table class="table">
+    <tbody>
+        @foreach (Worker worker in Model.Workers)
+        {
+            <tr>
+                <td>worker.Name</td>
+                <td>worker.Workers.Count</td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.Id">
+    Edit departament
+</a>
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit">Delete departament</button>
+</form>
