@@ -1,0 +1,20 @@
+﻿@model ServiceManagerApp.Models.Entities.Departament
+@{
+    <h3> Edit @Model.Name departament</h3>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <label asp-for="Name">Name:</label>
+        <input asp-for="Name" />
+
+        <label asp-for="Description">Descriptiom:</label>
+        <input asp-for="Description" />
+
+        @* <label asp-for="JobRoles">Job Roles</label>
+        <input asp-for="JobRoles" /> *@
+
+        <button type="submit">Save Changes</button>
+        @* <button type="">Cancel</button> *@
+    </form>
+}

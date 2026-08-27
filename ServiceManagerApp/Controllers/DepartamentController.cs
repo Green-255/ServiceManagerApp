@@ -36,7 +36,7 @@ namespace ServiceManagerApp.Controllers
             await _context.AddAsync(departamentVM);
             await _context.SaveChangesAsync();
 
-            return View();
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Details(int? id)
