@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServiceManagerApp.Data;
 
@@ -11,9 +12,11 @@ using ServiceManagerApp.Data;
 namespace ServiceManagerApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260826135610_FixJobRoleEntity")]
+    partial class FixJobRoleEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -224,7 +227,7 @@ namespace ServiceManagerApp.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ServiceManagerApp.Models.Entities.Department", b =>
+            modelBuilder.Entity("ServiceManagerApp.Models.Entities.Departament", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -241,7 +244,7 @@ namespace ServiceManagerApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departaments");
                 });
 
             modelBuilder.Entity("ServiceManagerApp.Models.Entities.JobRole", b =>
@@ -252,7 +255,7 @@ namespace ServiceManagerApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("DepartmentId")
+                    b.Property<int?>("DepartamentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -264,7 +267,7 @@ namespace ServiceManagerApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("DepartamentId");
 
                     b.ToTable("JobRoles");
                 });
@@ -365,7 +368,7 @@ namespace ServiceManagerApp.Data.Migrations
                     b.Property<int>("AvailabilityStatus")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DepartmentId")
+                    b.Property<int?>("DepartamentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -391,7 +394,7 @@ namespace ServiceManagerApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("DepartamentId");
 
                     b.HasIndex("JobRoleId");
 
@@ -466,11 +469,11 @@ namespace ServiceManagerApp.Data.Migrations
 
             modelBuilder.Entity("ServiceManagerApp.Models.Entities.JobRole", b =>
                 {
-                    b.HasOne("ServiceManagerApp.Models.Entities.Department", "Department")
+                    b.HasOne("ServiceManagerApp.Models.Entities.Departament", "Departament")
                         .WithMany("JobRoles")
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartamentId");
 
-                    b.Navigation("Department");
+                    b.Navigation("Departament");
                 });
 
             modelBuilder.Entity("ServiceManagerApp.Models.Entities.Service", b =>
@@ -485,15 +488,15 @@ namespace ServiceManagerApp.Data.Migrations
 
             modelBuilder.Entity("ServiceManagerApp.Models.Entities.Worker", b =>
                 {
-                    b.HasOne("ServiceManagerApp.Models.Entities.Department", "Department")
+                    b.HasOne("ServiceManagerApp.Models.Entities.Departament", "Departament")
                         .WithMany()
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartamentId");
 
                     b.HasOne("ServiceManagerApp.Models.Entities.JobRole", "JobRole")
                         .WithMany("Workers")
                         .HasForeignKey("JobRoleId");
 
-                    b.Navigation("Department");
+                    b.Navigation("Departament");
 
                     b.Navigation("JobRole");
                 });
@@ -513,7 +516,7 @@ namespace ServiceManagerApp.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ServiceManagerApp.Models.Entities.Department", b =>
+            modelBuilder.Entity("ServiceManagerApp.Models.Entities.Departament", b =>
                 {
                     b.Navigation("JobRoles");
                 });

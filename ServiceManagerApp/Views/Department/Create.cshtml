@@ -1,0 +1,13 @@
+﻿@model ServiceManagerApp.Models.Entities.Department
+<h2> Add new Department</h2>
+
+<form asp-action="Create" , method="post">
+    <label asp-for="Name"></label>
+    <input asp-for="Name"
+           type="text" />
+
+    <label asp-for="Description"></label>
+    <input asp-for="Description" />
+
+    <button type="submit">Add</button>
+</form>

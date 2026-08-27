@@ -10,8 +10,8 @@ namespace ServiceManagerApp.Models.Entities
         public AvailabilityStatus AvailabilityStatus { get; set; } = AvailabilityStatus.Available;
         public string? PhoneNumber { get; set; }
         public string Email { get; set; } = null!;
-        public int? DepartamentId { get; set; }
-        public Departament? Departament { get; set; }
+        public int? DepartmentId { get; set; }
+        public Department? Department { get; set; }
         public int? JobRoleId { get; set; }
         public JobRole? JobRole { get; set; }
         public SkillLevel? SkillLevel { get; set; }

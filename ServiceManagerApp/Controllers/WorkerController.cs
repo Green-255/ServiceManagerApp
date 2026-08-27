@@ -45,7 +45,7 @@ namespace ServiceManagerApp.Controllers
                 Name = newWorker.Name,
                 PhoneNumber = newWorker.PhoneNumber,
                 Email = newWorker.Email,
-                Departament = newWorker.Departament,
+                Department = newWorker.Department,
                 JobRole = newWorker.JobRole,
                 SkillLevel = newWorker.SkillLevel,
             };
@@ -54,7 +54,7 @@ namespace ServiceManagerApp.Controllers
             await _context.SaveChangesAsync();
 
             workerToAdd.ReferenceNumber =
-                GenerateWorkerReferenceNumber(workerToAdd.Id, workerToAdd.Departament);
+                GenerateWorkerReferenceNumber(workerToAdd.Id, workerToAdd.Department);
 
             await _context.SaveChangesAsync();
 
@@ -68,9 +68,9 @@ namespace ServiceManagerApp.Controllers
             return $"{tag}-{middleTag}-{id:D6}";
         }
 
-        private static string GenerateWorkerReferenceNumber(int id, Departament? departament)
+        private static string GenerateWorkerReferenceNumber(int id, Department? department)
         {
-            string name = departament != null ? departament.Name : "Unemployed";
+            string name = department != null ? department.Name : "Unemployed";
             // WIT = Worker Identity Tag
             return GenerateReferenceNumber("WIT", id, name);
         }
@@ -96,7 +96,7 @@ namespace ServiceManagerApp.Controllers
                 AvailabilityStatus = workerToEdit.AvailabilityStatus,
                 PhoneNumber = workerToEdit.PhoneNumber,
                 Email = workerToEdit.Email,
-                Departament = workerToEdit.Departament,
+                Department = workerToEdit.Department,
                 JobRole = workerToEdit.JobRole,
                 SkillLevel = workerToEdit.SkillLevel,
                 Services = workerToEdit.Services,
@@ -124,7 +124,7 @@ namespace ServiceManagerApp.Controllers
             workerToEdit.AvailabilityStatus = workerVM.AvailabilityStatus;
             workerToEdit.PhoneNumber = workerVM.PhoneNumber;
             workerToEdit.Email = workerVM.Email;
-            workerToEdit.Departament = workerVM.Departament;
+            workerToEdit.Department = workerVM.Department;
             workerToEdit.JobRole = workerVM.JobRole;
             workerToEdit.SkillLevel = workerVM.SkillLevel;
             workerToEdit.Services = workerVM.Services;
@@ -151,12 +151,13 @@ namespace ServiceManagerApp.Controllers
 
             var workerVM = new WorkerViewModel
             {
+                Id = worker.Id,
                 ReferenceNumber = worker.ReferenceNumber,
                 Name = worker.Name,
                 AvailabilityStatus = worker.AvailabilityStatus,
                 PhoneNumber = worker.PhoneNumber,
                 Email = worker.Email,
-                Departament = worker.Departament,
+                Department = worker.Department,
                 JobRole = worker.JobRole,
                 SkillLevel = worker.SkillLevel,
                 Services = worker.Services,
@@ -165,6 +166,7 @@ namespace ServiceManagerApp.Controllers
             return View(workerVM);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if(id == null)
@@ -176,6 +178,7 @@ namespace ServiceManagerApp.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var deletedRows = await _context.Workers.Where(w => w.Id == id).ExecuteDeleteAsync();
@@ -184,7 +187,15 @@ namespace ServiceManagerApp.Controllers
                 return NotFound();
             }
 
-            //return Ok(deletedRows);
+            //var workerToDetele = _context.Workers.Find(id);
+            //if (workerToDetele == null)
+            //{
+            //    return NotFound();
+            //}
+            //_context.Workers.Remove(workerToDetele);
+            //await _context.SaveChangesAsync();
+
+            //retu1`rn Ok(deletedRows);
             return RedirectToAction(nameof(Index));
         }
     }

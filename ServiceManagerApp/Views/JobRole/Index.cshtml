@@ -1,0 +1,33 @@
+﻿@model IReadOnlyList<ServiceManagerApp.Models.Entities.JobRole>
+
+
+<h2>Job Roles</h2>
+
+<a asp-action="Create">Add a role</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <td><strong>Name</strong></td>
+            <td><strong>Description</strong></td>
+            <td></td>
+            <td>Department</td>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach(var role in Model)
+        {
+            string departmentName = @role.Department != null ? role.Department.Name : "-";
+            <tr>
+                <td>@role.Name</td>
+                <td>@role.Description</td>
+                <td>@role.Workers.Count</td>
+                <td>@departmentName</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@role.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

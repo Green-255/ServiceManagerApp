@@ -1,0 +1,30 @@
+﻿@model ServiceManagerApp.Models.Entities.Department
+@using ServiceManagerApp.Models.Entities
+
+<h3>
+    <strong>@Model.Name</strong>
+</h3>
+
+<h5>Description:</h5>
+<p>@Model.Description</p>
+
+<table class="table">
+    <tbody>
+        @foreach(JobRole role in Model.JobRoles)
+        {
+            <tr>
+                <td>role.Name</td>
+                <td>role.Workers.Count</td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<a asp-action="Edit" asp-route-id="@Model.Id">
+    Edit department
+</a>
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit">Delete department</button>
+</form>
