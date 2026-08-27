@@ -1,11 +1,12 @@
-﻿using ServiceManagerApp.Models.Enums;
+﻿using ServiceManagerApp.Models.Entities;
+using ServiceManagerApp.Models.Enums;
 
-namespace ServiceManagerApp.Models.Entities
+namespace ServiceManagerApp.Models.ViewModels.Workers
 {
-    public class Worker
+    public class WorkerViewModel
     {
         public int Id { get; set; }
-        public string ReferenceNumber { get; set; } = string.Empty; // unique code for each worker, maybe use a GUID or a combination of name and ID
+        public string ReferenceNumber { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public AvailabilityStatus AvailabilityStatus { get; set; } = AvailabilityStatus.Available;
         public string? PhoneNumber { get; set; }
