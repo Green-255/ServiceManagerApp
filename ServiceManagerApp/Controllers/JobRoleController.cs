@@ -91,7 +91,7 @@ namespace ServiceManagerApp.Controllers
 
             roleToEdit.Name = role.Name;
             roleToEdit.Description = role.Description;
-            roleToEdit.Departament = role.Departament;
+            roleToEdit.Department = role.Department;
             roleToEdit.Workers = role.Workers;
 
             await _context.SaveChangesAsync();

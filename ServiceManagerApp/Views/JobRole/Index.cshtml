@@ -18,12 +18,12 @@
     <tbody>
         @foreach(var role in Model)
         {
-            string departamentName = @role.Departament != null ? role.Departament.Name : "-";
+            string departmentName = @role.Department != null ? role.Department.Name : "-";
             <tr>
                 <td>@role.Name</td>
                 <td>@role.Description</td>
                 <td>@role.Workers.Count</td>
-                <td>@departamentName</td>
+                <td>@departmentName</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@role.Id">Details</a>
                 </td>

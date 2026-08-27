@@ -45,7 +45,7 @@ namespace ServiceManagerApp.Controllers
                 Name = newWorker.Name,
                 PhoneNumber = newWorker.PhoneNumber,
                 Email = newWorker.Email,
-                Departament = newWorker.Departament,
+                Department = newWorker.Department,
                 JobRole = newWorker.JobRole,
                 SkillLevel = newWorker.SkillLevel,
             };
@@ -54,7 +54,7 @@ namespace ServiceManagerApp.Controllers
             await _context.SaveChangesAsync();
 
             workerToAdd.ReferenceNumber =
-                GenerateWorkerReferenceNumber(workerToAdd.Id, workerToAdd.Departament);
+                GenerateWorkerReferenceNumber(workerToAdd.Id, workerToAdd.Department);
 
             await _context.SaveChangesAsync();
 
@@ -68,9 +68,9 @@ namespace ServiceManagerApp.Controllers
             return $"{tag}-{middleTag}-{id:D6}";
         }
 
-        private static string GenerateWorkerReferenceNumber(int id, Departament? departament)
+        private static string GenerateWorkerReferenceNumber(int id, Department? department)
         {
-            string name = departament != null ? departament.Name : "Unemployed";
+            string name = department != null ? department.Name : "Unemployed";
             // WIT = Worker Identity Tag
             return GenerateReferenceNumber("WIT", id, name);
         }
@@ -96,7 +96,7 @@ namespace ServiceManagerApp.Controllers
                 AvailabilityStatus = workerToEdit.AvailabilityStatus,
                 PhoneNumber = workerToEdit.PhoneNumber,
                 Email = workerToEdit.Email,
-                Departament = workerToEdit.Departament,
+                Department = workerToEdit.Department,
                 JobRole = workerToEdit.JobRole,
                 SkillLevel = workerToEdit.SkillLevel,
                 Services = workerToEdit.Services,
@@ -124,7 +124,7 @@ namespace ServiceManagerApp.Controllers
             workerToEdit.AvailabilityStatus = workerVM.AvailabilityStatus;
             workerToEdit.PhoneNumber = workerVM.PhoneNumber;
             workerToEdit.Email = workerVM.Email;
-            workerToEdit.Departament = workerVM.Departament;
+            workerToEdit.Department = workerVM.Department;
             workerToEdit.JobRole = workerVM.JobRole;
             workerToEdit.SkillLevel = workerVM.SkillLevel;
             workerToEdit.Services = workerVM.Services;
@@ -157,7 +157,7 @@ namespace ServiceManagerApp.Controllers
                 AvailabilityStatus = worker.AvailabilityStatus,
                 PhoneNumber = worker.PhoneNumber,
                 Email = worker.Email,
-                Departament = worker.Departament,
+                Department = worker.Department,
                 JobRole = worker.JobRole,
                 SkillLevel = worker.SkillLevel,
                 Services = worker.Services,

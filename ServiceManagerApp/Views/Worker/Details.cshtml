@@ -8,9 +8,9 @@
 
 @{
     string role = Model.JobRole == null ? string.Empty : Model.JobRole.Name;
-    string departament = Model.Departament == null ? string.Empty : Model.Departament.Name;
+    string department = Model.Department == null ? string.Empty : Model.Department.Name;
 
-    <p>@role at @departament</p>
+    <p>@role at @department</p>
 }
 <p>Skill level: @Model.SkillLevel</p>
 

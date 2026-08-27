@@ -1,4 +1,4 @@
-﻿@model ServiceManagerApp.Models.Entities.Departament
+﻿@model ServiceManagerApp.Models.Entities.Department
 @using ServiceManagerApp.Models.Entities
 
 <h3>
@@ -22,9 +22,9 @@
 </table>
 
 <a asp-action="Edit" asp-route-id="@Model.Id">
-    Edit departament
+    Edit department
 </a>
 
 <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-    <button type="submit">Delete departament</button>
+    <button type="submit">Delete department</button>
 </form>

@@ -5,11 +5,11 @@
     <strong>@Model.Name</strong>
 </h3>
 @{
-    string departamentName = @Model.Departament != null ?
-        @Model.Departament.Name :
+    string departmentName = @Model.Department != null ?
+        @Model.Department.Name :
         "This job role has not been assigned to any departamanet.";
 
-    <p>Departament: @departamentName</p>
+    <p>Department: @departmentName</p>
 }
 
 <h5>Description:</h5>
@@ -29,9 +29,9 @@
 </table>
 
 <a asp-action="Edit" asp-route-id="@Model.Id">
-    Edit departament
+    Edit department
 </a>
 
 <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-    <button type="submit">Delete departament</button>
+    <button type="submit">Delete department</button>
 </form>

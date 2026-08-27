@@ -5,19 +5,19 @@ using ServiceManagerApp.Models.Entities;
 
 namespace ServiceManagerApp.Controllers
 {
-    public class DepartamentController : Controller
+    public class DepartmentController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public DepartamentController(ApplicationDbContext context)
+        public DepartmentController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         public async Task<IActionResult> Index()
         {
-            var departaments = await _context.Departaments.ToListAsync();
-            return View(departaments);
+            var departments = await _context.Departments.ToListAsync();
+            return View(departments);
         }
 
         public async Task<IActionResult> Create()
@@ -26,14 +26,14 @@ namespace ServiceManagerApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Departament departamentVM)
+        public async Task<IActionResult> Create(Department departmentVM)
         {
             if (!ModelState.IsValid)
             {
-                return View(departamentVM);
+                return View(departmentVM);
             }
 
-            await _context.AddAsync(departamentVM);
+            await _context.AddAsync(departmentVM);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
@@ -46,14 +46,14 @@ namespace ServiceManagerApp.Controllers
                 return BadRequest();
             }
 
-            var departament = await _context.Departaments.FindAsync(id);
+            var department = await _context.Departments.FindAsync(id);
 
-            if (departament == null)
+            if (department == null)
             {
                 return NotFound();
             }
 
-            return View(departament);
+            return View(department);
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -63,34 +63,34 @@ namespace ServiceManagerApp.Controllers
                 return BadRequest();
             }
 
-            var departament = await _context.Departaments.FindAsync(id);
+            var department = await _context.Departments.FindAsync(id);
 
-            if (departament == null)
+            if (department == null)
             {
                 return NotFound();
             }
 
-            return View(departament);
+            return View(department);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Departament departament)
+        public async Task<IActionResult> Edit(Department department)
         {
             if (!ModelState.IsValid)
             {
-                return View(departament);
+                return View(department);
             }
 
-            var departamentToEdit = await _context.Departaments.FindAsync(departament.Id);
+            var departmentToEdit = await _context.Departments.FindAsync(department.Id);
 
-            if (departamentToEdit == null)
+            if (departmentToEdit == null)
             {
                 return NotFound();
             }
 
-            departamentToEdit.Name = departament.Name;
-            departamentToEdit.Description = departament.Description;
-            departamentToEdit.JobRoles = departament.JobRoles;
+            departmentToEdit.Name = department.Name;
+            departmentToEdit.Description = department.Description;
+            departmentToEdit.JobRoles = department.JobRoles;
 
             await _context.SaveChangesAsync();
 
@@ -105,7 +105,7 @@ namespace ServiceManagerApp.Controllers
                 return BadRequest();
             }
 
-            var deleted = await _context.Departaments.Where(d => d.Id == id).ExecuteDeleteAsync();
+            var deleted = await _context.Departments.Where(d => d.Id == id).ExecuteDeleteAsync();
             if (deleted == 0)
             {
                 return NotFound();
