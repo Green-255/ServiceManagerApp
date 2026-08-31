@@ -1,4 +1,4 @@
-﻿@model ServiceManagerApp.Models.Entities.Department
+﻿@model ServiceManagerApp.Models.ViewModels.Departments.DepartmentCreateEditViewModel
 <h2> Add new Department</h2>
 
 <form asp-action="Create" , method="post">
@@ -8,6 +8,19 @@
 
     <label asp-for="Description"></label>
     <input asp-for="Description" />
+
+    <div>
+        <label asp-for="JobRoleIds" class="form-label">
+            Job roles
+        </label>
+
+        <select asp-for="JobRoleIds"
+                asp-items="@Model.JobRoles"
+                multiple
+                class="form-select"
+                size="5">
+        </select>
+    </div>
 
     <button type="submit">Add</button>
 </form>

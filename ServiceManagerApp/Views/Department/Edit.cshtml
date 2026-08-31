@@ -1,4 +1,4 @@
-﻿@model ServiceManagerApp.Models.Entities.Department
+﻿@model ServiceManagerApp.Models.ViewModels.Departments.DepartmentCreateEditViewModel
 @{
     <h3> Edit @Model.Name department</h3>
 
@@ -11,10 +11,15 @@
         <label asp-for="Description">Descriptiom:</label>
         <input asp-for="Description" />
 
-        @* <label asp-for="JobRoles">Job Roles</label>
-        <input asp-for="JobRoles" /> *@
+        <label asp-for="JobRoleIds">Job roles</label>
+        <select asp-for="JobRoleIds"
+            asp-items="@Model.JobRoles"
+            multiple
+            class="form-select"
+            size=5>
+        </select>
 
         <button type="submit">Save Changes</button>
-        @* <button type="">Cancel</button> *@
+        <a asp-for="Details" asp-route-id="@Model.Id">Cancel</a>
     </form>
 }

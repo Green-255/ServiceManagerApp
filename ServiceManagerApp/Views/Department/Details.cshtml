@@ -9,12 +9,17 @@
 <p>@Model.Description</p>
 
 <table class="table">
+    <thead>
+        <tr>
+            <td><strong>Active positions</strong></td>
+        </tr>
+    </thead>
     <tbody>
         @foreach(JobRole role in Model.JobRoles)
         {
             <tr>
-                <td>role.Name</td>
-                <td>role.Workers.Count</td>
+                <td>@role.Name</td>
+                <td>@role.Workers.Count</td>
             </tr>
         }
     </tbody>
