@@ -5,10 +5,9 @@
     <strong>@Model.Name</strong>
 </h3>
 @{
-    string departmentName = @Model.Department != null ?
-        @Model.Department.Name :
-        "This job role has not been assigned to any departamanet.";
-
+    string departmentName = @Model.Department == null ?
+        "This job role has not been assigned to any departamanet." :
+        @Model.Department.Name;
     <p>Department: @departmentName</p>
 }
 

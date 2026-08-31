@@ -1,6 +1,9 @@
-﻿@model ServiceManagerApp.Models.Entities.JobRole
+﻿@model ServiceManagerApp.Models.ViewModels.JobRoles.JobRoleCreateEditViewModel
 @{
-    <h3> Edit @Model.Name department</h3>
+    // ViewData["Title"] = "Create job role";
+}
+@{
+    <h3> Edit <strong>@Model.Name</strong> job role</h3>
 
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />
@@ -11,12 +14,18 @@
         <label asp-for="Description">Descriptiom:</label>
         <input asp-for="Description" />
 
-        @* <label asp-for="Department">Departamens</label>
-        <input asp-for="Department" /> *@
+        <label asp-for="DepartmentId">Department</label>
+        <select asp-for="DepartmentId"
+                asp-items="Model.Departments"
+                class="form-select">
+            <option value="">-- No department --</option>
+        </select>
+
         @* <label asp-for="Workers">Workers</label>
         <input asp-for="Workers" /> *@
 
         <button type="submit">Save Changes</button>
-        @* <button type="">Cancel</button> *@
+        <a asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
     </form>
 }
+
