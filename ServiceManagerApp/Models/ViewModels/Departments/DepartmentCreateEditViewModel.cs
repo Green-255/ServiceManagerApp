@@ -9,6 +9,6 @@ namespace ServiceManagerApp.Models.ViewModels.Departments
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public List<int> JobRoleIds { get; set; } = [];
-        public List<SelectListItem> JobRoles { get; set; } = [];
+        public List<JobRoleCheckboxViewModel> JobRoles { get; set; } = [];
     }
 }

@@ -26,21 +26,10 @@ namespace ServiceManagerApp.Controllers
         {
             var viewModel = new DepartmentCreateEditViewModel
             {
-                JobRoles = await PopulateJobRoleDropDownList(),
+                JobRoles = await GetJobRoleCheckboxesAsync(),
             };
 
-            return View();
-        }
-
-        private async Task<List<SelectListItem>> PopulateJobRoleDropDownList()
-        {
-            return await _context.JobRoles.Select(jr => new SelectListItem
-            {
-                Value = jr.Id.ToString(),
-                Text = jr.Name,
-                Selected = false,
-            })
-            .ToListAsync();
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -48,6 +37,7 @@ namespace ServiceManagerApp.Controllers
         {
             if (!ModelState.IsValid)
             {
+                viewModel.JobRoles = await GetJobRoleCheckboxesAsync(viewModel.JobRoleIds);
                 return View(viewModel);
             }
 
@@ -62,15 +52,12 @@ namespace ServiceManagerApp.Controllers
 
 
             var allJobRoles = await _context.JobRoles
-                .Include(jr => jr.Department)
+                .Where(jr => viewModel.JobRoleIds.Contains(jr.Id))
                 .ToListAsync();
 
             foreach(var role in allJobRoles)
             {
-                if (viewModel.JobRoleIds.Contains(role.Id))
-                {
-                    role.DepartmentId = departmentToAdd.Id;
-                }
+               role.DepartmentId = departmentToAdd.Id;
             }
 
             await _context.SaveChangesAsync();
@@ -114,20 +101,16 @@ namespace ServiceManagerApp.Controllers
                 return NotFound();
             }
 
-            var jobRoles = await _context.JobRoles.ToListAsync();
+
+            var jobRoleIds = _context.JobRoles.Select(jr => jr.Id).ToList(); // why no async await?
+            var selectedIds = department.JobRoles.Select(jr => jr.Id).ToList();
 
             var viewModel = new DepartmentCreateEditViewModel
             {
                 Name = department.Name,
                 Description = department.Description,
-                JobRoleIds = department.JobRoles.Select(jr => jr.Id).ToList(),
-                JobRoles = department.JobRoles
-                    .Select(jr => new SelectListItem
-                    {
-                        Value = jr.Id.ToString(),
-                        Text = jr.Name,
-                        Selected = jr.DepartmentId == department.Id,
-                    }).ToList()
+                JobRoleIds = jobRoleIds,
+                JobRoles = await GetJobRoleCheckboxesAsync(selectedIds),
             };
 
             return View(viewModel);
@@ -154,12 +137,16 @@ namespace ServiceManagerApp.Controllers
 
             var allJobRoles = await _context.JobRoles.ToListAsync();
 
+
+            // maybe it is possible to use XOR here to optimize.
+            // XOR operation would be used on Ids arrays (lists) of before and after
             foreach (JobRole role in allJobRoles)
             {
                 if (viewModel.JobRoleIds.Contains(role.Id))
                 {
                     role.DepartmentId = departmentToEdit.Id;
                 }
+                // nelabai suprantu kam sita
                 else if (role.DepartmentId == departmentToEdit.Id)
                 {
                     role.DepartmentId = null;
@@ -187,5 +174,22 @@ namespace ServiceManagerApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        private async Task<List<JobRoleCheckboxViewModel>> GetJobRoleCheckboxesAsync(
+            List<int>? selectedJobRoleIds = null)
+        {
+            selectedJobRoleIds ??= [];
+
+            return await _context.JobRoles
+                .OrderBy(jr => jr.Name)
+                .Select(jr => new JobRoleCheckboxViewModel
+                {
+                    Id = jr.Id,
+                    Name = jr.Name,
+                    IsSelected = selectedJobRoleIds.Contains(jr.Id)
+                })
+                .ToListAsync();
+        }
+
     }
 }

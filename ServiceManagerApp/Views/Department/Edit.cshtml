@@ -1,25 +1,33 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.Departments.DepartmentCreateEditViewModel
 @{
-    <h3> Edit @Model.Name department</h3>
-
-    <form asp-action="Edit" method="post">
-        <input type="hidden" asp-for="Id" />
-
-        <label asp-for="Name">Name:</label>
-        <input asp-for="Name" />
-
-        <label asp-for="Description">Descriptiom:</label>
-        <input asp-for="Description" />
-
-        <label asp-for="JobRoleIds">Job roles</label>
-        <select asp-for="JobRoleIds"
-            asp-items="@Model.JobRoles"
-            multiple
-            class="form-select"
-            size=5>
-        </select>
-
-        <button type="submit">Save Changes</button>
-        <a asp-for="Details" asp-route-id="@Model.Id">Cancel</a>
-    </form>
 }
+<h3> Edit @Model.Name department</h3>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <label asp-for="Name">Name:</label>
+    <input asp-for="Name" />
+
+    <label asp-for="Description">Descriptiom:</label>
+    <input asp-for="Description" />
+
+    @foreach (var role in Model.JobRoles)
+    {
+        <div>
+            <input
+                   type="checkbox"
+                   name="JobRoleIds"
+                   value="@role.Id"
+                   id="jobRole_@role.Id"
+                   checked="@role.IsSelected" />
+
+            <label class="form-check-label" for="jobRole_@role.Id">
+                @role.Name
+            </label>
+        </div>
+    }
+
+    <button type="submit">Save Changes</button>
+    <a asp-for="Details" asp-route-id="@Model.Id">Cancel</a>
+</form>
