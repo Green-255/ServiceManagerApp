@@ -107,6 +107,7 @@ namespace ServiceManagerApp.Controllers
 
             var viewModel = new DepartmentCreateEditViewModel
             {
+                Id = department.Id,
                 Name = department.Name,
                 Description = department.Description,
                 JobRoleIds = jobRoleIds,
