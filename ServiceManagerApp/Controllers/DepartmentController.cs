@@ -37,7 +37,7 @@ namespace ServiceManagerApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                viewModel.JobRoles = await GetJobRoleCheckboxesAsync(viewModel.JobRoleIds);
+                viewModel.JobRoles = await GetJobRoleCheckboxesAsync(viewModel.Id, viewModel.JobRoleIds);
                 return View(viewModel);
             }
 
@@ -111,7 +111,7 @@ namespace ServiceManagerApp.Controllers
                 Name = department.Name,
                 Description = department.Description,
                 JobRoleIds = jobRoleIds,
-                JobRoles = await GetJobRoleCheckboxesAsync(selectedIds),
+                JobRoles = await GetJobRoleCheckboxesAsync(department.Id, selectedIds),
             };
 
             return View(viewModel);
@@ -177,12 +177,13 @@ namespace ServiceManagerApp.Controllers
         }
 
         private async Task<List<JobRoleCheckboxViewModel>> GetJobRoleCheckboxesAsync(
+            int? id = null,
             List<int>? selectedJobRoleIds = null)
         {
             selectedJobRoleIds ??= [];
 
             return await _context.JobRoles
-                .OrderBy(jr => jr.Name)
+                .Where(jr => jr.DepartmentId == null || jr.DepartmentId == id)
                 .Select(jr => new JobRoleCheckboxViewModel
                 {
                     Id = jr.Id,
