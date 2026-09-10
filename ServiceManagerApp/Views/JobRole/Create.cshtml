@@ -1,4 +1,4 @@
-﻿@model ServiceManagerApp.Models.Entities.JobRole
+﻿@model ServiceManagerApp.Models.ViewModels.JobRoles.JobRoleCreateEditViewModel
 <h2> Add new job role</h2>
 
 <form asp-action="Create" , method="post">
@@ -10,6 +10,12 @@
     <input asp-for="Description"
            type="text" />
 
+    <label asp-for="DepartmentId"></label>
+    <select asp-for="DepartmentId"
+        asp-items="Model.Departments"
+        class="form-select">
+        <option value="">-- No department --</option>
+    </select>
     @* <label asp-for="Department"></label>
     <input asp-for="Department" />
 

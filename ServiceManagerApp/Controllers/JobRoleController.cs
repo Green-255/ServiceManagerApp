@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
+using ServiceManagerApp.Models.ViewModels.JobRoles;
 
 namespace ServiceManagerApp.Controllers
 {
@@ -17,24 +19,49 @@ namespace ServiceManagerApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var roles = await _context.JobRoles.ToListAsync();
+            var roles = await _context.JobRoles
+                .Include(jr => jr.Department)
+                .ToListAsync();
             return View(roles);
         }
 
         public async Task<IActionResult> Create()
         {
-            return View();
+            var model = new JobRoleCreateEditViewModel
+            {
+                Departments = await PopulateDepartmentDropDownAsync()
+            };
+
+            return View(model);
+        }
+
+        public async Task<List<SelectListItem>> PopulateDepartmentDropDownAsync()
+        {
+            return await _context.Departments.Select(d => new SelectListItem
+            {
+                Value = d.Id.ToString(),
+                Text = d.Name
+            })
+            .ToListAsync();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(JobRole jobRoleVM)
+        public async Task<IActionResult> Create(JobRoleCreateEditViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(jobRoleVM);
+                model.Departments = await PopulateDepartmentDropDownAsync();
+                return View(model);
             }
 
-            await _context.AddAsync(jobRoleVM);
+            JobRole jobRole = new JobRole
+            {
+                Name = model.Name,
+                Description = model.Description,
+                DepartmentId = model.DepartmentId,
+            };
+
+            await _context.AddAsync(jobRole);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
@@ -47,7 +74,9 @@ namespace ServiceManagerApp.Controllers
                 return BadRequest();
             }
 
-            var role = await _context.JobRoles.FindAsync(id);
+            var role = await _context.JobRoles
+                .Include(jr => jr.Department)
+                .FirstOrDefaultAsync(jr => jr.Id == id);
 
             if (role == null)
             {
@@ -71,28 +100,38 @@ namespace ServiceManagerApp.Controllers
                 return NotFound();
             }
 
-            return View(role);
+            var roleVM = new JobRoleCreateEditViewModel
+            {
+                Id = role.Id,
+                Name = role.Name,
+                Description = role.Description,
+                DepartmentId = role.DepartmentId,
+                Departments = await PopulateDepartmentDropDownAsync(),
+            };
+
+            return View(roleVM);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(JobRole role)
+        public async Task<IActionResult> Edit(JobRoleCreateEditViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(role);
+                model.Departments = await PopulateDepartmentDropDownAsync();
+                return View(model);
             }
 
-            var roleToEdit = await _context.JobRoles.FindAsync(role.Id);
+            var roleToEdit = await _context.JobRoles.FindAsync(model.Id);
 
             if (roleToEdit == null)
             {
                 return NotFound();
             }
 
-            roleToEdit.Name = role.Name;
-            roleToEdit.Description = role.Description;
-            roleToEdit.Department = role.Department;
-            roleToEdit.Workers = role.Workers;
+            roleToEdit.Name = model.Name;
+            roleToEdit.Description = model.Description;
+            roleToEdit.DepartmentId = model.DepartmentId;
+            //roleToEdit.Workers = roleVM.Workers;
 
             await _context.SaveChangesAsync();
 

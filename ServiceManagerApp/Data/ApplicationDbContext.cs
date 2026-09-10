@@ -21,6 +21,12 @@ namespace ServiceManagerApp.Data
                 .WithMany()
                 .HasForeignKey(s => s.ServiceRequestId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<JobRole>()
+                .HasOne(jr => jr.Department)
+                .WithMany(d => d.JobRoles)
+                .HasForeignKey(jr => jr.DepartmentId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 

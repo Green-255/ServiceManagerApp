@@ -1,13 +1,33 @@
-﻿@model ServiceManagerApp.Models.Entities.Department
+﻿@model ServiceManagerApp.Models.ViewModels.Departments.DepartmentCreateEditViewModel
 <h2> Add new Department</h2>
 
-<form asp-action="Create" , method="post">
+<form asp-action="Create" method="post">
     <label asp-for="Name"></label>
     <input asp-for="Name"
            type="text" />
 
     <label asp-for="Description"></label>
     <input asp-for="Description" />
+
+
+    <label asp-for="JobRoleIds" class="form-label">
+        Job roles:
+    </label>
+    @foreach(var role in Model.JobRoles)
+    {       
+        <div>
+            <input 
+                type="checkbox"
+                name="JobRoleIds"
+                value="@role.Id"
+                id="jobRole_@role.Id"
+                checked="@role.IsSelected"/>
+
+            <label for="jobRole_@role.Id">
+                @role.Name
+            </label>
+        </div>
+    }
 
     <button type="submit">Add</button>
 </form>
