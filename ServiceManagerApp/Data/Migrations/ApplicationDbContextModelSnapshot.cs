@@ -255,9 +255,6 @@ namespace ServiceManagerApp.Data.Migrations
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DepartmentId1")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -268,8 +265,6 @@ namespace ServiceManagerApp.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
-
-                    b.HasIndex("DepartmentId1");
 
                     b.ToTable("JobRoles");
                 });
@@ -472,13 +467,9 @@ namespace ServiceManagerApp.Data.Migrations
             modelBuilder.Entity("ServiceManagerApp.Models.Entities.JobRole", b =>
                 {
                     b.HasOne("ServiceManagerApp.Models.Entities.Department", "Department")
-                        .WithMany()
+                        .WithMany("JobRoles")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("ServiceManagerApp.Models.Entities.Department", null)
-                        .WithMany("JobRoles")
-                        .HasForeignKey("DepartmentId1");
 
                     b.Navigation("Department");
                 });
