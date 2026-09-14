@@ -10,7 +10,9 @@
 <h4>@title</h4>
 
 <form asp-action="Review" method="post">
-    <input asp-for="Id" type="hidden"/>
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="ReferenceNumber" type="hidden" />
+    <input asp-for="ServiceRequestId" type="hidden" />
 
     @* <label asp-for="Comments"></label>
     <input asp-for="Comments" /> *@

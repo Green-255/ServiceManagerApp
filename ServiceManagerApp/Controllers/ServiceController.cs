@@ -348,9 +348,9 @@ public class ServiceController : Controller
         }
 
 
-        service.Id = serviceVM.Id;
-        service.ServiceRequestId = serviceVM.ServiceRequestId;
-        service.ServiceRequest = serviceVM.ServiceRequest;
+        //service.Id = serviceVM.Id;
+        //service.ServiceRequestId = serviceVM.ServiceRequestId;
+        //service.ServiceRequest = serviceVM.ServiceRequest;
         service.ReferenceNumber = serviceVM.ReferenceNumber;
         service.ServiceRequestType = serviceVM.ServiceRequestType;
         service.DueAtUtc = serviceVM.DueAtUtc;
