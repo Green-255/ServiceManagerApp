@@ -1,0 +1,40 @@
+﻿@using ServiceManagerApp.Models.Enums
+@model ServiceManagerApp.Models.ViewModels.Services.Review.ServiceRequestReviewViewModel
+
+<h2>Review of a @Model.ReferenceNumber service</h2>
+
+@{
+    string title = @Model.ServiceRequest == null ? "No Title given" : @Model.ServiceRequest.Title;
+}
+
+<h4>@title</h4>
+
+<form asp-action="Review" method="post">
+    <input asp-for="Id" type="hidden"/>
+
+    @* <label asp-for="Comments"></label>
+    <input asp-for="Comments" /> *@
+    
+    <label asp-for="DurationHours"></label>
+    <input asp-for="DurationHours" />
+    <label asp-for="DurationMinutes"></label>
+    <input asp-for="DurationMinutes" />
+
+    <label asp-for="DueAtUtc"></label>
+    <input asp-for="DueAtUtc" />
+
+    <label asp-for="Location"></label>
+    <input asp-for="Location" />
+
+    <label asp-for="SkillLevel"></label>
+    <select asp-for="SkillLevel" 
+        asp-items="Html.GetEnumSelectList<SkillLevel>()"/>
+
+    <label asp-for="Cost"></label>
+    <input asp-for="Cost" />
+
+    @* <label asp-for="Workers"></label>
+    <input asp-for="Workers" /> *@
+
+    <button type="submit">Accept</button>
+</form>
