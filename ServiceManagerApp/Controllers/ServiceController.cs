@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.Services;
+using ServiceManagerApp.Models.ViewModels.Services.Review;
+using System;
 
 namespace ServiceManagerApp.Controllers;
 public class ServiceController : Controller
@@ -82,7 +85,8 @@ public class ServiceController : Controller
 
         var servicesViewModel = new ServiceIndexViewModel
         {
-            AllServices = allServices,
+            //AllServices = allServices,
+            AllServices = allServices.Except(needReviewServices).ToList(),
             ServicesNeedingReview = needReviewServices
         };
 
@@ -139,11 +143,9 @@ public class ServiceController : Controller
         return TimeSpan.FromMinutes(totalMinutes);
     }
 
-    private int GetMinutesFromTimeSpan(TimeSpan duration)
+    private int GetMinutesFromTimeSpan(TimeSpan? duration)
     {
-        //if (duration == null) return 0;
-        int minutes = duration.Hours * 60 + duration.Minutes;
-        return minutes;
+        return duration == null ? 0 : (int) duration.Value.TotalMinutes;
     }
 
     public async Task<IActionResult> Edit(int id)
@@ -185,8 +187,6 @@ public class ServiceController : Controller
             return View(serviceEdited);
         }
 
-        //var serviceToUpdate = await _context.Services
-        //    .FirstOrDefaultAsync(s => s.Id == serviceEdited.Id);
         var serviceToUpdate = await _context.Services.FindAsync(serviceEdited.Id);
 
         if (serviceToUpdate == null)
@@ -285,5 +285,86 @@ public class ServiceController : Controller
             Cost = service.Cost
         };
         return View(viewModel);
+    }
+
+    public async Task<IActionResult> Review(int? id)
+    {
+        if (id == null)
+        {
+            return BadRequest();
+        }
+        var service = await _context.Services
+            .Include(s => s.ServiceRequest)
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (service == null)
+        {
+            return NotFound();
+        }
+
+        int minutes = GetMinutesFromTimeSpan(service.Duration);
+
+
+        var serviceVM = new ServiceRequestReviewViewModel
+        {
+            Id = service.Id,
+            ServiceRequestId = service.ServiceRequestId,
+            ServiceRequest = service.ServiceRequest,
+            ReferenceNumber = service.ReferenceNumber,
+            ServiceRequestType = service.ServiceRequestType,
+            DueAtUtc = service.DueAtUtc,
+            DurationHours = minutes / 60,
+            DurationMinutes = minutes % 60,
+            Location = service.Location,
+            Workers = service.Workers,
+            SkillLevel = service.SkillLevel,
+            Comments = service.Comments,
+            Cost = service.Cost,
+        };
+
+        return View(serviceVM);
+    }
+
+    [HttpPost, ActionName("Review")]
+    public async Task<IActionResult> ReviewAccepted(ServiceRequestReviewViewModel serviceVM)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View();
+        }
+
+        var service = await _context.Services
+            .Include(s => s.ServiceRequest)
+            .FirstOrDefaultAsync(s => s.Id == serviceVM.Id);
+
+        //var service = _context.Services
+        //    .Include(s => s.ServiceRequest)
+        //    .Where(s => s.Id == serviceVM.Id)
+        //    .Select(s => { });
+
+        if (service == null)
+        {
+            return NotFound();
+        }
+
+
+        //service.Id = serviceVM.Id;
+        //service.ServiceRequestId = serviceVM.ServiceRequestId;
+        //service.ServiceRequest = serviceVM.ServiceRequest;
+        service.ReferenceNumber = serviceVM.ReferenceNumber;
+        service.ServiceRequestType = serviceVM.ServiceRequestType;
+        service.DueAtUtc = serviceVM.DueAtUtc;
+        service.Duration = CalculateDuration(serviceVM.DurationHours, serviceVM.DurationMinutes);
+        service.Location = serviceVM.Location;
+        service.Workers = serviceVM.Workers;
+        service.SkillLevel = serviceVM.SkillLevel;
+        service.Comments = serviceVM.Comments;
+        service.Cost = serviceVM.Cost;
+
+        service.Status = ServiceStatus.Scheduled;
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
     }
 }

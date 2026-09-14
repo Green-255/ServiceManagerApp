@@ -20,7 +20,8 @@ public class ServiceRequestController : Controller
     public async Task<IActionResult> Index()
     {
         var serviceRequests = await _context.ServiceRequests
-            .OrderByDescending(sr => sr.CreatedAtUtc).ToListAsync();
+            .OrderByDescending(sr => sr.CreatedAtUtc)
+            .ToListAsync();
 
         var serviceRequestsList = new List<ServiceRequestIndexViewModel>();
 
