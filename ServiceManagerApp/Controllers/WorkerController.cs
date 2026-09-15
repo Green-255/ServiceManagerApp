@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
@@ -32,7 +33,13 @@ namespace ServiceManagerApp.Controllers
 
         public async Task<IActionResult> Create()
         {
-            return View();
+            var workerVM = new WorkerCreateViewModel
+            {
+                Departments = await PopulateDepartmentDropDownAsync(),
+                JobRoles = await PopulateJobRoleDropDownAsync(),
+            };
+
+            return View(workerVM);
         }
 
 
@@ -45,8 +52,8 @@ namespace ServiceManagerApp.Controllers
                 Name = newWorker.Name,
                 PhoneNumber = newWorker.PhoneNumber,
                 Email = newWorker.Email,
-                Department = newWorker.Department,
-                JobRole = newWorker.JobRole,
+                DepartmentId = newWorker.DepartmentId,
+                JobRoleId = newWorker.JobRoleId,
                 SkillLevel = newWorker.SkillLevel,
             };
 
@@ -60,6 +67,27 @@ namespace ServiceManagerApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<List<SelectListItem>> PopulateDepartmentDropDownAsync()
+        {
+            return await _context.Departments.Select(d => new SelectListItem
+            {
+                Value = d.Id.ToString(),
+                Text = d.Name
+            })
+            .ToListAsync();
+        }
+
+        public async Task<List<SelectListItem>> PopulateJobRoleDropDownAsync()
+        {
+            return await _context.JobRoles.Select(d => new SelectListItem
+            {
+                Value = d.Id.ToString(),
+                Text = d.Name
+            })
+            .ToListAsync();
+        }
+
 
         private static string GenerateReferenceNumber(string tag, int id, string? middleTag = null)
         {
@@ -88,7 +116,7 @@ namespace ServiceManagerApp.Controllers
                 return NotFound();
             }
 
-            var workerVM = new WorkerViewModel
+            var workerVM = new WorkerEditViewModel
             {
                 Id = workerToEdit.Id,
                 ReferenceNumber = workerToEdit.ReferenceNumber,
@@ -96,20 +124,22 @@ namespace ServiceManagerApp.Controllers
                 AvailabilityStatus = workerToEdit.AvailabilityStatus,
                 PhoneNumber = workerToEdit.PhoneNumber,
                 Email = workerToEdit.Email,
-                Department = workerToEdit.Department,
-                JobRole = workerToEdit.JobRole,
+                Departments = await PopulateDepartmentDropDownAsync(),
+                JobRoles = await PopulateJobRoleDropDownAsync(),
                 SkillLevel = workerToEdit.SkillLevel,
-                Services = workerToEdit.Services,
+                //Services = workerToEdit.Services,
             };
 
             return View(workerVM);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(WorkerViewModel workerVM)
+        public async Task<IActionResult> Edit(WorkerEditViewModel workerVM)
         {
             if (!ModelState.IsValid)
             {
+                workerVM.Departments = await PopulateDepartmentDropDownAsync();
+                workerVM.JobRoles = await PopulateJobRoleDropDownAsync();
                 return View(workerVM);
             }
 
@@ -124,10 +154,10 @@ namespace ServiceManagerApp.Controllers
             workerToEdit.AvailabilityStatus = workerVM.AvailabilityStatus;
             workerToEdit.PhoneNumber = workerVM.PhoneNumber;
             workerToEdit.Email = workerVM.Email;
-            workerToEdit.Department = workerVM.Department;
-            workerToEdit.JobRole = workerVM.JobRole;
+            workerToEdit.DepartmentId = workerVM.DepartmentId;
+            workerToEdit.JobRoleId = workerVM.JobRoleId;
             workerToEdit.SkillLevel = workerVM.SkillLevel;
-            workerToEdit.Services = workerVM.Services;
+            //workerToEdit.Services = workerVM.Services;
 
             await _context.SaveChangesAsync();
 
