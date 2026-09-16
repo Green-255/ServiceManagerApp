@@ -176,7 +176,10 @@ namespace ServiceManagerApp.Controllers
                 return BadRequest();
             }
 
-            var worker = await _context.Workers.FindAsync(id);
+            var worker = await _context.Workers
+                .Include(w => w.Department)
+                .Include(w => w.JobRole)
+                .FirstOrDefaultAsync(w => w.Id == id);
 
             if (worker == null)
             {
@@ -188,12 +191,12 @@ namespace ServiceManagerApp.Controllers
                 Id = worker.Id,
                 ReferenceNumber = worker.ReferenceNumber,
                 Name = worker.Name,
-                AvailabilityStatus = worker.AvailabilityStatus,
+                AvailabilityStatus = worker.AvailabilityStatus.ToString(),
                 PhoneNumber = worker.PhoneNumber,
                 Email = worker.Email,
-                Department = worker.Department,
-                JobRole = worker.JobRole,
-                SkillLevel = worker.SkillLevel,
+                DepartmentName = worker.Department?.Name,
+                JobRoleName = worker.JobRole?.Name,
+                SkillLevel = worker.SkillLevel.ToString(),
                 Services = worker.Services,
             };
 

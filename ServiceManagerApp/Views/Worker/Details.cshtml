@@ -7,10 +7,10 @@
 <p>@Model.Name | @Model.Email | @Model.PhoneNumber</p>
 
 @{
-    string role = Model.JobRole == null ? string.Empty : Model.JobRole.Name;
-    string department = Model.Department == null ? string.Empty : Model.Department.Name;
+    string role = Model.JobRoleName == null ? string.Empty : Model.JobRoleName;
+    string department = Model.DepartmentName == null ? string.Empty : "Works at " + Model.DepartmentName;
 
-    <p>@role at @department</p>
+    <p>@role @department</p>
 }
 <p>Skill level: @Model.SkillLevel</p>
 
