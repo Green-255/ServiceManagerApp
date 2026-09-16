@@ -33,7 +33,13 @@
     <label asp-for="SkillLevel"></label>
     <select asp-for="SkillLevel"
         asp-items="Html.GetEnumSelectList<SkillLevel>()"
-        class="from-select">
+        class="form-select">
+    </select>
+
+    <label asp-for="AvailabilityStatus"></label>
+    <select asp-for="AvailabilityStatus"
+            asp-items="Html.GetEnumSelectList<AvailabilityStatus>()"
+            class="form-select">
     </select>
 
     <button type="submit">Save</button>

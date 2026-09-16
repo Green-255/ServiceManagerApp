@@ -14,5 +14,6 @@ namespace ServiceManagerApp.Models.ViewModels.Workers
         public int? JobRoleId { get; set; }
         public List<SelectListItem> JobRoles { get; set; } = [];
         public SkillLevel? SkillLevel { get; set; }
+        public AvailabilityStatus AvailabilityStatus { get; set; } = AvailabilityStatus.Unavailable;
     }
 }

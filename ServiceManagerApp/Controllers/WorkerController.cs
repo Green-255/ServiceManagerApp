@@ -24,7 +24,7 @@ namespace ServiceManagerApp.Controllers
                 Id              = w.Id,
                 ReferenceNumber = w.ReferenceNumber,
                 Name            = w.Name,
-                AvailabilityStatus = w.AvailabilityStatus,
+                AvailabilityStatus = w.AvailabilityStatus.ToString(),
                 JobRoleName = w.JobRole == null ? null : w.JobRole.Name,
                 SkillLevel = w.SkillLevel == null ? null : w.SkillLevel.ToString(),
             })
@@ -58,6 +58,7 @@ namespace ServiceManagerApp.Controllers
                 DepartmentId = newWorker.DepartmentId,
                 JobRoleId = newWorker.JobRoleId,
                 SkillLevel = newWorker.SkillLevel,
+                AvailabilityStatus = newWorker.AvailabilityStatus,
             };
 
             await _context.AddAsync(workerToAdd);
@@ -124,12 +125,12 @@ namespace ServiceManagerApp.Controllers
                 Id = workerToEdit.Id,
                 ReferenceNumber = workerToEdit.ReferenceNumber,
                 Name = workerToEdit.Name,
-                AvailabilityStatus = workerToEdit.AvailabilityStatus,
                 PhoneNumber = workerToEdit.PhoneNumber,
                 Email = workerToEdit.Email,
                 Departments = await PopulateDepartmentDropDownAsync(),
                 JobRoles = await PopulateJobRoleDropDownAsync(),
                 SkillLevel = workerToEdit.SkillLevel,
+                AvailabilityStatus = workerToEdit.AvailabilityStatus,
                 //Services = workerToEdit.Services,
             };
 
@@ -154,12 +155,12 @@ namespace ServiceManagerApp.Controllers
             }
 
             workerToEdit.Name = workerVM.Name;
-            workerToEdit.AvailabilityStatus = workerVM.AvailabilityStatus;
             workerToEdit.PhoneNumber = workerVM.PhoneNumber;
             workerToEdit.Email = workerVM.Email;
             workerToEdit.DepartmentId = workerVM.DepartmentId;
             workerToEdit.JobRoleId = workerVM.JobRoleId;
             workerToEdit.SkillLevel = workerVM.SkillLevel;
+            workerToEdit.AvailabilityStatus = workerVM.AvailabilityStatus;
             //workerToEdit.Services = workerVM.Services;
 
             await _context.SaveChangesAsync();

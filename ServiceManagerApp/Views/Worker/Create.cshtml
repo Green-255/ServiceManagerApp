@@ -36,5 +36,11 @@
         <option value="">-- Undefined --</option>
     </select>
 
+    <label asp-for="AvailabilityStatus"></label>
+    <select asp-for="AvailabilityStatus"
+            asp-items="Html.GetEnumSelectList<AvailabilityStatus>()"
+            class="form-select">
+    </select>
+
     <button type="submit">Add</button>
 </form>
