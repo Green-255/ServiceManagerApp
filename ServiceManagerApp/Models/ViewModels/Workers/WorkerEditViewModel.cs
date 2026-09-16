@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 
 namespace ServiceManagerApp.Models.ViewModels.Workers

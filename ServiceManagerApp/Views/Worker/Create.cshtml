@@ -30,7 +30,11 @@
     </select>>
 
     <label asp-for="SkillLevel"></label>
-    <input asp-for="SkillLevel" />
+    <select asp-for="SkillLevel" 
+        asp-items="Html.GetEnumSelectList<SkillLevel>()"
+        class="form-select">
+        <option value="">-- Undefined --</option>
+    </select>
 
     <button type="submit">Add</button>
 </form>

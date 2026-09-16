@@ -1,6 +1,5 @@
-﻿@model ServiceManagerApp.Models.ViewModels.Workers.WorkerEditViewModel
-@{
-}
+﻿@using ServiceManagerApp.Models.Enums
+@model ServiceManagerApp.Models.ViewModels.Workers.WorkerEditViewModel
 
 <h2> Edit worker @Model.ReferenceNumber</h2>
 
@@ -32,7 +31,10 @@
     </select>>
 
     <label asp-for="SkillLevel"></label>
-    <input asp-for="SkillLevel" />
+    <select asp-for="SkillLevel"
+        asp-items="Html.GetEnumSelectList<SkillLevel>()"
+        class="from-select">
+    </select>
 
     <button type="submit">Save</button>
 </form>

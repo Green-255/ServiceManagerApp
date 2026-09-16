@@ -1,5 +1,4 @@
-﻿using ServiceManagerApp.Models.Entities;
-using ServiceManagerApp.Models.Enums;
+﻿using ServiceManagerApp.Models.Enums;
 
 namespace ServiceManagerApp.Models.ViewModels.Workers
 {
@@ -15,7 +14,7 @@ namespace ServiceManagerApp.Models.ViewModels.Workers
         //public Department? Department { get; set; }
         //public int? JobRoleId { get; set; }
         public string? JobRoleName { get; set; }
-        public SkillLevel? SkillLevel { get; set; }
+        public string? SkillLevel { get; set; }
         //public ICollection<Service> Services { get; set; } = [];
     }
 }

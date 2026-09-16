@@ -25,8 +25,8 @@ namespace ServiceManagerApp.Controllers
                 ReferenceNumber = w.ReferenceNumber,
                 Name            = w.Name,
                 AvailabilityStatus = w.AvailabilityStatus,
-                JobRoleName         = w.JobRole == null ? null : w.JobRole.Name,
-                SkillLevel      = w.SkillLevel,
+                JobRoleName = w.JobRole == null ? null : w.JobRole.Name,
+                SkillLevel = w.SkillLevel == null ? null : w.SkillLevel.ToString(),
             })
             .ToListAsync();
 
