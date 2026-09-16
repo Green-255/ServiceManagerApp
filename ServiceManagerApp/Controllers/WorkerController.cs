@@ -17,12 +17,15 @@ namespace ServiceManagerApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var workersList = await _context.Workers.Select(w => new WorkerIndexViewModel
+            var workersList = await _context.Workers
+                .Include(w => w.JobRole)
+                .Select(w => new WorkerIndexViewModel
             {
                 Id              = w.Id,
                 ReferenceNumber = w.ReferenceNumber,
                 Name            = w.Name,
-                JobRole         = w.JobRole,
+                AvailabilityStatus = w.AvailabilityStatus,
+                JobRoleName         = w.JobRole == null ? null : w.JobRole.Name,
                 SkillLevel      = w.SkillLevel,
             })
             .ToListAsync();

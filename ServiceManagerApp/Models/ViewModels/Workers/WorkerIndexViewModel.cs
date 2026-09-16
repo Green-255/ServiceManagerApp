@@ -14,7 +14,7 @@ namespace ServiceManagerApp.Models.ViewModels.Workers
         //public int? DepartmentId { get; set; }
         //public Department? Department { get; set; }
         //public int? JobRoleId { get; set; }
-        public JobRole? JobRole { get; set; }
+        public string? JobRoleName { get; set; }
         public SkillLevel? SkillLevel { get; set; }
         //public ICollection<Service> Services { get; set; } = [];
     }

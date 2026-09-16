@@ -24,7 +24,11 @@
             <tr>
                 <td>@worker.ReferenceNumber</td>
                 <td>@worker.Name</td>
-                <td>@worker.JobRole</td>
+                @{
+                    string occupation = @worker.JobRoleName == null 
+                        ? "Unemplyed" : @worker.JobRoleName;
+                }
+                <td>@occupation</td>
                 <td>@worker.SkillLevel</td>
                 <td>@worker.AvailabilityStatus</td>
                 <td>
