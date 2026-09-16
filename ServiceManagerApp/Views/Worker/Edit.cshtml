@@ -1,39 +1,39 @@
 ﻿@using ServiceManagerApp.Models.Enums
-@model ServiceManagerApp.Models.ViewModels.Workers.WorkerCreateViewModel
-<h1> Add new worker</h1>
+@model ServiceManagerApp.Models.ViewModels.Workers.WorkerEditViewModel
 
-<form asp-action="Create" , method="post">
+<h2> Edit worker @Model.ReferenceNumber</h2>
+
+<form asp-action="Edit" , method="post">
     <label asp-for="Name"></label>
     <input asp-for="Name"
            type="text" />
 
     <label asp-for="PhoneNumber"></label>
     <input asp-for="PhoneNumber"
-           type="tel"/>
+           type="tel" />
 
     <label asp-for="Email"></label>
     <input asp-for="Email"
-           type="email"/>
+           type="email" />
 
     <label asp-for="DepartmentId">Department</label>
     <select asp-for="DepartmentId"
-        asp-items="Model.Departments"
-        class="form-select">
+            asp-items="Model.Departments"
+            class="form-select">
         <option value="">-- No department --</option>
     </select>
 
     <label asp-for="JobRoleId">Job role</label>
     <select asp-for="JobRoleId"
-        asp-items="Model.JobRoles"
-        class="form-select">
+            asp-items="Model.JobRoles"
+            class="form-select">
         <option value="">-- No department --</option>
     </select>>
 
     <label asp-for="SkillLevel"></label>
-    <select asp-for="SkillLevel" 
+    <select asp-for="SkillLevel"
         asp-items="Html.GetEnumSelectList<SkillLevel>()"
         class="form-select">
-        <option value="">-- Undefined --</option>
     </select>
 
     <label asp-for="AvailabilityStatus"></label>
@@ -42,5 +42,5 @@
             class="form-select">
     </select>
 
-    <button type="submit">Add</button>
+    <button type="submit">Save</button>
 </form>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
@@ -16,13 +17,16 @@ namespace ServiceManagerApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var workersList = await _context.Workers.Select(w => new WorkerIndexViewModel
+            var workersList = await _context.Workers
+                .Include(w => w.JobRole)
+                .Select(w => new WorkerIndexViewModel
             {
                 Id              = w.Id,
                 ReferenceNumber = w.ReferenceNumber,
                 Name            = w.Name,
-                JobRole         = w.JobRole,
-                SkillLevel      = w.SkillLevel,
+                AvailabilityStatus = w.AvailabilityStatus.ToString(),
+                JobRoleName = w.JobRole == null ? null : w.JobRole.Name,
+                SkillLevel = w.SkillLevel == null ? null : w.SkillLevel.ToString(),
             })
             .ToListAsync();
 
@@ -32,7 +36,13 @@ namespace ServiceManagerApp.Controllers
 
         public async Task<IActionResult> Create()
         {
-            return View();
+            var workerVM = new WorkerCreateViewModel
+            {
+                Departments = await PopulateDepartmentDropDownAsync(),
+                JobRoles = await PopulateJobRoleDropDownAsync(),
+            };
+
+            return View(workerVM);
         }
 
 
@@ -45,9 +55,10 @@ namespace ServiceManagerApp.Controllers
                 Name = newWorker.Name,
                 PhoneNumber = newWorker.PhoneNumber,
                 Email = newWorker.Email,
-                Department = newWorker.Department,
-                JobRole = newWorker.JobRole,
+                DepartmentId = newWorker.DepartmentId,
+                JobRoleId = newWorker.JobRoleId,
                 SkillLevel = newWorker.SkillLevel,
+                AvailabilityStatus = newWorker.AvailabilityStatus,
             };
 
             await _context.AddAsync(workerToAdd);
@@ -60,6 +71,27 @@ namespace ServiceManagerApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<List<SelectListItem>> PopulateDepartmentDropDownAsync()
+        {
+            return await _context.Departments.Select(d => new SelectListItem
+            {
+                Value = d.Id.ToString(),
+                Text = d.Name
+            })
+            .ToListAsync();
+        }
+
+        public async Task<List<SelectListItem>> PopulateJobRoleDropDownAsync()
+        {
+            return await _context.JobRoles.Select(d => new SelectListItem
+            {
+                Value = d.Id.ToString(),
+                Text = d.Name
+            })
+            .ToListAsync();
+        }
+
 
         private static string GenerateReferenceNumber(string tag, int id, string? middleTag = null)
         {
@@ -88,28 +120,30 @@ namespace ServiceManagerApp.Controllers
                 return NotFound();
             }
 
-            var workerVM = new WorkerViewModel
+            var workerVM = new WorkerEditViewModel
             {
                 Id = workerToEdit.Id,
                 ReferenceNumber = workerToEdit.ReferenceNumber,
                 Name = workerToEdit.Name,
-                AvailabilityStatus = workerToEdit.AvailabilityStatus,
                 PhoneNumber = workerToEdit.PhoneNumber,
                 Email = workerToEdit.Email,
-                Department = workerToEdit.Department,
-                JobRole = workerToEdit.JobRole,
+                Departments = await PopulateDepartmentDropDownAsync(),
+                JobRoles = await PopulateJobRoleDropDownAsync(),
                 SkillLevel = workerToEdit.SkillLevel,
-                Services = workerToEdit.Services,
+                AvailabilityStatus = workerToEdit.AvailabilityStatus,
+                //Services = workerToEdit.Services,
             };
 
             return View(workerVM);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(WorkerViewModel workerVM)
+        public async Task<IActionResult> Edit(WorkerEditViewModel workerVM)
         {
             if (!ModelState.IsValid)
             {
+                workerVM.Departments = await PopulateDepartmentDropDownAsync();
+                workerVM.JobRoles = await PopulateJobRoleDropDownAsync();
                 return View(workerVM);
             }
 
@@ -121,13 +155,13 @@ namespace ServiceManagerApp.Controllers
             }
 
             workerToEdit.Name = workerVM.Name;
-            workerToEdit.AvailabilityStatus = workerVM.AvailabilityStatus;
             workerToEdit.PhoneNumber = workerVM.PhoneNumber;
             workerToEdit.Email = workerVM.Email;
-            workerToEdit.Department = workerVM.Department;
-            workerToEdit.JobRole = workerVM.JobRole;
+            workerToEdit.DepartmentId = workerVM.DepartmentId;
+            workerToEdit.JobRoleId = workerVM.JobRoleId;
             workerToEdit.SkillLevel = workerVM.SkillLevel;
-            workerToEdit.Services = workerVM.Services;
+            workerToEdit.AvailabilityStatus = workerVM.AvailabilityStatus;
+            //workerToEdit.Services = workerVM.Services;
 
             await _context.SaveChangesAsync();
 
@@ -142,7 +176,10 @@ namespace ServiceManagerApp.Controllers
                 return BadRequest();
             }
 
-            var worker = await _context.Workers.FindAsync(id);
+            var worker = await _context.Workers
+                .Include(w => w.Department)
+                .Include(w => w.JobRole)
+                .FirstOrDefaultAsync(w => w.Id == id);
 
             if (worker == null)
             {
@@ -154,12 +191,12 @@ namespace ServiceManagerApp.Controllers
                 Id = worker.Id,
                 ReferenceNumber = worker.ReferenceNumber,
                 Name = worker.Name,
-                AvailabilityStatus = worker.AvailabilityStatus,
+                AvailabilityStatus = worker.AvailabilityStatus.ToString(),
                 PhoneNumber = worker.PhoneNumber,
                 Email = worker.Email,
-                Department = worker.Department,
-                JobRole = worker.JobRole,
-                SkillLevel = worker.SkillLevel,
+                DepartmentName = worker.Department?.Name,
+                JobRoleName = worker.JobRole?.Name,
+                SkillLevel = worker.SkillLevel.ToString(),
                 Services = worker.Services,
             };
 

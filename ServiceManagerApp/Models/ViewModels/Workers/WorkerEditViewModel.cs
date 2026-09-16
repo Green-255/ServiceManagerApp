@@ -3,9 +3,10 @@ using ServiceManagerApp.Models.Enums;
 
 namespace ServiceManagerApp.Models.ViewModels.Workers
 {
-    public class WorkerCreateViewModel
+    public class WorkerEditViewModel
     {
         public int Id { get; set; }
+        public string ReferenceNumber { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string? PhoneNumber { get; set; }
         public string Email { get; set; } = null!;
@@ -15,5 +16,6 @@ namespace ServiceManagerApp.Models.ViewModels.Workers
         public List<SelectListItem> JobRoles { get; set; } = [];
         public SkillLevel? SkillLevel { get; set; }
         public AvailabilityStatus AvailabilityStatus { get; set; } = AvailabilityStatus.Unavailable;
+        public List<SelectListItem> Services { get; set; } = [];
     }
 }
