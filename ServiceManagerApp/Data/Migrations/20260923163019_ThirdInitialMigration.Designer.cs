@@ -12,8 +12,8 @@ using ServiceManagerApp.Data;
 namespace ServiceManagerApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260827185049_InitialMigrationAfterDrop")]
-    partial class InitialMigrationAfterDrop
+    [Migration("20260923163019_ThirdInitialMigration")]
+    partial class ThirdInitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -471,7 +471,8 @@ namespace ServiceManagerApp.Data.Migrations
                 {
                     b.HasOne("ServiceManagerApp.Models.Entities.Department", "Department")
                         .WithMany("JobRoles")
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Department");
                 });
