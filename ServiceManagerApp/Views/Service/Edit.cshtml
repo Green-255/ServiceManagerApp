@@ -32,7 +32,22 @@
     <label asp-for="Cost">Cost:</label>
     <input asp-for="Cost" />
 
+    <label asp-for="Workers">Workers assigned for this service:</label>
+    @foreach (var worker in Model.Workers)
+    {
+        <div>
+            <input 
+                type="checkbox"
+                name="WorkerIds"
+                value="@worker.Id"
+                id="worker_@worker.Id"
+                checked="@worker.IsSelected"/>
 
+            <label class="form-check-label" for="worker_@worker.Id">
+                @worker.Name (@worker.SkillLevel)
+            </label>
+        </div>
+    }
 
     <button type="submit">Save Changes</button>
     @* <button type="">Cancel</button> *@

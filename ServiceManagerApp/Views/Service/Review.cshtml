@@ -1,5 +1,5 @@
 ﻿@using ServiceManagerApp.Models.Enums
-@model ServiceManagerApp.Models.ViewModels.Services.Review.ServiceRequestReviewViewModel
+@model ServiceManagerApp.Models.ViewModels.Services.Review.ServiceReviewViewModel
 
 <h2>Review of a @Model.ReferenceNumber service</h2>
 
@@ -44,9 +44,10 @@
                 value="@worker.Id"
                 id="worker_@worker.Id"
                 checked="@worker.IsSelected" />
-                <label class="form-check-label" for="worker_@worker.Id">
-                    @worker.Name (@worker.SkillLevel)
-                </label>
+
+            <label class="form-check-label" for="worker_@worker.Id">
+                @worker.Name (@worker.SkillLevel)
+            </label>
         </div>
     }
 

@@ -150,12 +150,25 @@ public class ServiceController : Controller
 
     public async Task<IActionResult> Edit(int id)
     {
-        var serviceToEdit = await _context.Services.FirstOrDefaultAsync(s => s.Id == id);
+        var serviceToEdit = await _context.Services
+            .Include(s => s.Workers)
+            .FirstOrDefaultAsync(s => s.Id == id);
 
         if (serviceToEdit == null)
         {
             return NotFound();
         }
+
+        var assignedWorkerIds = serviceToEdit.Workers.Select(sw => sw.Id).ToList();
+        var workersAssignStatus = await _context.Workers
+            .Select(w => new ServiceReviewWorkerViewModel
+            {
+                Id = w.Id,
+                Name = w.Name,
+                SkillLevel = w.SkillLevel.ToString(),
+                IsSelected = assignedWorkerIds.Contains(w.Id)
+            })
+            .ToListAsync();
 
         var viewModel = new ServiceEditViewModel
         {
@@ -165,7 +178,8 @@ public class ServiceController : Controller
             Status = serviceToEdit.Status,
             DueAtUtc = serviceToEdit.DueAtUtc,
             Location = serviceToEdit.Location,
-            Workers = serviceToEdit.Workers,
+            WorkerIds = assignedWorkerIds,
+            Workers = workersAssignStatus,
             Comments = serviceToEdit.Comments,
             Cost = serviceToEdit.Cost,
         };
@@ -194,13 +208,17 @@ public class ServiceController : Controller
             return NotFound();
         }
 
+        var workers = await _context.Workers
+            .Where(w => serviceEdited.WorkerIds.Contains(w.Id))
+            .ToListAsync();
+
         serviceToUpdate.ServiceRequest = serviceEdited.ServiceRequest;
         serviceToUpdate.ServiceRequestType = serviceEdited.ServiceRequestType;
         serviceToUpdate.Status = serviceEdited.Status;
         serviceToUpdate.DueAtUtc = serviceEdited.DueAtUtc;
         serviceToUpdate.Duration = CalculateDuration(serviceEdited.DurationHours, serviceEdited.DurationMinutes);
         serviceToUpdate.Location = serviceEdited.Location;
-        serviceToUpdate.Workers = serviceEdited.Workers;
+        serviceToUpdate.Workers = workers;
         serviceToUpdate.Comments = serviceEdited.Comments;
         serviceToUpdate.Cost = serviceEdited.Cost;
 
