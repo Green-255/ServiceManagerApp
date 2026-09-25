@@ -4,7 +4,7 @@ using ServiceManagerApp.Models.Enums;
 
 namespace ServiceManagerApp.Models.ViewModels.Services.Review
 {
-    public class ServiceRequestReviewViewModel
+    public class ServiceReviewViewModel
     {
         public int Id { get; set; }
         public int? ServiceRequestId { get; set; }

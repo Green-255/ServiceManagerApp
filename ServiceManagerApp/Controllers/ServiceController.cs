@@ -315,7 +315,7 @@ public class ServiceController : Controller
     }
 
     [HttpPost, ActionName("Review")]
-    public async Task<IActionResult> ReviewAccepted(ServiceRequestReviewViewModel serviceVM)
+    public async Task<IActionResult> ReviewAccepted(ServiceReviewViewModel serviceVM)
     {
         if (!ModelState.IsValid)
         {
@@ -380,7 +380,7 @@ public class ServiceController : Controller
     }
 
 
-    private async Task<ServiceRequestReviewViewModel> PopulateServiceRequestReviewViewModel(Service service)
+    private async Task<ServiceReviewViewModel> PopulateServiceRequestReviewViewModel(Service service)
     {
         var workersAvailable = await _context.Workers
             .Where(w => w.AvailabilityStatus == AvailabilityStatus.Available)
@@ -395,7 +395,7 @@ public class ServiceController : Controller
 
         int minutes = GetMinutesFromTimeSpan(service.Duration);
 
-        var serviceVM = new ServiceRequestReviewViewModel
+        var serviceVM = new ServiceReviewViewModel
         {
             Id = service.Id,
             ServiceRequestId = service.ServiceRequestId,
