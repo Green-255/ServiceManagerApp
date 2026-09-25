@@ -293,8 +293,10 @@ public class ServiceController : Controller
         {
             return BadRequest();
         }
+
         var service = await _context.Services
             .Include(s => s.ServiceRequest)
+            .Include(s => s.Workers)
             .FirstOrDefaultAsync(s => s.Id == id);
 
         if (service == null)
@@ -302,8 +304,96 @@ public class ServiceController : Controller
             return NotFound();
         }
 
-        int minutes = GetMinutesFromTimeSpan(service.Duration);
+        var serviceVM = await PopulateServiceRequestReviewViewModel(service);
 
+        if (serviceVM == null)
+        {
+            return NotFound();
+        }
+
+        return View(serviceVM);
+    }
+
+    [HttpPost, ActionName("Review")]
+    public async Task<IActionResult> ReviewAccepted(ServiceRequestReviewViewModel serviceVM)
+    {
+        if (!ModelState.IsValid)
+        {
+            var service1 = await _context.Services
+            .Include(s => s.ServiceRequest)
+            .Include(s => s.Workers)
+            .FirstOrDefaultAsync(s => s.Id == serviceVM.Id);
+
+            if (service1 == null)
+            {
+                return NotFound();
+            }
+            serviceVM = await PopulateServiceRequestReviewViewModel(service1);
+
+            serviceVM.Workers = await _context.Workers
+                .Where(w => w.AvailabilityStatus == AvailabilityStatus.Available)
+                .Select(w => new ServiceReviewWorkerViewModel
+                {
+                    Id = w.Id,
+                    Name = w.Name,
+                    SkillLevel = w.SkillLevel.ToString(),
+                    IsSelected = serviceVM.WorkerIds.Contains(w.Id)
+                })
+                .ToListAsync();
+
+            return View("Review", serviceVM);
+        }
+
+        var service = await _context.Services
+            .Include(s => s.ServiceRequest)
+            .Include(s => s.Workers)
+            .FirstOrDefaultAsync(s => s.Id == serviceVM.Id);
+
+        //var service = _context.Services
+        //    .Include(s => s.ServiceRequest)
+            //.Include(s => s.Workers)
+        //    .Where(s => s.Id == serviceVM.Id)
+        //    .Select(s => { });
+
+        if (service == null)
+        {
+            return NotFound();
+        }
+
+        service.ServiceRequestType = serviceVM.ServiceRequestType;
+        service.DueAtUtc = serviceVM.DueAtUtc;
+        service.Duration = CalculateDuration(serviceVM.DurationHours, serviceVM.DurationMinutes);
+        service.Location = serviceVM.Location;
+        service.SkillLevel = serviceVM.SkillLevel;
+        service.Comments = serviceVM.Comments;
+        service.Cost = serviceVM.Cost;
+
+        service.Workers = await _context.Workers
+            .Where(w => serviceVM.WorkerIds.Contains(w.Id))
+            .ToListAsync();
+
+        service.Status = ServiceStatus.Scheduled;
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
+    private async Task<ServiceRequestReviewViewModel> PopulateServiceRequestReviewViewModel(Service service)
+    {
+        var workersAvailable = await _context.Workers
+            .Where(w => w.AvailabilityStatus == AvailabilityStatus.Available)
+            .Select(w => new ServiceReviewWorkerViewModel
+            {
+                Id = w.Id,
+                Name = w.Name,
+                SkillLevel = w.SkillLevel == null ? string.Empty : w.SkillLevel.ToString(),
+                //IsSelected = service.Workers.Any(sw => sw.Id == w.Id)
+            })
+            .ToListAsync();
+
+        int minutes = GetMinutesFromTimeSpan(service.Duration);
 
         var serviceVM = new ServiceRequestReviewViewModel
         {
@@ -316,55 +406,12 @@ public class ServiceController : Controller
             DurationHours = minutes / 60,
             DurationMinutes = minutes % 60,
             Location = service.Location,
-            Workers = service.Workers,
+            Workers = workersAvailable,
             SkillLevel = service.SkillLevel,
             Comments = service.Comments,
             Cost = service.Cost,
         };
 
-        return View(serviceVM);
-    }
-
-    [HttpPost, ActionName("Review")]
-    public async Task<IActionResult> ReviewAccepted(ServiceRequestReviewViewModel serviceVM)
-    {
-        if (!ModelState.IsValid)
-        {
-            return View();
-        }
-
-        var service = await _context.Services
-            .Include(s => s.ServiceRequest)
-            .FirstOrDefaultAsync(s => s.Id == serviceVM.Id);
-
-        //var service = _context.Services
-        //    .Include(s => s.ServiceRequest)
-        //    .Where(s => s.Id == serviceVM.Id)
-        //    .Select(s => { });
-
-        if (service == null)
-        {
-            return NotFound();
-        }
-
-
-        //service.Id = serviceVM.Id;
-        //service.ServiceRequestId = serviceVM.ServiceRequestId;
-        //service.ServiceRequest = serviceVM.ServiceRequest;
-        service.ReferenceNumber = serviceVM.ReferenceNumber;
-        service.ServiceRequestType = serviceVM.ServiceRequestType;
-        service.DueAtUtc = serviceVM.DueAtUtc;
-        service.Duration = CalculateDuration(serviceVM.DurationHours, serviceVM.DurationMinutes);
-        service.Location = serviceVM.Location;
-        service.Workers = serviceVM.Workers;
-        service.SkillLevel = serviceVM.SkillLevel;
-        service.Comments = serviceVM.Comments;
-        service.Cost = serviceVM.Cost;
-
-        service.Status = ServiceStatus.Scheduled;
-
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction(nameof(Index));
+        return serviceVM;
     }
 }

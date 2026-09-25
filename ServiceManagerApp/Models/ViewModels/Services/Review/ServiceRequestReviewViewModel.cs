@@ -1,4 +1,5 @@
-﻿using ServiceManagerApp.Models.Entities;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 
 namespace ServiceManagerApp.Models.ViewModels.Services.Review
@@ -14,7 +15,8 @@ namespace ServiceManagerApp.Models.ViewModels.Services.Review
         public int DurationHours { get; set; }
         public int DurationMinutes { get; set; }
         public string Location { get; set; } = string.Empty;
-        public ICollection<Worker> Workers { get; set; } = [];
+        public List<int> WorkerIds { get; set; } = [];
+        public List<ServiceReviewWorkerViewModel> Workers { get; set; } = [];
         public SkillLevel? SkillLevel { get; set; }
         public ICollection<string> Comments { get; set; } = [];
         public float Cost { get; set; } = 0.0f;
