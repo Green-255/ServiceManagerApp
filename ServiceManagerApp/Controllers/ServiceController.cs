@@ -201,7 +201,9 @@ public class ServiceController : Controller
             return View(serviceEdited);
         }
 
-        var serviceToUpdate = await _context.Services.FindAsync(serviceEdited.Id);
+        var serviceToUpdate = await _context.Services
+                    .Include(s => s.Workers)
+                    .FirstOrDefaultAsync(s => s.Id == serviceEdited.Id);
 
         if (serviceToUpdate == null)
         {
