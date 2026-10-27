@@ -33,7 +33,9 @@ else
                     <td>@service.Status</td>
                     <td>@service.DueAtUtc</td>  
                     <td>
-                        <a asp-action="Review" asp-route-id="@service.Id">Review</a>
+                        <a asp-action="Review" asp-route-id="@service.Id" class="btn btn-primary">
+                            Review
+                        </a>
                     </td>
                 </tr>   
             }
@@ -42,7 +44,9 @@ else
 }
 
 
-<a asp-action="Create"> <strong> Add service </strong></a>
+<a asp-action="Create" class="btn btn-outline-primary">
+    <strong> Add service </strong>
+</a>
 
 <h1> Services </h1>
 
@@ -72,9 +76,13 @@ else
                     <td>@service.Status</td>
                     <td>@service.DueAtUtc</td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@service.Id">Details</a>
+                        <a asp-action="Details" asp-route-id="@service.Id" class="btn btn-primary">
+                            Details
+                        </a>
                         <form asp-action="Delete" asp-route-id="@service.Id" method="post">
-                            <button type="submit">Delete</button>
+                            <button type="submit" class="btn btn-outline-danger">
+                                Delete
+                            </button>
                         </form>
                     </td>
                 </tr>
