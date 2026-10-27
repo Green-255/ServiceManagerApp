@@ -26,10 +26,16 @@
 
 </table>
 
-<a asp-action="Edit" asp-route-id="@Model.Id">
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
     Edit department
 </a>
 
 <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-    <button type="submit">Delete department</button>
+    <button type="submit">
+        Delete department
+    </button>
 </form>
+
+<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+    Back
+</a>
