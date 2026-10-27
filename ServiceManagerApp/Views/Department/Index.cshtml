@@ -3,13 +3,16 @@
 
 <h2>Departments</h2>
 
-<a asp-action="Create">Add department</a>
+<a asp-action="Create" class="btn btn-outline-primary">
+    Add department
+</a>
 
 <table class="table">
     <thead>
         <tr>
             <td><strong>Name</strong></td>
             <td><strong>Description</strong></td>
+            <td></td>
         </tr>
     </thead>
 
@@ -20,7 +23,9 @@
                 <td>@department.Name</td>
                 <td>@department.Description</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@department.Id">Details</a>
+                    <a asp-action="Details" asp-route-id="@department.Id" class="btn btn-primary">
+                        Details
+                    </a>
                 </td>
             </tr>
         }
