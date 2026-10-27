@@ -1,5 +1,5 @@
 ﻿@using ServiceManagerApp.Models.Enums
-@model ServiceManagerApp.Models.ViewModels.Services.Review.ServiceRequestReviewViewModel
+@model ServiceManagerApp.Models.ViewModels.Services.Review.ServiceReviewViewModel
 
 <h2>Review of a @Model.ReferenceNumber service</h2>
 
@@ -35,8 +35,21 @@
     <label asp-for="Cost"></label>
     <input asp-for="Cost" />
 
-    @* <label asp-for="Workers"></label>
-    <input asp-for="Workers" /> *@
+    @foreach (var worker in Model.Workers)
+    {
+        <div>
+            <input
+                type="checkbox"
+                name="WorkerIds"
+                value="@worker.Id"
+                id="worker_@worker.Id"
+                checked="@worker.IsSelected" />
+
+            <label class="form-check-label" for="worker_@worker.Id">
+                @worker.Name (@worker.SkillLevel)
+            </label>
+        </div>
+    }
 
     <button type="submit">Accept</button>
 </form>
