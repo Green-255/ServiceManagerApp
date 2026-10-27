@@ -135,7 +135,7 @@ namespace ServiceManagerApp.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new {id = roleToEdit.Id});
         }
 
         [HttpPost, ActionName("Delete")]

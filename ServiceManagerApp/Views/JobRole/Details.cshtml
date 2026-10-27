@@ -27,10 +27,14 @@
 
 </table>
 
-<a asp-action="Edit" asp-route-id="@Model.Id">
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
     Edit department
 </a>
 
 <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
     <button type="submit">Delete department</button>
 </form>
+
+<a asp-action="Index" class="btn btn-secondary">
+    Back
+</a>

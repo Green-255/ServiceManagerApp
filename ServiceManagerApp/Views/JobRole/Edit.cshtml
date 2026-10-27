@@ -24,8 +24,10 @@
         @* <label asp-for="Workers">Workers</label>
         <input asp-for="Workers" /> *@
 
-        <button type="submit">Save Changes</button>
-        <a asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+            Cancel
+        </a>
     </form>
 }
 
