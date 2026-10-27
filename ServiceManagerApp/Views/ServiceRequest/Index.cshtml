@@ -1,7 +1,9 @@
 ﻿@model IReadOnlyList<ServiceManagerApp.Models.ViewModels.ServiceRequests.ServiceRequestIndexViewModel>
 
 <h1> Service Requests </h1>
-<a asp-action="Create"> New request </a>
+<a asp-action="Create" class="btn btn-outline-primary">
+    New request
+</a>
     @{
         if (!Model.Any())
         {
@@ -19,6 +21,8 @@
                     <th>Description</th>
                     <th>Status</th>
                     <th>Requested date</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -35,9 +39,13 @@
                         }
                         <td>@request.ReferenceNumber</td>
                         <td>
-                            <a asp-action="Details" asp-route-id="@request.Id">Details</a>
+                            <a asp-action="Details" asp-route-id="@request.Id" class="btn btn-primary">
+                                Details
+                            </a>
                             <form asp-action="Delete" asp-route-id="@request.Id" method="post">
-                                <button type="submit">Delete</button>
+                                <button type="submit" class="btn btn-outline-danger">
+                                    Delete
+                                </button>
                             </form>
                         </td>
                     </tr>

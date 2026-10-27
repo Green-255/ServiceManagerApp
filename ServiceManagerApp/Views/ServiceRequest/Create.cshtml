@@ -25,6 +25,10 @@
     <label asp-for="RequestedDueUtc"></label>
     <input asp-for="RequestedDueUtc" />
 
-    <button type="submit">Add</button>
-    <button asp-action="">Cancel</button>
+    <button type="submit" class="btn btn-primary">
+        Add
+    </button>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        Cancel
+    </a>
 </form>
