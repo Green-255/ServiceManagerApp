@@ -12,6 +12,7 @@
     <thead>
         <tr>
             <td><strong>Active positions</strong></td>
+            <td></td>
         </tr>
     </thead>
     <tbody>
@@ -26,10 +27,16 @@
 
 </table>
 
-<a asp-action="Edit" asp-route-id="@Model.Id">
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
     Edit department
 </a>
 
 <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-    <button type="submit">Delete department</button>
+    <button type="submit" class="btn btn-outline-danger">
+        Delete department
+    </button>
 </form>
+
+<a asp-action="Index" class="btn btn-outline-secondary">
+    Back
+</a>

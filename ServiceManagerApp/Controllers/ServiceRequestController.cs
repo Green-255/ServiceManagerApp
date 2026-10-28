@@ -229,7 +229,7 @@ public class ServiceRequestController : Controller
 
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Details), new {id = requestToUpdate.Id});
     }
 
 }

@@ -4,7 +4,9 @@
 
 <h2>Workers</h2>
 
-<a asp-action="Create">Add new Worker</a>
+<a asp-action="Create" class="btn btn-outline-primary">
+    Add new Worker
+</a>
 
 <table class="table">
     <thead>
@@ -32,7 +34,9 @@
                 <td>@worker.SkillLevel</td>
                 <td>@worker.AvailabilityStatus</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@worker.Id">Details</a>
+                    <a asp-action="Details" asp-route-id="@worker.Id" class="btn btn-primary">
+                        Details
+                    </a>
                 </td>
             </tr>
         }

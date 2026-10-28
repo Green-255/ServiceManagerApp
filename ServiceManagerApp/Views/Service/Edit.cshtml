@@ -49,6 +49,11 @@
         </div>
     }
 
-    <button type="submit">Save Changes</button>
-    @* <button type="">Cancel</button> *@
+    <button type="submit" class="btn btn-primary">
+        Save Changes
+    </button>
+
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+        Cancel
+    </a>
 </form>

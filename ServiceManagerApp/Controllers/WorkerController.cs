@@ -165,7 +165,7 @@ namespace ServiceManagerApp.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new {id = workerToEdit.Id});
         }
 
 

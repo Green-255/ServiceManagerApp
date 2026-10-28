@@ -226,7 +226,7 @@ public class ServiceController : Controller
 
         await _context.SaveChangesAsync();
 
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Details), new {id = serviceToUpdate.Id});
     }
 
     [HttpGet]
