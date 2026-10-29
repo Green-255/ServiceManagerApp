@@ -1,6 +1,5 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.Departments.DepartmentCreateEditViewModel
-@{
-}
+
 <h3> Edit @Model.Name department</h3>
 
 <form asp-action="Edit" method="post">
@@ -8,9 +7,13 @@
 
     <label asp-for="Name">Name:</label>
     <input asp-for="Name" />
+    <span asp-validation-for="Name"
+          class="text-danger"></span>
 
     <label asp-for="Description">Descriptiom:</label>
     <input asp-for="Description" />
+    <span asp-validation-for="Description"
+          class="text-danger"></span>
 
     @foreach (var role in Model.JobRoles)
     {
