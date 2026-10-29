@@ -1,13 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using ServiceManagerApp.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ServiceManagerApp.Models.ViewModels.Workers
 {
     public class WorkerCreateViewModel
     {
-        public int Id { get; set; }
+        [Required]
         public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [Phone]
         public string? PhoneNumber { get; set; }
+
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = null!;
         public int? DepartmentId { get; set; }
         public List<SelectListItem> Departments { get; set; } = [];

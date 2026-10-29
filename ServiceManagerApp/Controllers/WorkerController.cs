@@ -49,9 +49,19 @@ namespace ServiceManagerApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(WorkerCreateViewModel newWorker)
         {
+            if (!ModelState.IsValid)
+            {
+                var workerVM = new WorkerCreateViewModel
+                {
+                    Departments = await PopulateDepartmentDropDownAsync(),
+                    JobRoles = await PopulateJobRoleDropDownAsync(),
+                };
+
+                return View(workerVM);
+            }
+
             var workerToAdd = new Worker
             {
-                Id = newWorker.Id,
                 Name = newWorker.Name,
                 PhoneNumber = newWorker.PhoneNumber,
                 Email = newWorker.Email,

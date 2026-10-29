@@ -3,17 +3,19 @@
 <h1> Add new worker</h1>
 
 <form asp-action="Create" , method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     <label asp-for="Name"></label>
-    <input asp-for="Name"
-           type="text" />
+    <input asp-for="Name" type="text" />
+    <span asp-validation-for="Name" class="text-danger"></span>
 
     <label asp-for="PhoneNumber"></label>
-    <input asp-for="PhoneNumber"
-           type="tel"/>
+    <input asp-for="PhoneNumber" type="tel"/>
+    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
 
     <label asp-for="Email"></label>
-    <input asp-for="Email"
-           type="email"/>
+    <input asp-for="Email" type="email"/>
+    <span asp-validation-for="Email" class="text-danger"></span>
 
     <label asp-for="DepartmentId">Department</label>
     <select asp-for="DepartmentId"
