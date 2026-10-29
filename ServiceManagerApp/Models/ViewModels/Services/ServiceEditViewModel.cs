@@ -1,4 +1,5 @@
-﻿using ServiceManagerApp.Models.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.Services.Review;
 
@@ -18,6 +19,8 @@ namespace ServiceManagerApp.Models.ViewModels.Services
         public string Location { get; set; } = string.Empty;
         public List<int> WorkerIds { get; set; } = [];
         public List<ServiceReviewWorkerViewModel> Workers { get; set; } = [];
+
+        //[Required(ErrorMessage = "Service needs a thourough description.")]
         public ICollection<string> Comments { get; set; } = [];
         public float Cost { get; set; } = 0.0f;
     }

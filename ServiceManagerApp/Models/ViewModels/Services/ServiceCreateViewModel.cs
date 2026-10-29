@@ -1,5 +1,6 @@
 ﻿using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ServiceManagerApp.Models.ViewModels.Services
 {
@@ -11,7 +12,10 @@ namespace ServiceManagerApp.Models.ViewModels.Services
         public int? DurationHours { get; set; }
         public int? DurationMinutes { get; set; }
         public string Location { get; set; } = string.Empty;
-        public string Comments { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Service needs a thourough description.")]
+        [StringLength(300, MinimumLength = 2)]
+        public required string Comments { get; set; }
         public float Cost { get; set; }
         public int[] WorkersIds { get; set; } = [];
 
