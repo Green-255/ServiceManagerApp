@@ -5,7 +5,10 @@
 <h3> Edit @Model.ReferenceNumber Service </h3>
 
 <form asp-action="Edit" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ReferenceNumber" />
 
     @*<label asp-for="ServiceRequestType">Service Request Type:</label>
     <input asp-for="ServiceRequestType" />*@
@@ -28,6 +31,8 @@
 
     <label asp-for="Comments">Comments:</label>
     <input asp-for="Comments" />
+    <span asp-validation-for="Comments" class="text-danger"></span>
+
 
     <label asp-for="Cost">Cost:</label>
     <input asp-for="Cost" />

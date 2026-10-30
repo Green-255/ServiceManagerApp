@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ServiceManagerApp.Models.ViewModels.Services.Review
 {
@@ -14,10 +15,15 @@ namespace ServiceManagerApp.Models.ViewModels.Services.Review
         public DateTime? DueAtUtc { get; set; }
         public int DurationHours { get; set; }
         public int DurationMinutes { get; set; }
+
+        [Required]
         public string Location { get; set; } = string.Empty;
         public List<int> WorkerIds { get; set; } = [];
         public List<ServiceReviewWorkerViewModel> Workers { get; set; } = [];
         public SkillLevel? SkillLevel { get; set; }
+
+        //[Required(ErrorMessage = "Service needs a thourough description.")]
+        //[StringLength(300, MinimumLength = 2)]
         public ICollection<string> Comments { get; set; } = [];
         public float Cost { get; set; } = 0.0f;
     }

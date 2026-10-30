@@ -104,6 +104,11 @@ public class ServiceController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(ServiceCreateViewModel newService)
     {
+        if (!ModelState.IsValid)
+        {
+            return View(newService);
+        }
+
         var serviceToAdd = new Service
         {
             ServiceRequest = newService.ServiceRequest,
@@ -174,6 +179,7 @@ public class ServiceController : Controller
         {
             Id = id,
             ServiceRequest = serviceToEdit.ServiceRequest,
+            ReferenceNumber = serviceToEdit.ReferenceNumber,
             ServiceRequestType = serviceToEdit.ServiceRequestType,
             Status = serviceToEdit.Status,
             DueAtUtc = serviceToEdit.DueAtUtc,

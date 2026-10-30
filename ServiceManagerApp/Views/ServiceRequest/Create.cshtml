@@ -9,6 +9,8 @@
 <h1> Create new request </h1>
 
 <form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     <label asp-for="ServiceRequestType"></label>
     <select asp-for="ServiceRequestType"
         asp-items="Html.GetEnumSelectList<ServiceRequestType>()"
@@ -17,13 +19,19 @@
 
     <label asp-for="Title"> Title </label>
     <input asp-for="Title" />
+    <span asp-validation-for="Title" class="text-danger"></span>
+
 
     <label asp-for="Description"> Describe the service needed </label>
     <input asp-for="Description" />
-    @* <span asp-validation-for="Description" /> *@
+    <span asp-validation-for="Description" class="text-danger"></span>
 
-    <label asp-for="RequestedDueUtc"></label>
-    <input asp-for="RequestedDueUtc" />
+    <label asp-for="RequestedDueUtc" class="form-control-plaintext"></label>
+    <input asp-for="RequestedDueUtc"/>
+           @* min="@DateTime.UtcNow.ToString()"
+           max="@DateTime.UtcNow.AddYears(1).ToString()" /> *@
+
+    <span asp-validation-for="RequestedDueUtc" class="text-danger"></span>
 
     <button type="submit" class="btn btn-primary">
         Add

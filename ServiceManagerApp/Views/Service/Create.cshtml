@@ -6,6 +6,8 @@
 <h1> Add new service</h1>
 
 <form asp-action="Create", method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     <label asp-for="DueAtUtc"></label>
     <input asp-for="DueAtUtc" />
     
@@ -24,6 +26,7 @@
 
     <label asp-for="Comments"></label>
     <input asp-for="Comments" />
+    <span asp-validation-for="Comments" class="text-danger"></span>
 
     @* <label asp-for="ServiceRequest"></label>
     <input asp-for="ServiceRequest" /> *@
