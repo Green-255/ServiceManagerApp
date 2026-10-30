@@ -1,40 +1,93 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.Departments.DepartmentCreateEditViewModel
+@{
+    ViewData["Title"] = "Edit department";
+}
 
-<h3> Edit @Model.Name department</h3>
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-9 col-xl-8">
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
+        <!-- Page header -->
 
-    <label asp-for="Name">Name:</label>
-    <input asp-for="Name" />
-    <span asp-validation-for="Name"
-          class="text-danger"></span>
-
-    <label asp-for="Description">Descriptiom:</label>
-    <input asp-for="Description" />
-    <span asp-validation-for="Description"
-          class="text-danger"></span>
-
-    @foreach (var role in Model.JobRoles)
-    {
-        <div>
-            <input
-                   type="checkbox"
-                   name="JobRoleIds"
-                   value="@role.Id"
-                   id="jobRole_@role.Id"
-                   checked="@role.IsSelected" />
-
-            <label class="form-check-label" for="jobRole_@role.Id">
-                @role.Name
-            </label>
+        <div class="mb-4">
+            <h1 class="h3">Edit department</h1>
+            <p class="text-muted">
+                Update @Model.Name and its assigned job roles.
+            </p>
         </div>
-    }
 
-    <button type="submit" class="btn btn-primary">
-        Save Changes
-    </button>
-    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
-        Cancel
-    </a>
-</form>
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3"></div>
+
+
+            <!-- Name -->
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+
+            <!-- Description -->
+            <div class="mb-4">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+
+            <!-- Job roles -->
+            <fieldset class="mb-4">
+                <legend class="fs-6 fw-semibold">Assigned job roles</legend>
+                <p class="text-muted small">
+                    Select or deselect roles to update the department.
+                </p>
+
+                <div class="border rounded p-3">
+                    @if (!Model.JobRoles.Any())
+                    {
+                        <p class="text-muted mb-0">
+                            No job roles available.
+                        </p>
+                    }
+                    else
+                    {
+                        @foreach (var role in Model.JobRoles)
+                        {
+                            <div class="form-check mb-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       name="JobRoleIds"
+                                       value="@role.Id"
+                                       id="jobRole_@role.Id"
+                                       checked="@role.IsSelected" />
+
+                                <label class="form-check-label"
+                                       for="jobRole_@role.Id">
+                                    @role.Name
+                                </label>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <span asp-validation-for="JobRoleIds"
+                      class="text-danger"></span>
+            </fieldset>
+            
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Save changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
