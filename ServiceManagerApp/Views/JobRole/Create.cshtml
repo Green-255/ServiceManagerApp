@@ -1,31 +1,69 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.JobRoles.JobRoleCreateEditViewModel
-<h2> Add new job role</h2>
 
-<form asp-action="Create" , method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+@{
+    ViewData["Title"] = "Create job role";
+}
 
-    <label asp-for="Name"></label>
-    <input asp-for="Name"
-           type="text" />
-    <span asp-validation-for="Name" class="text-danger"></span>
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-9 col-xl-8">
 
-    <label asp-for="Description"></label>
-    <input asp-for="Description"
-           type="text" />
-    <span asp-validation-for="Description" class="text-danger"></span>
+        <!-- Page header-->
+        <div class="mb-4">
+            <h1 class="h3">Add new job role</h1>
+            <p class="text-muted">
+                Enter information about the job role.
+            </p>
+        </div>
 
-    <label asp-for="DepartmentId"></label>
-    <select asp-for="DepartmentId"
-        asp-items="Model.Departments"
-        class="form-select">
-        <option value="">-- No department --</option>
-    </select>
 
-    <button type="submit" class="btn btn-primary">
-        Add
-    </button>
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        Cancel
-    </a>
-</form>
+            <!-- Name -->
+            <div class="mb-4  col-md-4">
+                <label asp-for="Name" class="form-label mb-1"></label>
+                <input asp-for="Name" class="form-control"
+                       style="width: 100%; max-width: 300px;" 
+                       placeholder="Ex.: Plumber" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <!-- Desciprtion -->
+            <div class="mb-4">
+                <label asp-for="Description" class="form-label mb-1"></label>
+                <textarea asp-for="Description" class="form-control"
+                       rows="3"
+                       placeholder="Describe the role"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+
+            <!-- Department -->
+            <div class="d-flex justify-content-left mb-4">
+                <div>
+                    <label asp-for="DepartmentId" class="form-select-label mb-1">Deparment</label>
+                    <select asp-for="DepartmentId"
+                        asp-items="Model.Departments"
+                        class="form-select">
+                        <option value="">-- No department --</option>
+                    </select>
+                </div>
+
+
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Add
+                </button>
+            </div>
+        </form>
+    </div>
+
+
+</div>
