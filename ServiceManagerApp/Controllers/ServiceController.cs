@@ -85,7 +85,8 @@ public class ServiceController : Controller
 
         var servicesViewModel = new ServiceIndexViewModel
         {
-            //AllServices = allServices,
+            //AllServices = [],
+            //ServicesNeedingReview = []
             AllServices = allServices.Except(needReviewServices).ToList(),
             ServicesNeedingReview = needReviewServices
         };
