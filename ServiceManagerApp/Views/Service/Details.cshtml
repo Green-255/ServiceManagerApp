@@ -1,40 +1,126 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.Services.ServiceDetailsViewModel
+
 @{
+    ViewData["Title"] = $"Service {Model.ReferenceNumber}";
+
+    // Display enum values as readable labels: NewService -> New Service.
+    var serviceType = System.Text.RegularExpressions.Regex.Replace(
+        Model.ServiceRequestType.ToString(), @"(?<!^)([A-Z])", " $1");
+
+    var durationDisplay = Model.Duration is TimeSpan duration
+        ? $"{(int)duration.TotalHours}h {duration.Minutes}m"
+        : "Not set";
+
+    var status = Model.Status.ToString();
+    var statusLabel = System.Text.RegularExpressions.Regex.Replace(
+        status, @"(?<!^)([A-Z])", " $1");
+
+    var statusBadgeClass = status switch
+    {
+        "Completed" => "bg-success",
+        "InProgress" => "bg-primary",
+        "Pending" or "NeedsReview" => "bg-warning text-dark",
+        "Cancelled" or "Canceled" => "bg-secondary",
+        _ => "bg-secondary"
+    };
 }
 
-<h3>Service @Model.ReferenceNumber details</h3>
+<div class="container py-4" style="max-width: 960px;">
+    <!-- Navigation and primary action -->
+    <a asp-action="Index" class="d-inline-block small text-decoration-none mb-3">
+        &larr; Back to services
+    </a>
 
-<p>
-    <Strong>@Model.ServiceRequestType</Strong>
-</p>
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+        <div>
+            <p class="text-muted small mb-1">SERVICE @Model.ReferenceNumber</p>
+            <h1 class="h3 mb-0">Service details</h1>
+        </div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            Edit service
+        </a>
+    </div>
 
-<p>
-    <strong>Status: </strong>@Model.Status
-</p>
+    <div class="card shadow-sm border-0">
+        <!-- Service overview -->
+        <div class="card-header bg-white px-4 py-3">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div>
+                    <div class="small text-muted mb-1">Service type</div>
+                    <div class="fs-5 fw-semibold">@serviceType</div>
+                </div>
+                <div>
+                    <div class="small text-muted mb-1">Status</div>
+                    <span class="badge rounded-pill @statusBadgeClass">@statusLabel</span>
+                </div>
+            </div>
+        </div>
 
-<p>
-    <weak>Due Date:</weak> @Model.DueAtUtc
-</p>
-<p>
-    <weak>Duration:</weak> @Model.Duration
-</p>
-<p>
-    <weak>Location:</weak> @Model.Location
-</p>
-<p>
-    <strong>Cost:</strong> @Model.Cost
-</p>
+        <!-- Service details -->
+        <div class="card-body px-4 py-4">
 
-<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
-    Edit
-</a>
+            <dl class="row g-4 mb-0">
+                <div class="col-sm-6">
+                    <dt class="text-muted small fw-normal mb-1">Due date</dt>
+                    <dd class="mb-0 fw-semibold">
+                        @(Model.DueAtUtc?.ToString("dd MMM yyyy, HH:mm") ?? "Not set")
+                        @if (Model.DueAtUtc.HasValue)
+                        {
+                            <span class="text-muted fw-normal small">UTC</span>
+                        }
+                    </dd>
+                </div>
 
-<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-    <button type="submit" class="btn btn-outline-danger">
-        Delete
-    </button>
-</form>
+                <div class="col-sm-6">
+                    <dt class="text-muted small fw-normal mb-1">Duration</dt>
+                    <dd class="mb-0 fw-semibold">@durationDisplay</dd>
+                </div>
 
-<a asp-action="Index" class="btn btn-outline-secondary">
-    Back
-</a>
+                <div class="col-sm-6">
+                    <dt class="text-muted small fw-normal mb-1">Location</dt>
+                    <dd class="mb-0 fw-semibold">
+                        @(string.IsNullOrWhiteSpace(Model.Location) ? "Not specified" : Model.Location)
+                    </dd>
+                </div>
+
+                <div class="col-sm-6">
+                    <dt class="text-muted small fw-normal mb-1">Cost</dt>
+                    <dd class="mb-0 fw-semibold">@Model.Cost</dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Destructive action, separated from editing -->
+        <div class="card-footer bg-white px-4 py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <span class="small text-muted">Service management</span>
+            <button type="button" class="btn btn-outline-danger btn-sm"
+                    data-bs-toggle="modal" data-bs-target="#deleteServiceModal">
+                Delete service
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm before deleting -->
+<div class="modal fade" id="deleteServiceModal" tabindex="-1"
+     aria-labelledby="deleteServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="deleteServiceModalLabel">Delete service?</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete service
+                <strong>@Model.ReferenceNumber</strong>? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" asp-antiforgery="true" class="m-0">
+                    <button type="submit" class="btn btn-danger">Delete service</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

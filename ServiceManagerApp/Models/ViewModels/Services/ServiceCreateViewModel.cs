@@ -16,6 +16,8 @@ namespace ServiceManagerApp.Models.ViewModels.Services
         [Required(ErrorMessage = "Service needs a thourough description.")]
         [StringLength(300, MinimumLength = 2)]
         public required string Comments { get; set; }
+
+        [Required(ErrorMessage = "Please enter cost.")]
         public float Cost { get; set; }
         public int[] WorkersIds { get; set; } = [];
 

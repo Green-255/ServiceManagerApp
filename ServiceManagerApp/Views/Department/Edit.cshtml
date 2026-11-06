@@ -1,40 +1,100 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.Departments.DepartmentCreateEditViewModel
+@{
+    ViewData["Title"] = "Edit department";
+}
 
-<h3> Edit @Model.Name department</h3>
+<style>
+    .department-role-choice { cursor: pointer; transition: border-color .15s, background-color .15s; }
+    .department-role-choice:hover { background-color: var(--bs-tertiary-bg); }
+    .department-role-choice:has(input:checked) { border-color: var(--bs-primary) !important; background-color: var(--bs-primary-bg-subtle); }
+</style>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
+<div class="mx-auto" style="max-width: 880px;">
+    <div class="mb-4">
+        <a asp-action="Details" asp-route-id="@Model.Id" class="small text-decoration-none">&larr; Back to department</a>
+        <h1 class="h3 fw-semibold mt-3 mb-1">Edit department</h1>
+        <p class="text-muted mb-0">Update <strong>@Model.Name</strong> and manage its assigned job roles.</p>
+    </div>
 
-    <label asp-for="Name">Name:</label>
-    <input asp-for="Name" />
-    <span asp-validation-for="Name"
-          class="text-danger"></span>
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
 
-    <label asp-for="Description">Descriptiom:</label>
-    <input asp-for="Description" />
-    <span asp-validation-for="Description"
-          class="text-danger"></span>
+        <!-- Department basics -->
+        <section class="card border shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-semibold mb-1">Department information</h2>
+                <p class="small text-muted mb-4">Edit the department's name and description.</p>
 
-    @foreach (var role in Model.JobRoles)
-    {
-        <div>
-            <input
-                   type="checkbox"
-                   name="JobRoleIds"
-                   value="@role.Id"
-                   id="jobRole_@role.Id"
-                   checked="@role.IsSelected" />
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label fw-medium">Department name</label>
+                    <input asp-for="Name" class="form-control" style="max-width: 430px;"
+                           placeholder="e.g. Maintenance" autocomplete="organization" />
+                    <span asp-validation-for="Name" class="text-danger small d-block mt-1"></span>
+                </div>
+                <div>
+                    <label asp-for="Description" class="form-label fw-medium"></label>
+                    <textarea asp-for="Description" class="form-control" rows="4"
+                              placeholder="What is this department responsible for?"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small d-block mt-1"></span>
+                </div>
+            </div>
+        </section>
 
-            <label class="form-check-label" for="jobRole_@role.Id">
-                @role.Name
-            </label>
+        <!-- Assigned roles -->
+        <section class="card border shadow-sm mb-4">
+            <div class="card-body p-4">
+                <fieldset class="mb-0">
+                    <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-2">
+                        <legend class="h5 fw-semibold mb-0 w-auto float-none">Assigned job roles</legend>
+                        <span id="selectedRoleCount" class="badge text-bg-light border text-secondary" aria-live="polite"></span>
+                    </div>
+                    <p class="small text-muted mb-3">Check the roles that belong to this department. Uncheck a role to remove its department assignment when you save.</p>
+
+                    @if (!Model.JobRoles.Any())
+                    {
+                        <div class="rounded border bg-light p-4 text-center">
+                            <p class="fw-semibold mb-1">No job roles available</p>
+                            <p class="small text-muted mb-0">Create job roles before assigning them here.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row g-2">
+                            @foreach (var role in Model.JobRoles.OrderBy(r => r.Name))
+                            {
+                                <div class="col-12 col-sm-6">
+                                    <label class="department-role-choice d-flex align-items-center gap-3 border rounded p-3 h-100 w-100"
+                                           for="role_@role.Id">
+                                        <input id="role_@role.Id" type="checkbox" class="form-check-input m-0 flex-shrink-0"
+                                               name="JobRoleIds" value="@role.Id" checked="@role.IsSelected" />
+                                        <span class="fw-medium">@role.Name</span>
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    }
+                    <span asp-validation-for="JobRoleIds" class="text-danger small d-block mt-2"></span>
+                </fieldset>
+            </div>
+        </section>
+
+        <div class="d-flex flex-column-reverse flex-sm-row justify-content-end gap-2 border-top pt-3 mb-4">
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save changes</button>
         </div>
-    }
+    </form>
+</div>
 
-    <button type="submit" class="btn btn-primary">
-        Save Changes
-    </button>
-    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
-        Cancel
-    </a>
-</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const boxes = [...document.querySelectorAll('input[name="JobRoleIds"]')];
+            const count = document.getElementById('selectedRoleCount');
+            const update = () => { count.textContent = `${boxes.filter(x => x.checked).length} selected`; };
+            boxes.forEach(x => x.addEventListener('change', update));
+            update();
+        })();
+    </script>
+}

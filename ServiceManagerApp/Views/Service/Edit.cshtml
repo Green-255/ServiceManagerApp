@@ -1,64 +1,145 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.Services.ServiceEditViewModel
+
 @{
+    ViewData["Title"] = $"Edit service {Model.ReferenceNumber}";
 }
 
-<h3> Edit @Model.ReferenceNumber Service </h3>
-
-<form asp-action="Edit" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="ReferenceNumber" />
-
-    @*<label asp-for="ServiceRequestType">Service Request Type:</label>
-    <input asp-for="ServiceRequestType" />*@
-
-    @*<label asp-for="Status">Status:</label>
-    <input asp-for="Status" />*@
-
-    <label asp-for="DueAtUtc">Due At (UTC):</label>
-    <input asp-for="DueAtUtc" />
-
-
-    <label asp-for="DurationHours">Duration (Hours):</label>
-    <input asp-for="DurationHours" />
-
-    <label asp-for="DurationMinutes">Duration (Minutes):</label>
-    <input asp-for="DurationMinutes" />
-
-    <label asp-for="Location">Location:</label>
-    <input asp-for="Location" />
-
-    <label asp-for="Comments">Comments:</label>
-    <input asp-for="Comments" />
-    <span asp-validation-for="Comments" class="text-danger"></span>
-
-
-    <label asp-for="Cost">Cost:</label>
-    <input asp-for="Cost" />
-
-    <label asp-for="Workers">Workers assigned for this service:</label>
-    @foreach (var worker in Model.Workers)
-    {
-        <div>
-            <input 
-                type="checkbox"
-                name="WorkerIds"
-                value="@worker.Id"
-                id="worker_@worker.Id"
-                checked="@worker.IsSelected"/>
-
-            <label class="form-check-label" for="worker_@worker.Id">
-                @worker.Name (@worker.SkillLevel)
-            </label>
-        </div>
-    }
-
-    <button type="submit" class="btn btn-primary">
-        Save Changes
-    </button>
-
-    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
-        Cancel
+<div class="container py-4" style="max-width: 960px;">
+    <a asp-action="Details" asp-route-id="@Model.Id" class="d-inline-block small text-decoration-none mb-3">
+        &larr; Back to service details
     </a>
-</form>
+
+    <div class="mb-4">
+        <p class="text-muted small mb-1">SERVICE @Model.ReferenceNumber</p>
+        <h1 class="h3 mb-1">Edit service</h1>
+        <p class="text-muted mb-0">Update the schedule, service information, and assigned workers.</p>
+    </div>
+
+    <form asp-action="Edit" method="post" asp-antiforgery="true">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ReferenceNumber" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3" role="alert"></div>
+
+        <!-- Comments -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <label asp-for="Comments" class="form-label fw-semibold">Description</label>
+                <textarea asp-for="Comments" class="form-control" rows="3"
+                          placeholder="Fully discribe the service needed, instructions and useful details"></textarea>
+                <span asp-validation-for="Comments" class="text-danger small"></span>
+            </div>
+        </div>
+
+
+        <!-- Location, Date and Time -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h2 class="h6 mb-1">Schedule</h2>
+                <p class="small text-muted mb-4">Adjust the due date or expected duration.</p>
+
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label asp-for="Location" class="form-label fw-semibold"></label>
+                        <input asp-for="Location" class="form-control" placeholder="Enter service location" />
+                        <span asp-validation-for="Location" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DueAtUtc" class="form-label fw-semibold">Due date</label>
+                        <input asp-for="DueAtUtc" asp-format="{0:yyyy-MM-ddTHH:mm}"
+                               type="datetime-local" class="form-control" aria-describedby="editDueHelp" />
+                        <span asp-validation-for="DueAtUtc" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <fieldset>
+                            <legend class="form-label fw-semibold fs-6 mb-0">Estimated duration</legend>
+                            <div class="row g-2">
+                                <div class="col-6 d-flex justify-content-between align-items-center gap-1">
+                                    <input asp-for="DurationHours" type="number" min="0" step="1"
+                                           class="form-control" placeholder="0" />
+                                    <span asp-validation-for="DurationHours" class="text-danger small"></span>
+                                    <label asp-for="DurationHours" class="form-label small text-muted mb-0">Hours</label>
+                                </div>
+                                <div class="col-6 d-flex justify-content-between align-items-center gap-1">
+                                    <input asp-for="DurationMinutes" type="number" min="0" max="59" step="15"
+                                           class="form-control py-1" placeholder="0" aria-describedby="durationHelp" />
+                                    <span asp-validation-for="DurationMinutes" class="text-danger small"></span>
+                                    <label asp-for="DurationMinutes" class="form-label small text-muted mb-0">Minutes</label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Workers -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h2 class="h6 mb-1">Assigned workers</h2>
+                <p class="small text-muted mb-3">Select the workers who should be assigned to this service.</p>
+
+                @* <div class="col-md-3 mb-3">
+                    <label asp-for="SkillLevel" class="form-label fw-semibold"></label>
+                    <select asp-for="SkillLevel" asp-items="Html.GetEnumSelectList<SkillLevel>()"
+                            class="form-select"></select>
+                    <span asp-validation-for="SkillLevel" class="text-danger small"></span>
+                </div> *@
+
+                @if (Model.Workers.Any())
+                {
+                    <fieldset>
+                        <legend class="visually-hidden">Workers assigned to this service</legend>
+                        <div class="row g-2">
+                            @foreach (var worker in Model.Workers)
+                            {
+                                <div class="col-sm-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox"
+                                                   name="WorkerIds" value="@worker.Id"
+                                                   id="worker_@worker.Id" checked="@worker.IsSelected" />
+                                            <label class="form-check-label" for="worker_@worker.Id">
+                                                <span class="fw-semibold d-block">@worker.Name</span>
+                                                <span class="small text-muted">@worker.SkillLevel</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </fieldset>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No workers are available to assign.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Cost -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <label asp-for="Cost" class="form-label fw-semibold"></label>
+                        <input asp-for="Cost" type="number" min="0" step="any" class="form-control" placeholder="0.00" />
+                        <span asp-validation-for="Cost" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex flex-wrap justify-content-end align-items-center gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4">Save</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

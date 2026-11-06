@@ -1,58 +1,208 @@
 ﻿@model IReadOnlyList<ServiceManagerApp.Models.ViewModels.ServiceRequests.ServiceRequestIndexViewModel>
 
-<h1> Service Requests </h1>
-<a asp-action="Create" class="btn btn-outline-primary">
-    New request
-</a>
-    @{
-        if (!Model.Any())
-        {
-            <p>No service requests</p>
-        }
+@{
+    ViewData["Title"] = "Service requests";
 
-        else
-        {
+    var requests = Model.ToList();
 
-            <table class="table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th></th>
-                    <th>Description</th>
-                    <th>Status</th>
-                    <th>Requested date</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var request in Model)
-                {
-                    <tr>
-                        <td>@request.Title</td>
-                        <td>@request.ServiceRequestType</td>
-                        <td>@request.Description</td>
-                        <td>@request.Status</td>
-                        @if(request.RequestedDueUtc != null)
-                        {
-                            <td>@request.RequestedDueUtc</td>
-                        }
-                        <td>@request.ReferenceNumber</td>
-                        <td>
-                            <a asp-action="Details" asp-route-id="@request.Id" class="btn btn-primary">
-                                Details
-                            </a>
-                            <form asp-action="Delete" asp-route-id="@request.Id" method="post">
-                                <button type="submit" class="btn btn-outline-danger">
-                                    Delete
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-            </table>
-        }
-    }
+    string ReadableLabel(string value) =>
+        System.Text.RegularExpressions.Regex.Replace(value, @"(?<=[a-z])(?=[A-Z])", " ");
 
+    string StatusBadgeClass(string status) => status switch
+    {
+        "Completed" or "Approved" or "Accepted" => "bg-success bg-opacity-10 text-success",
+        "InProgress" => "bg-primary bg-opacity-10 text-primary",
+        "Pending" or "NeedsReview" or "Draft" => "bg-warning bg-opacity-25 text-dark",
+        "Rejected" => "bg-danger bg-opacity-10 text-danger",
+        "Cancelled" or "Canceled" => "bg-secondary bg-opacity-10 text-secondary",
+        _ => "bg-secondary bg-opacity-10 text-secondary"
+    };
+}
 
+<div class="container py-4" style="max-width: 1120px;">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Service requests</h1>
+            <p class="text-muted mb-0">Browse, track, and manage incoming work requests.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary align-self-start align-self-sm-auto">
+            + New request
+        </a>
+    </div>
+
+    <section aria-labelledby="requestListHeading">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white px-4 py-3">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h2 class="h5 mb-0" id="requestListHeading">Request list</h2>
+                            <span class="badge rounded-pill bg-secondary">@requests.Count</span>
+                        </div>
+                        <p class="small text-muted mb-0">Open a request to view its description and full details.</p>
+                    </div>
+                    @if (requests.Count > 0)
+                    {
+                        <div class="w-100" style="max-width: 320px;">
+                            <label for="requestSearch" class="visually-hidden">Search requests</label>
+                            <input id="requestSearch" type="search" class="form-control form-control-sm"
+                                   placeholder="Search reference, title, type, status..." autocomplete="off" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (requests.Count == 0)
+            {
+                <div class="card-body text-center py-5">
+                    <h3 class="h6 mb-2">No service requests yet</h3>
+                    <p class="text-muted mb-3">Create a request to start tracking the work you need done.</p>
+                    <a asp-action="Create" class="btn btn-outline-primary btn-sm">Create a request</a>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="requestsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="ps-4 py-3">Reference number</th>
+                                <th scope="col" class="py-3">Request</th>
+                                <th scope="col" class="py-3">Type</th>
+                                <th scope="col" class="py-3">Status</th>
+                                <th scope="col" class="py-3">Requested due date</th>
+                                <th scope="col" class="text-end pe-4 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in requests)
+                            {
+                                var status = request.Status.ToString();
+                                var searchText = $"{request.ReferenceNumber} {request.Title} {request.Description} {request.ServiceRequestType} {ReadableLabel(request.ServiceRequestType.ToString())} {status} {ReadableLabel(status)}";
+
+                                <tr data-search="@searchText">
+                                    <th scope="row" class="ps-4 py-3 fw-semibold">
+                                        <a asp-action="Details" asp-route-id="@request.Id"
+                                           class="text-decoration-none text-nowrap">@request.ReferenceNumber</a>
+                                    </th>
+                                    <td class="py-3" style="min-width: 200px;">
+                                        <a asp-action="Details" asp-route-id="@request.Id"
+                                           class="fw-semibold text-decoration-none text-body text-break">@request.Title</a>
+                                        @if (!string.IsNullOrWhiteSpace(request.Description))
+                                        {
+                                            <span class="d-block small text-muted text-truncate mt-1"
+                                                  style="max-width: 260px;" title="@request.Description">@request.Description</span>
+                                        }
+                                    </td>
+                                    <td class="py-3">@ReadableLabel(request.ServiceRequestType.ToString())</td>
+                                    <td class="py-3">
+                                        <span class="badge rounded-pill fw-semibold @StatusBadgeClass(status)">
+                                            @ReadableLabel(status)
+                                        </span>
+                                    </td>
+                                    <td class="py-3">
+                                        @if (request.RequestedDueUtc.HasValue)
+                                        {
+                                            <div class="text-nowrap">@request.RequestedDueUtc.Value.ToString("dd MMM yyyy")</div>
+                                            <div class="small text-muted">@request.RequestedDueUtc.Value.ToString("HH:mm") UTC</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not set</span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4 py-3">
+                                        <div class="d-inline-flex align-items-center gap-2">
+                                            <a asp-action="Details" asp-route-id="@request.Id"
+                                               class="btn btn-sm btn-outline-primary">Details</a>
+                                            <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none"
+                                                    data-bs-toggle="modal" data-bs-target="#deleteRequestModal"
+                                                    data-request-title="@request.Title"
+                                                    data-delete-url="@Url.Action("Delete", new { id = request.Id })">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noRequestMatches" class="d-none text-center text-muted p-4" role="status">
+                    No requests match your search.
+                </div>
+                <div class="card-footer bg-white px-4 py-2">
+                    <span class="small text-muted" id="requestListCount">@requests.Count requests shown</span>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+@if (requests.Count > 0)
+{
+    <!-- A single confirmation dialog handles deletion from any row. -->
+    <div class="modal fade" id="deleteRequestModal" tabindex="-1"
+         aria-labelledby="deleteRequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="deleteRequestModalLabel">Delete service request?</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete <strong id="deleteRequestTitle"></strong>?
+                    This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form asp-action="Delete" method="post" asp-antiforgery="true"
+                          id="deleteRequestForm" class="m-0">
+                        <button type="submit" class="btn btn-danger">Delete request</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Filter rows already loaded on the page. No extra server requests are made.
+            const searchInput = document.getElementById('requestSearch');
+            const rows = document.querySelectorAll('#requestsTable tbody tr[data-search]');
+            const noMatches = document.getElementById('noRequestMatches');
+            const listCount = document.getElementById('requestListCount');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    const query = searchInput.value.trim().toLowerCase();
+                    let visible = 0;
+
+                    rows.forEach(function (row) {
+                        const matches = (row.dataset.search || '').toLowerCase().includes(query);
+                        row.classList.toggle('d-none', !matches);
+                        if (matches) visible++;
+                    });
+
+                    noMatches.classList.toggle('d-none', visible !== 0);
+                    listCount.textContent = visible + ' of ' + rows.length + ' requests shown';
+                });
+            }
+
+            const deleteModal = document.getElementById('deleteRequestModal');
+            if (deleteModal) {
+                deleteModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    if (!button) return;
+
+                    document.getElementById('deleteRequestTitle').textContent =
+                        button.getAttribute('data-request-title') || '';
+                    document.getElementById('deleteRequestForm').action =
+                        button.getAttribute('data-delete-url') || '';
+                });
+            }
+        });
+    </script>
+}

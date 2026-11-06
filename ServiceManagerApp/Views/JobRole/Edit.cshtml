@@ -1,39 +1,61 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.JobRoles.JobRoleCreateEditViewModel
 @{
-    // ViewData["Title"] = "Create job role";
+    ViewData["Title"] = $"Edit {Model.Name}";
 }
-@{
-    <h3> Edit <strong>@Model.Name</strong> job role</h3>
+
+<div class="container py-4" style="max-width: 880px;">
+    <div class="mb-4">
+        <a asp-action="Details" asp-route-id="@Model.Id" class="d-inline-block small text-decoration-none mb-3">&larr; Back to job role</a>
+        <h1 class="h3 fw-semibold mb-1">Edit job role</h1>
+        <p class="text-muted mb-0">Update <strong>@Model.Name</strong> and manage its department assignment.</p>
+    </div>
 
     <form asp-action="Edit" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
         <input type="hidden" asp-for="Id" />
-        
-        <label asp-for="Name">Name:</label>
-        <input asp-for="Name" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
 
-        
-        <label asp-for="Description">Descriptiom:</label>
-        <input asp-for="Description" />
-        <span asp-validation-for="Description" class="text-danger"></span>
+        <section class="card border-0 shadow-sm mb-4" aria-labelledby="roleInfoHeading">
+            <div class="card-body p-4">
+                <h2 id="roleInfoHeading" class="h5 fw-semibold mb-1">Job role information</h2>
+                <p class="small text-muted mb-4">Keep the role name recognizable and its description up to date.</p>
 
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label fw-medium">Role name</label>
+                    <input asp-for="Name" class="form-control" style="max-width: 430px;" autocomplete="off" />
+                    <span asp-validation-for="Name" class="text-danger small d-block mt-1"></span>
+                </div>
 
-        <label asp-for="DepartmentId">Department</label>
-        <select asp-for="DepartmentId"
-                asp-items="Model.Departments"
-                class="form-select">
-            <option value="">-- No department --</option>
-        </select>
+                <div>
+                    <label asp-for="Description" class="form-label fw-medium"></label>
+                    <textarea asp-for="Description" class="form-control" rows="4"
+                              placeholder="Describe the role's responsibilities"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small d-block mt-1"></span>
+                </div>
+            </div>
+        </section>
 
-        @* <label asp-for="Workers">Workers</label>
-        <input asp-for="Workers" /> *@
+        <section class="card border-0 shadow-sm mb-4" aria-labelledby="departmentHeading">
+            <div class="card-body p-4">
+                <h2 id="departmentHeading" class="h5 fw-semibold mb-1">Department assignment</h2>
+                <p class="small text-muted mb-3">Changing the department will update where this role is listed. Choose “No department” to leave it unassigned.</p>
 
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
-            Cancel
-        </a>
+                <div style="max-width: 430px;">
+                    <label asp-for="DepartmentId" class="form-label fw-medium">Department</label>
+                    <select asp-for="DepartmentId" asp-items="Model.Departments" class="form-select">
+                        <option value="">No department</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger small d-block mt-1"></span>
+                </div>
+            </div>
+        </section>
+
+        <div class="d-flex flex-column-reverse flex-sm-row justify-content-end gap-2 border-top pt-3 mb-4">
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
     </form>
-}
+</div>
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

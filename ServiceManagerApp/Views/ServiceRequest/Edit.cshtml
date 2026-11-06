@@ -1,41 +1,82 @@
 ﻿@using ServiceManagerApp.Models.Enums
 @model ServiceManagerApp.Models.ViewModels.ServiceRequests.ServiceRequestEditViewModel
+
 @{
+    ViewData["Title"] = $"Edit request {Model.ReferenceNumber}";
 }
 
-<h3> Edit @Model.ReferenceNumber request. </h3>
-
-<form asp-action="Edit" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="ReferenceNumber" />
-
-    <label asp-for="ServiceRequestType"></label>
-    <select asp-for="ServiceRequestType"
-        asp-items="Html.GetEnumSelectList<ServiceRequestType>()"
-        class="form-select">
-    </select>
-
-    <label asp-for="Title"> Title </label>
-    <input asp-for="Title" class="ServiceRequest-Title"/>
-    <span asp-validation-for="Title" class="text-danger"></span>
-
-    <label asp-for="Description"> Description </label>
-    <input asp-for="Description" class="ServiceRequest-Description"/>
-    <span asp-validation-for="Description" class="text-danger"></span>
-
-
-    <label asp-for="RequestedDueUtc"> Due Date </label>
-    <input asp-for="RequestedDueUtc" class="ServiceRequest-RequestedDueUtc"/>
-
-    <button type="submit" class="btn btn-primary">
-        Save
-    </button>
-
-    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
-        Cancel
+<div class="container py-4" style="max-width: 960px;">
+    <a asp-action="Details" asp-route-id="@Model.Id" class="d-inline-block small text-decoration-none mb-3">
+        &larr; Back to request details
     </a>
-</form>
 
+    <div class="mb-4">
+        <p class="text-muted small mb-1">REQUEST @Model.ReferenceNumber</p>
+        <h1 class="h3 mb-1">Edit service request</h1>
+        <p class="text-muted mb-0">Update the request information and the preferred completion date.</p>
+    </div>
 
+    <form asp-action="Edit" method="post" asp-antiforgery="true">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ReferenceNumber" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3" role="alert"></div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h2 class="h6 mb-1">Request information</h2>
+                <p class="small text-muted mb-4">Keep the title concise and the description detailed enough to plan the work.</p>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="ServiceRequestType" class="form-label fw-semibold">Request type</label>
+                        <select asp-for="ServiceRequestType"
+                                asp-items="Html.GetEnumSelectList<ServiceRequestType>()"
+                                class="form-select"></select>
+                        <span asp-validation-for="ServiceRequestType" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-8">
+                        <label asp-for="Title" class="form-label fw-semibold"></label>
+                        <input asp-for="Title" class="form-control"
+                               placeholder="Short summary of the request" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="5"
+                                  placeholder="Describe the issue and required work"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h2 class="h6 mb-1">Requested schedule</h2>
+                <p class="small text-muted mb-4">Adjust the preferred completion date and time.</p>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="RequestedDueUtc" class="form-label fw-semibold">
+                            Requested due date
+                        </label>
+                        <input asp-for="RequestedDueUtc" asp-format="{0:yyyy-MM-ddTHH:mm}"
+                               type="datetime-local" class="form-control" aria-describedby="editRequestDueHelp" />
+                        <div id="editRequestDueHelp" class="form-text">Enter the date and time. Clear the value if no date is needed.</div>
+                        <span asp-validation-for="RequestedDueUtc" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center justify-content-end gap-2">
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4">Save changes</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
