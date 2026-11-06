@@ -1,31 +1,123 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.ServiceRequests.ServiceRequestDetailsViewModel
 
-<h3> @Model.ServiceRequestType <strong> @Model.Title </strong> </h3>
+@{
+    ViewData["Title"] = "Service request details";
 
-<p>
-    <strong>Status:</strong> @Model.RequestStatus
-</p>
-<h3> <strong>Description:</strong> </h3>
-<p>
-    @Model.Description
-</p>
-<p>
-    <strong>Due to:</strong> @Model.RequestedDueUtc
-</p>
-<p>
-    <weak>Request created:</weak> @Model.CreatedAtUtc
-</p>
+    string ReadableLabel(string value) =>
+        System.Text.RegularExpressions.Regex.Replace(value, @"(?<=[a-z])(?=[A-Z])", " ");
 
-<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
-    Edit
-</a>
+    var status = Model.RequestStatus.ToString();
+    var statusBadgeClass = status switch
+    {
+        "Completed" or "Approved" or "Accepted" => "bg-success",
+        "InProgress" => "bg-primary",
+        "Pending" or "NeedsReview" or "Draft" => "bg-warning text-dark",
+        "Rejected" => "bg-danger",
+        "Cancelled" or "Canceled" => "bg-secondary",
+        _ => "bg-secondary"
+    };
+}
 
-<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-    <button type="submit" class="btn btn-outline-danger">
-        Delete
-    </button>
-</form>
+<div class="container py-4" style="max-width: 960px;">
+    <a asp-action="Index" class="d-inline-block small text-decoration-none mb-3">
+        &larr; Back to service requests
+    </a>
 
-<a asp-action="Index" class="btn btn-outline-secondary">
-    Back
-</a>
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+        <div>
+            <p class="text-muted small text-uppercase mb-1">Service request</p>
+            <h1 class="h3 mb-0">Request details</h1>
+        </div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            Edit request
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white px-4 py-3">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-3">
+                <div>
+                    <div class="small text-muted mb-1">@ReadableLabel(Model.ServiceRequestType.ToString())</div>
+                    <h2 class="h5 mb-0 text-break">@Model.Title</h2>
+                </div>
+                <div>
+                    <span class="badge rounded-pill @statusBadgeClass">@ReadableLabel(status)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body px-4 py-4">
+            <section aria-labelledby="requestDescriptionHeading" class="mb-4">
+                <h3 class="h6 mb-3" id="requestDescriptionHeading">Description</h3>
+                @if (string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <p class="text-muted mb-0">No description provided.</p>
+                }
+                else
+                {
+                    <p class="mb-0 text-break" style="white-space: pre-wrap;">@Model.Description</p>
+                }
+            </section>
+
+            <hr class="my-4" />
+
+            <section aria-labelledby="requestDatesHeading">
+                <h3 class="h6 mb-4" id="requestDatesHeading">Request timeline</h3>
+                <dl class="row g-4 mb-0">
+                    <div class="col-sm-6">
+                        <dt class="small text-muted fw-normal mb-1">Requested due date</dt>
+                        <dd class="mb-0 fw-semibold">
+                            @if (Model.RequestedDueUtc.HasValue)
+                            {
+                                @Model.RequestedDueUtc.Value.ToString("dd MMM yyyy, HH:mm")
+                                <span class="small text-muted fw-normal">UTC</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted fw-normal">Not set</span>
+                            }
+                        </dd>
+                    </div>
+                    <div class="col-sm-6">
+                        <dt class="small text-muted fw-normal mb-1">Request created</dt>
+                        <dd class="mb-0 fw-semibold">
+                            @Model.CreatedAtUtc.ToString("dd MMM yyyy, HH:mm")
+                            <span class="small text-muted fw-normal">UTC</span>
+                        </dd>
+                    </div>
+                </dl>
+            </section>
+        </div>
+
+        <div class="card-footer bg-white px-4 py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <span class="small text-muted">Request management</span>
+            <button type="button" class="btn btn-outline-danger btn-sm"
+                    data-bs-toggle="modal" data-bs-target="#deleteRequestModal">
+                Delete request
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteRequestModal" tabindex="-1"
+     aria-labelledby="deleteRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="deleteRequestModalLabel">Delete service request?</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong>@Model.Title</strong>?
+                This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+                      asp-antiforgery="true" class="m-0">
+                    <button type="submit" class="btn btn-danger">Delete request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
