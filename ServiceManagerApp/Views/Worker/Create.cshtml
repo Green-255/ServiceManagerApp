@@ -1,54 +1,105 @@
 ﻿@using ServiceManagerApp.Models.Enums
 @model ServiceManagerApp.Models.ViewModels.Workers.WorkerCreateViewModel
-<h1> Add new worker</h1>
 
-<form asp-action="Create" , method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+@{
+    ViewData["Title"] = "Add worker";
+}
 
-    <label asp-for="Name"></label>
-    <input asp-for="Name" type="text" />
-    <span asp-validation-for="Name" class="text-danger"></span>
-
-    <label asp-for="PhoneNumber"></label>
-    <input asp-for="PhoneNumber" type="tel"/>
-    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-
-    <label asp-for="Email"></label>
-    <input asp-for="Email" type="email"/>
-    <span asp-validation-for="Email" class="text-danger"></span>
-
-    <label asp-for="DepartmentId">Department</label>
-    <select asp-for="DepartmentId"
-        asp-items="Model.Departments"
-        class="form-select">
-        <option value="">-- No department --</option>
-    </select>
-
-    <label asp-for="JobRoleId">Job role</label>
-    <select asp-for="JobRoleId"
-        asp-items="Model.JobRoles"
-        class="form-select">
-        <option value="">-- No department --</option>
-    </select>>
-
-    <label asp-for="SkillLevel"></label>
-    <select asp-for="SkillLevel" 
-        asp-items="Html.GetEnumSelectList<SkillLevel>()"
-        class="form-select">
-        <option value="">-- Undefined --</option>
-    </select>
-
-    <label asp-for="AvailabilityStatus"></label>
-    <select asp-for="AvailabilityStatus"
-            asp-items="Html.GetEnumSelectList<AvailabilityStatus>()"
-            class="form-select">
-    </select>
-
-    <button type="submit" class="btn btn-primary">
-        Add
-    </button>
-
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        Cancel
+<div class="container py-4" style="max-width: 960px;">
+    <a asp-action="Index" class="d-inline-block small text-decoration-none mb-3">
+        &larr; Back to workers
     </a>
-</form>
+
+    <div class="mb-4">
+        <p class="text-muted small text-uppercase mb-1">Workers</p>
+        <h1 class="h3 mb-1">Add a new worker</h1>
+        <p class="text-muted mb-0">Create a worker profile, add contact details, and set their role and availability.</p>
+    </div>
+
+    <form asp-action="Create" method="post" asp-antiforgery="true">
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3" role="alert"></div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h2 class="h6 mb-1">Personal and contact information</h2>
+                <p class="small text-muted mb-4">Use the worker's full name and preferred contact details.</p>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="Name" class="form-label fw-semibold"></label>
+                        <input asp-for="Name" type="text" class="form-control"
+                               autocomplete="name" placeholder="e.g. Alex Morgan" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold"></label>
+                        <input asp-for="Email" type="email" class="form-control"
+                               autocomplete="email" placeholder="e.g. alex@example.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="PhoneNumber" class="form-label fw-semibold">Phone number</label>
+                        <input asp-for="PhoneNumber" type="tel" class="form-control"
+                               autocomplete="tel" placeholder="e.g. 60000000" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h2 class="h6 mb-1">Department and job role</h2>
+                <p class="small text-muted mb-4">Choose the organizational assignment, or leave it unassigned for now.</p>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="DepartmentId" class="form-label fw-semibold">Department</label>
+                        <select asp-for="DepartmentId" asp-items="Model.Departments" class="form-select">
+                            <option value="">No department</option>
+                        </select>
+                        <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="JobRoleId" class="form-label fw-semibold">Job role</label>
+                        <select asp-for="JobRoleId" asp-items="Model.JobRoles" class="form-select">
+                            <option value="">No job role</option>
+                        </select>
+                        <span asp-validation-for="JobRoleId" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h2 class="h6 mb-1">Work profile</h2>
+                <p class="small text-muted mb-4">Record the worker's skill level and current availability.</p>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="SkillLevel" class="form-label fw-semibold">Skill level</label>
+                        <select asp-for="SkillLevel" asp-items="Html.GetEnumSelectList<SkillLevel>()" class="form-select">
+                            <option value="">Undefined</option>
+                        </select>
+                        <span asp-validation-for="SkillLevel" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="AvailabilityStatus" class="form-label fw-semibold">Availability status</label>
+                        <select asp-for="AvailabilityStatus" asp-items="Html.GetEnumSelectList<AvailabilityStatus>()" class="form-select"></select>
+                        <span asp-validation-for="AvailabilityStatus" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-end gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4">Add worker</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

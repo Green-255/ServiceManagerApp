@@ -1,29 +1,132 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.Workers.WorkerViewModel
 
-<h3>
-    Worker <strong>@Model.ReferenceNumber</strong>
-</h3>
-
-<p>@Model.Name | @Model.Email | @Model.PhoneNumber</p>
-
 @{
-    string role = Model.JobRoleName == null ? string.Empty : Model.JobRoleName;
-    string department = Model.DepartmentName == null ? string.Empty : "Works at " + Model.DepartmentName;
-
-    <p>@role @department</p>
+    ViewData["Title"] = $"Worker {Model.ReferenceNumber}";
+    string ReadableLabel(string value) =>
+        System.Text.RegularExpressions.Regex.Replace(value.Replace("_", " "), @"(?<=[a-z0-9])(?=[A-Z])", " ");
 }
-<p>Skill level: @Model.SkillLevel</p>
 
-<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
-    Edit worker's information
-</a>
+<div class="container py-4" style="max-width: 960px;">
+    <a asp-action="Index" class="d-inline-block small text-decoration-none mb-3">
+        &larr; Back to workers
+    </a>
 
-<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-    <button type="submit" class="btn btn-outline-danger">
-        Delete worker
-    </button>
-</form>
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+        <div>
+            <p class="text-muted small mb-1">WORKER @Model.ReferenceNumber</p>
+            <h1 class="h3 mb-0">Worker details</h1>
+        </div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit worker</a>
+    </div>
 
-<a asp-action="Index" class="btn btn-outline-secondary">
-    Back
-</a>
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white px-4 py-3">
+            <div class="small text-muted mb-1">Worker profile</div>
+            <h2 class="h5 mb-0 text-break">@Model.Name</h2>
+            <p class="small text-muted mb-0 mt-1">@Model.ReferenceNumber</p>
+        </div>
+
+        <div class="card-body px-4 py-4">
+            <section aria-labelledby="workerContactHeading">
+                <h3 class="h6 mb-4" id="workerContactHeading">Contact information</h3>
+                <dl class="row g-4 mb-0">
+                    <div class="col-sm-6">
+                        <dt class="text-muted small fw-normal mb-1">Email address</dt>
+                        <dd class="mb-0 fw-semibold text-break">
+                            @if (!string.IsNullOrWhiteSpace(Model.Email))
+                            {
+                                <a href="mailto:@Model.Email" class="text-decoration-none">@Model.Email</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted fw-normal">Not provided</span>
+                            }
+                        </dd>
+                    </div>
+                    <div class="col-sm-6">
+                        <dt class="text-muted small fw-normal mb-1">Phone number</dt>
+                        <dd class="mb-0 fw-semibold">
+                            @if (Model.PhoneNumber != null && !string.IsNullOrWhiteSpace(Model.PhoneNumber.ToString()))
+                            {
+                                <a href="tel:@Model.PhoneNumber" class="text-decoration-none">@Model.PhoneNumber</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted fw-normal">Not provided</span>
+                            }
+                        </dd>
+                    </div>
+                </dl>
+            </section>
+
+            <hr class="my-4" />
+
+            <section aria-labelledby="workerAssignmentHeading">
+                <h3 class="h6 mb-4" id="workerAssignmentHeading">Work assignment</h3>
+                <dl class="row g-4 mb-0">
+                    <div class="col-sm-6">
+                        <dt class="text-muted small fw-normal mb-1">Department</dt>
+                        <dd class="mb-0 fw-semibold">
+                            @if (string.IsNullOrWhiteSpace(Model.DepartmentName))
+                            {
+                                <span class="text-muted fw-normal">Not assigned</span>
+                            }
+                            else
+                            {
+                                @Model.DepartmentName
+                            }
+                        </dd>
+                    </div>
+                    <div class="col-sm-6">
+                        <dt class="text-muted small fw-normal mb-1">Job role</dt>
+                        <dd class="mb-0 fw-semibold">
+                            @if (string.IsNullOrWhiteSpace(Model.JobRoleName))
+                            {
+                                <span class="text-muted fw-normal">Not assigned</span>
+                            }
+                            else
+                            {
+                                @Model.JobRoleName
+                            }
+                        </dd>
+                    </div>
+                    <div class="col-sm-6">
+                        <dt class="text-muted small fw-normal mb-1">Skill level</dt>
+                        <dd class="mb-0 fw-semibold">@ReadableLabel(Model.SkillLevel.ToString())</dd>
+                    </div>
+                </dl>
+            </section>
+        </div>
+
+        <div class="card-footer bg-white px-4 py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <span class="small text-muted">Worker management</span>
+            <button type="button" class="btn btn-outline-danger btn-sm"
+                    data-bs-toggle="modal" data-bs-target="#deleteWorkerModal">
+                Delete worker
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteWorkerModal" tabindex="-1"
+     aria-labelledby="deleteWorkerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="deleteWorkerModalLabel">Delete worker?</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong>@Model.Name</strong>
+                (<span>@Model.ReferenceNumber</span>)? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+                      asp-antiforgery="true" class="m-0">
+                    <button type="submit" class="btn btn-danger">Delete worker</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
