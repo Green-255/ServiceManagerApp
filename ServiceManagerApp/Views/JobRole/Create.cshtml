@@ -1,69 +1,61 @@
 ﻿@model ServiceManagerApp.Models.ViewModels.JobRoles.JobRoleCreateEditViewModel
-
 @{
     ViewData["Title"] = "Create job role";
 }
 
-<div class="row justify-content-center">
-    <div class="col-12 col-lg-9 col-xl-8">
-
-        <!-- Page header-->
-        <div class="mb-4">
-            <h1 class="h3">Add new job role</h1>
-            <p class="text-muted">
-                Enter information about the job role.
-            </p>
-        </div>
-
-
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-            <!-- Name -->
-            <div class="mb-4  col-md-4">
-                <label asp-for="Name" class="form-label mb-1"></label>
-                <input asp-for="Name" class="form-control"
-                       style="width: 100%; max-width: 300px;" 
-                       placeholder="Ex.: Plumber" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-
-            <!-- Desciprtion -->
-            <div class="mb-4">
-                <label asp-for="Description" class="form-label mb-1"></label>
-                <textarea asp-for="Description" class="form-control"
-                       rows="3"
-                       placeholder="Describe the role"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-
-
-            <!-- Department -->
-            <div class="d-flex justify-content-left mb-4">
-                <div>
-                    <label asp-for="DepartmentId" class="form-select-label mb-1">Deparment</label>
-                    <select asp-for="DepartmentId"
-                        asp-items="Model.Departments"
-                        class="form-select">
-                        <option value="">-- No department --</option>
-                    </select>
-                </div>
-
-
-            </div>
-
-            <!-- Actions -->
-            <div class="d-flex justify-content-end gap-2 border-top pt-3">
-                <a asp-action="Index" class="btn btn-outline-secondary">
-                    Cancel
-                </a>
-
-                <button type="submit" class="btn btn-primary">
-                    Add
-                </button>
-            </div>
-        </form>
+<div class="container py-4" style="max-width: 880px;">
+    <div class="mb-4">
+        <a asp-action="Index" class="d-inline-block small text-decoration-none mb-3">&larr; Back to job roles</a>
+        <h1 class="h3 fw-semibold mb-1">Create job role</h1>
+        <p class="text-muted mb-0">Define a position and optionally associate it with a department.</p>
     </div>
 
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
 
+        <section class="card border-0 shadow-sm mb-4" aria-labelledby="roleInfoHeading">
+            <div class="card-body p-4">
+                <h2 id="roleInfoHeading" class="h5 fw-semibold mb-1">Job role information</h2>
+                <p class="small text-muted mb-4">Provide a clear name and describe the responsibilities of the role.</p>
+
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label fw-medium">Role name</label>
+                    <input asp-for="Name" class="form-control" style="max-width: 430px;"
+                           placeholder="e.g. Plumber" autocomplete="off" />
+                    <span asp-validation-for="Name" class="text-danger small d-block mt-1"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Description" class="form-label fw-medium"></label>
+                    <textarea asp-for="Description" class="form-control" rows="4"
+                              placeholder="Describe the role's responsibilities"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small d-block mt-1"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="card border-0 shadow-sm mb-4" aria-labelledby="departmentHeading">
+            <div class="card-body p-4">
+                <h2 id="departmentHeading" class="h5 fw-semibold mb-1">Department assignment</h2>
+                <p class="small text-muted mb-3">Choose the department this role belongs to, or leave it unassigned for now.</p>
+
+                <div style="max-width: 430px;">
+                    <label asp-for="DepartmentId" class="form-label fw-medium">Department</label>
+                    <select asp-for="DepartmentId" asp-items="Model.Departments" class="form-select">
+                        <option value="">No department</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger small d-block mt-1"></span>
+                </div>
+            </div>
+        </section>
+
+        <div class="d-flex flex-column-reverse flex-sm-row justify-content-end gap-2 border-top pt-3 mb-4">
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Create job role</button>
+        </div>
+    </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

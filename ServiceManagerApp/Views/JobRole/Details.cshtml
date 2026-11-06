@@ -1,101 +1,133 @@
 ﻿@model ServiceManagerApp.Models.Entities.JobRole
-@* @using ServiceManagerApp.Models.Entities *@
-
 @{
     ViewData["Title"] = Model.Name;
+    var workerCount = Model.Workers?.Count ?? 0;
 }
 
-<!-- Page header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <a asp-action="Index" class="text-decoration-none">
-            &larr; Back to Job roles
-        </a>
-        
-        <h1 class="h3 mt-3 mb-0">
-            @Model.Name
-        </h1>
-
+<div class="container py-4" style="max-width: 960px;">
+    <div class="mb-4">
+        <a asp-action="Index" class="d-inline-block small text-decoration-none mb-3">&larr; Back to job roles</a>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-3">
+            <div>
+                <h1 class="h3 fw-semibold mb-1 text-break">@Model.Name</h1>
+                <p class="text-muted mb-0">Job role overview and assigned workers</p>
+            </div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary flex-shrink-0">Edit job role</a>
+        </div>
     </div>
 
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
-        Edit job role
-    </a>
-</div>
+    <section class="card border-0 shadow-sm mb-4" aria-labelledby="roleOverviewHeading">
+        <div class="card-header bg-white px-4 py-3">
+            <h2 id="roleOverviewHeading" class="h5 fw-semibold mb-0">Role information</h2>
+        </div>
+        <div class="card-body p-4">
+            <dl class="row g-4 mb-0">
+                <div class="col-12">
+                    <dt class="small text-muted fw-normal mb-1">Description</dt>
+                    <dd class="mb-0">
+                        @if (string.IsNullOrWhiteSpace(Model.Description))
+                        {
+                            <span class="text-muted fst-italic">No description has been added yet.</span>
+                        }
+                        else
+                        {
+                            <span style="white-space: pre-wrap;">@Model.Description</span>
+                        }
+                    </dd>
+                </div>
+                <div class="col-12">
+                    <dt class="small text-muted fw-normal mb-1">Department</dt>
+                    <dd class="mb-0 fw-semibold">
+                        @if (Model.Department == null)
+                        {
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary border">Not assigned</span>
+                        }
+                        else
+                        {
+                            <a asp-controller="Department" asp-action="Details" asp-route-id="@Model.Department.Id"
+                               class="text-decoration-none">@Model.Department.Name</a>
+                        }
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </section>
 
+    <section class="card border-0 shadow-sm mb-4" aria-labelledby="assignedWorkersHeading">
+        <div class="card-header bg-white px-4 py-3 d-flex align-items-center justify-content-between gap-3">
+            <div>
+                <h2 id="assignedWorkersHeading" class="h5 fw-semibold mb-1">Assigned workers</h2>
+                <p class="text-muted small mb-0">Workers currently associated with this role</p>
+            </div>
+            <span class="badge bg-light text-secondary border">@workerCount @(workerCount == 1 ? "worker" : "workers")</span>
+        </div>
 
-<!-- Job role information -->
-<section class="mb-4">
-    <h2 class="h5">Description:</h5>
-
-    <p class="text-muted">
-        @if(Model.Department == null)
+        @if (workerCount == 0)
         {
-            <text>This job role has not been assigned to any department.</text>
-        }
-        else
-        {
-            <text>Department: <strong> @Model.Department.Name </strong></text>
-        }
-       
-    </p>
-    <p class="text-muted">
-        @(string.IsNullOrWhiteSpace(Model.Description)
-            ? "No description provided." : Model.Description)
-    </p>
-</section>
-
-
-<!-- Assigned job role workers -->
-<section class="mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h5 mb-0">Workers</h2>
-
-        <span class="text-muted">
-            @Model.Workers.Count workers
-        </span>
-    </div>
-    <div>
-        @if (!Model.Workers.Any())
-        {
-            <div class="border rounded p-4 text-center">
-                <p class="text-muted mb-0">
-                    No workers assigned to this job role.
-                </p>
+            <div class="card-body text-center py-5">
+                <h3 class="h6 fw-semibold mb-2">No workers assigned</h3>
+                <p class="text-muted small mb-0">Workers assigned to this job role will appear here.</p>
             </div>
         }
         else
         {
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead  class="table-light">
-                        <th>Name</th>
-                        <th></th>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="ps-4 py-3">Worker name</th>
+                            <th scope="col" class="text-end pe-4 py-3">Action</th>
+                        </tr>
                     </thead>
                     <tbody>
-                        @foreach (var worker in Model.Workers)
+                        @foreach (var worker in Model.Workers.OrderBy(w => w.Name))
                         {
                             <tr>
-                                <td scope="col">worker.Name</td>
-                                <td scope="col">worker.Workers.Count</td>
+                                <th scope="row" class="ps-4 py-3 fw-semibold">@worker.Name</th>
+                                <td class="text-end pe-4 py-3">
+                                    <a asp-controller="Worker" asp-action="Details" asp-route-id="@worker.Id"
+                                       class="btn btn-sm btn-outline-primary">View worker</a>
+                                </td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
         }
-    </div>
+    </section>
 
-</section>
-
-    
-<!-- Destructiove actions -->
-<div class="d-flex justify-content-end mt-4">
-    <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
-        onsubmit="return confirm('Delete this job role?')">
-
-        <button type="submit" class="btn btn-outline-danger">
-            Delete department
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 border-top pt-4 mb-4">
+        <p class="text-muted small mb-0">Need to remove this job role?</p>
+        <button type="button" class="btn btn-outline-danger"
+                data-bs-toggle="modal" data-bs-target="#deleteJobRoleModal">
+            Delete job role
         </button>
-    </form>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteJobRoleModal" tabindex="-1"
+     aria-labelledby="deleteJobRoleTitle" aria-describedby="deleteJobRoleDescription" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="deleteJobRoleTitle" class="modal-title fs-5">Delete job role?</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteJobRoleDescription" class="mb-2">
+                    Are you sure you want to delete <strong>@Model.Name</strong>? This action cannot be undone.
+                </p>
+                @if (workerCount > 0)
+                {
+                    <p class="text-muted small mb-0">This role currently has @workerCount assigned @(workerCount == 1 ? "worker" : "workers"). Review those assignments before deleting.</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" asp-antiforgery="true" class="m-0">
+                    <button type="submit" class="btn btn-danger">Delete job role</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
