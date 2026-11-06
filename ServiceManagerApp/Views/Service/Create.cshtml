@@ -1,4 +1,5 @@
-﻿@model ServiceManagerApp.Models.ViewModels.Services.ServiceCreateViewModel
+﻿@using ServiceManagerApp.Models.Enums
+@model ServiceManagerApp.Models.ViewModels.Services.ServiceCreateViewModel
 
 @{
     ViewData["Title"] = "Add service";
@@ -12,18 +13,35 @@
     <div class="mb-4">
         <p class="text-muted small mb-1 text-uppercase">Service management</p>
         <h1 class="h3 mb-1">Add new service</h1>
-        <p class="text-muted mb-0">Enter the schedule, location, and other details for this service.</p>
+        @* <p class="text-muted mb-0">Enter the schedule, location, and other details for this service.</p> *@
     </div>
 
     <form asp-action="Create" method="post" asp-antiforgery="true">
         <div asp-validation-summary="ModelOnly" class="text-danger small mb-3" role="alert"></div>
 
+        <!-- Comments -->
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
-                <h2 class="h6 mb-1">Schedule</h2>
+                <label asp-for="Comments" class="form-label fw-semibold">Description</label>
+                <textarea asp-for="Comments" class="form-control" rows="3"
+                          placeholder="Fully discribe the service needed, instructions and useful details"></textarea>
+                <span asp-validation-for="Comments" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <!-- Location, Date and Time -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">Schedule and location</h2>
                 @* <p class="small text-muted mb-4">Set the due date and expected duration.</p> *@
 
                 <div class="row g-3">
+                    <div class="col-md-8 mb-3">
+                        <label asp-for="Location" class="form-label fw-semibold"></label>
+                        <input asp-for="Location" class="form-control" placeholder="Enter service location" />
+                        <span asp-validation-for="Location" class="text-danger small"></span>
+                    </div>
+
                     <div class="col-md-6">
                         <label asp-for="DueAtUtc" class="form-label fw-semibold">Due date</label>
                         <input asp-for="DueAtUtc" asp-format="{0:yyyy-MM-ddTHH:mm}"
@@ -33,19 +51,19 @@
 
                     <div class="col-md-6">
                         <fieldset>
-                            <legend class="form-label fw-semibold fs-6">Estimated duration</legend>
+                            <legend class="form-label fw-semibold fs-6 mb-0">Estimated duration</legend>
                             <div class="row g-2">
-                                <div class="col-6">
-                                    <label asp-for="DurationHours" class="form-label small text-muted">Hours</label>
+                                <div class="col-6 d-flex justify-content-between align-items-center gap-1">
                                     <input asp-for="DurationHours" type="number" min="0" step="1"
                                            class="form-control" placeholder="0" />
                                     <span asp-validation-for="DurationHours" class="text-danger small"></span>
+                                    <label asp-for="DurationHours" class="form-label small text-muted mb-0">Hours</label>
                                 </div>
-                                <div class="col-6">
-                                    <label asp-for="DurationMinutes" class="form-label small text-muted">Minutes</label>
+                                <div class="col-6 d-flex justify-content-between align-items-center gap-1">
                                     <input asp-for="DurationMinutes" type="number" min="0" max="59" step="15"
-                                           class="form-control" placeholder="0" aria-describedby="durationHelp" />
+                                           class="form-control py-1" placeholder="0" aria-describedby="durationHelp" />
                                     <span asp-validation-for="DurationMinutes" class="text-danger small"></span>
+                                    <label asp-for="DurationMinutes" class="form-label small text-muted mb-0">Minutes</label>
                                 </div>
                             </div>
                             @* <div id="durationHelp" class="form-text">Minutes in 15-minute increments (0, 15, 30, or 45).</div> *@
@@ -55,37 +73,68 @@
             </div>
         </div>
 
+        @* <!-- Workers and skill level -->
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
-                <h2 class="h6 mb-1">Service information</h2>
-                <p class="small text-muted mb-4">Specify where the work will happen and its expected cost.</p>
+                <h2 class="h6 mb-1">Assign workers</h2>
+                <p class="small text-muted mb-3">Select the workers who will carry out this service and choose skill level required for the service to complete.</p>
+
+                <div class="col-md-3 mb-3">
+                    <label asp-for="SkillLevel" class="form-label fw-semibold"></label>
+                    <select asp-for="SkillLevel" asp-items="Html.GetEnumSelectList<SkillLevel>()"
+                            class="form-select"></select>
+                    <span asp-validation-for="SkillLevel" class="text-danger small"></span>
+                </div>
+
+                @if (Model.Workers.Any())
+                {
+                    <fieldset>
+                        <legend class="visually-hidden">Workers to assign</legend>
+                        <div class="row g-2">
+                            @foreach (var worker in Model.Workers)
+                            {
+                                <div class="col-sm-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="form-check mb-0">
+                                            <input type="checkbox" class="form-check-input"
+                                                   name="WorkerIds" value="@worker.Id"
+                                                   id="worker_@worker.Id" checked="@worker.IsSelected" />
+                                            <label class="form-check-label" for="worker_@worker.Id">
+                                                <span class="fw-semibold d-block">@worker.Name</span>
+                                                <span class="small text-muted">@worker.SkillLevel</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </fieldset>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No workers are available to assign.</p>
+                }
+            </div>
+        </div> *@
+
+        <!-- Cost -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                @* <h2 class="h6 mb-1">Requirements and cost</h2>
+                <p class="small text-muted mb-4">Calculate estimated service cost.</p> *@
 
                 <div class="row g-3">
-                    <div class="col-md-8">
-                        <label asp-for="Location" class="form-label fw-semibold"></label>
-                        <input asp-for="Location" class="form-control" placeholder="e.g. Main office, second floor" />
-                        <span asp-validation-for="Location" class="text-danger small"></span>
-                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <label asp-for="Cost" class="form-label fw-semibold"></label>
-                        <input asp-for="Cost" type="number" min="0" step="any"
-                               class="form-control" placeholder="0.00" />
+                        <input asp-for="Cost" type="number" min="0" step="any" class="form-control" placeholder="0.00" />
                         <span asp-validation-for="Cost" class="text-danger small"></span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body p-4">
-                <h2 class="h6 mb-3">Additional notes</h2>
-                <label asp-for="Comments" class="form-label fw-semibold"></label>
-                <textarea asp-for="Comments" class="form-control" rows="3"
-                          placeholder="Add any instructions or other useful details"></textarea>
-                <span asp-validation-for="Comments" class="text-danger small"></span>
-            </div>
-        </div>
 
+        <!-- Actions -->
         <div class="d-flex flex-wrap justify-content-end gap-2">
             <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
             <button type="submit" class="btn btn-primary px-4">Add service</button>
