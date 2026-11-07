@@ -406,6 +406,8 @@ public class ServiceController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ReviewRejected(int? id)
     {
         if (id == null)
@@ -429,7 +431,6 @@ public class ServiceController : Controller
             serviceToReject.ServiceRequest.Status = ServiceRequestStatus.Rejected;
         }
 
-        //_context.Services.Remove(serviceToReject);
         await _context.SaveChangesAsync();
     
         return RedirectToAction(nameof(Index));
