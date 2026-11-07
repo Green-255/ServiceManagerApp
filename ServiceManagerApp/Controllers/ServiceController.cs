@@ -406,6 +406,35 @@ public class ServiceController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    public async Task<IActionResult> ReviewRejected(int? id)
+    {
+        if (id == null)
+        {
+            return BadRequest();
+        }
+
+        var serviceToReject = await _context.Services
+            .Include(s => s.ServiceRequest)
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (serviceToReject == null)
+        {
+            return NotFound();
+        }
+
+        serviceToReject.Status = ServiceStatus.Cancelled;
+
+        if(serviceToReject.ServiceRequest != null)
+        {
+            serviceToReject.ServiceRequest.Status = ServiceRequestStatus.Rejected;
+        }
+
+        //_context.Services.Remove(serviceToReject);
+        await _context.SaveChangesAsync();
+    
+        return RedirectToAction(nameof(Index));
+    }
+
 
     private async Task<ServiceReviewViewModel> PopulateServiceRequestReviewViewModel(Service service)
     {

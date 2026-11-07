@@ -141,9 +141,13 @@
         </div>
 
         <!-- Actions -->
-        <div class="d-flex flex-wrap justify-content-end align-items-center gap-2">
-            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary px-4">Accept service</button>
+        <div class="d-flex flex-wrap justify-content-between align-items-center ">
+            <a asp-action="ReviewRejected" asp-route-id="@Model.Id" class="btn btn-outline-danger">Reject service</a>
+            <div class="gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary px-4">Accept service</button>
+            </div>
+
         </div>
     </form>
 </div>
