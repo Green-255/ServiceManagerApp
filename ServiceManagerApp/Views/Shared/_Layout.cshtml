@@ -23,21 +23,40 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="ServiceRequest" asp-action="Index">Service requests</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Service" asp-action="Index">Services</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Worker" asp-action="Index">Workers</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="JobROle" asp-action="Index">Job roles</a>
-                        </li>
+                        @* @if (User.IsInRole(AppRoles.Customer) || User.IsInRole(AppRoles.Administrator)) *@
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="ServiceRequest" asp-action="Index">Service requests</a>
+                            </li>
+                        }
+                        @if (User.IsInRole(AppRoles.Worker) || User.IsInRole(AppRoles.Administrator))
+                        {
+                           <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Service" asp-action="Index">Services</a>
+                            </li>
+                        }
+                        
+                        @if (User.IsInRole(AppRoles.Worker) || User.IsInRole(AppRoles.Administrator))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Worker" asp-action="Index">Workers</a>
+                            </li>
+                        }
+                        
+                        @if (User.IsInRole(AppRoles.Administrator))
+                        {
+                           <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
+                            </li>
+                        }
+                        
+                        @if (User.IsInRole(AppRoles.Worker) || User.IsInRole(AppRoles.Administrator))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="JobROle" asp-action="Index">Job roles</a>
+                            </li>
+                        }
+                                
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
