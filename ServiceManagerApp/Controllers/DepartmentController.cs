@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.ViewModels.Departments;
 
+
 namespace ServiceManagerApp.Controllers
 {
+    [Authorize(Roles="Administrator,Worker")]
     public class DepartmentController : Controller
     {
         private readonly ApplicationDbContext _context;
