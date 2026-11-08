@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ServiceManagerApp.Authorization;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
@@ -11,15 +14,21 @@ namespace ServiceManagerApp.Controllers;
 public class ServiceRequestController : Controller
 {
     private readonly ApplicationDbContext _context;
-    public ServiceRequestController(ApplicationDbContext context)
+    private readonly UserManager<IdentityUser> _userManager;
+
+    public ServiceRequestController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        var userId = _userManager.GetUserId(User);
+
         var serviceRequests = await _context.ServiceRequests
+            .Where(sr => sr.CustomerUserId == userId)
             .OrderByDescending(sr => sr.CreatedAtUtc)
             .ToListAsync();
 
@@ -50,6 +59,7 @@ public class ServiceRequestController : Controller
         return View();
     }
 
+    [Authorize(Roles = AppRoles.Customer)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ServiceRequestCreateViewModel request)
@@ -67,7 +77,9 @@ public class ServiceRequestController : Controller
             Title           = request.Title,
             Description     = request.Description,
             RequestedDueUtc = request.RequestedDueUtc, // GetDateTimeType(request.DueAt)
-            CreatedAtUtc    = createdAtUtc
+            CreatedAtUtc    = createdAtUtc,
+
+            CustomerUserId = _userManager.GetUserId(User)
         };
 
         var newService = CreateServiceFromRequest(newRequest);
@@ -133,9 +145,13 @@ public class ServiceRequestController : Controller
         var serviceRequest = await _context.ServiceRequests.FindAsync(id);
 
         if (serviceRequest == null)
-        {
             return NotFound();
-        }
+
+        var userId = _userManager.GetUserId(User);
+        bool isAdmin = User.IsInRole(AppRoles.Administrator);
+        bool isOwner = serviceRequest.CustomerUserId == userId;
+        if (!isAdmin && !isOwner)
+            return Forbid(); // or NotFound() to avoid disclosing that another customer's record exists.
 
         var serviceRequestDetailsViewModel = new ServiceRequestDetailsViewModel
         {
