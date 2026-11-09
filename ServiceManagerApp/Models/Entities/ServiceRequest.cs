@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Enums;
 
 namespace ServiceManagerApp.Models.Entities
@@ -15,6 +16,6 @@ namespace ServiceManagerApp.Models.Entities
         public DateTime? RequestedDueUtc { get; set; }
 
         public string? CustomerUserId { get; set; }
-        public IdentityUser? CustomerUser { get; set; }
+        public ApplicationUser? CustomerUser { get; set; }
     }
 }

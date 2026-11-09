@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ServiceManagerApp.Models.Enums;
+using ServiceManagerApp.Data;
 
 namespace ServiceManagerApp.Models.Entities
 {
@@ -18,8 +19,7 @@ namespace ServiceManagerApp.Models.Entities
         public SkillLevel? SkillLevel { get; set; }
         public ICollection<Service> Services { get; set; } = [];
 
-
-        public string? IdentityUserId { get; set; }
-        public IdentityUser? IdentityUser { get; set; }
+        public string? ApplicationUserId { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; }
     }
 }
