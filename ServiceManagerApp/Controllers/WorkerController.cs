@@ -4,37 +4,58 @@ using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.ViewModels.Workers;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using ServiceManagerApp.Authorization;
 
-namespace ServiceManagerApp.Controllers
+namespace ServiceManagerApp.Controllers;
+
+[Authorize(Roles = AppRoles.Worker + "," + AppRoles.Administrator)]
+public class WorkerController : Controller
 {
-    public class WorkerController : Controller
+    private readonly ApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
+    public WorkerController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
-        private readonly ApplicationDbContext _context;
-        public WorkerController(ApplicationDbContext context)
+        _context = context;
+        _userManager = userManager;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var workersList = await _context.Workers
+            .Include(w => w.JobRole)
+            .Select(w => new WorkerIndexViewModel
         {
-            _context = context;
-        }
+            Id              = w.Id,
+            ReferenceNumber = w.ReferenceNumber,
+            Name            = w.Name,
+            AvailabilityStatus = w.AvailabilityStatus.ToString(),
+            JobRoleName = w.JobRole == null ? null : w.JobRole.Name,
+            SkillLevel = w.SkillLevel == null ? null : w.SkillLevel.ToString(),
+        })
+        .ToListAsync();
 
-        public async Task<IActionResult> Index()
+
+        return View(workersList);
+    }
+
+    public async Task<IActionResult> Create()
+    {
+        var workerVM = new WorkerCreateViewModel
         {
-            var workersList = await _context.Workers
-                .Include(w => w.JobRole)
-                .Select(w => new WorkerIndexViewModel
-            {
-                Id              = w.Id,
-                ReferenceNumber = w.ReferenceNumber,
-                Name            = w.Name,
-                AvailabilityStatus = w.AvailabilityStatus.ToString(),
-                JobRoleName = w.JobRole == null ? null : w.JobRole.Name,
-                SkillLevel = w.SkillLevel == null ? null : w.SkillLevel.ToString(),
-            })
-            .ToListAsync();
+            Departments = await PopulateDepartmentDropDownAsync(),
+            JobRoles = await PopulateJobRoleDropDownAsync(),
+        };
+
+        return View(workerVM);
+    }
 
 
-            return View(workersList);
-        }
-
-        public async Task<IActionResult> Create()
+    [HttpPost]
+    public async Task<IActionResult> Create(WorkerCreateViewModel newWorker)
+    {
+        if (!ModelState.IsValid)
         {
             var workerVM = new WorkerCreateViewModel
             {
@@ -46,204 +67,212 @@ namespace ServiceManagerApp.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<IActionResult> Create(WorkerCreateViewModel newWorker)
+        var workerToAdd = new Worker
         {
-            if (!ModelState.IsValid)
-            {
-                var workerVM = new WorkerCreateViewModel
-                {
-                    Departments = await PopulateDepartmentDropDownAsync(),
-                    JobRoles = await PopulateJobRoleDropDownAsync(),
-                };
+            Name = newWorker.Name,
+            PhoneNumber = newWorker.PhoneNumber,
+            Email = newWorker.Email,
+            DepartmentId = newWorker.DepartmentId,
+            JobRoleId = newWorker.JobRoleId,
+            SkillLevel = newWorker.SkillLevel,
+            AvailabilityStatus = newWorker.AvailabilityStatus,
 
-                return View(workerVM);
-            }
+        };
 
-            var workerToAdd = new Worker
-            {
-                Name = newWorker.Name,
-                PhoneNumber = newWorker.PhoneNumber,
-                Email = newWorker.Email,
-                DepartmentId = newWorker.DepartmentId,
-                JobRoleId = newWorker.JobRoleId,
-                SkillLevel = newWorker.SkillLevel,
-                AvailabilityStatus = newWorker.AvailabilityStatus,
-            };
+        //if (User.IsInRole(AppRoles.Worker))
+        //{
+        //    var userId = _userManager.GetUserId(User);
+        //    workerToAdd.ApplicationUserId = userId;
+        //}
 
-            await _context.AddAsync(workerToAdd);
-            await _context.SaveChangesAsync();
 
-            workerToAdd.ReferenceNumber =
-                GenerateWorkerReferenceNumber(workerToAdd.Id, workerToAdd.Department);
+        await _context.AddAsync(workerToAdd);
+        await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
+        workerToAdd.ReferenceNumber =
+            GenerateWorkerReferenceNumber(workerToAdd.Id, workerToAdd.Department);
 
-            return RedirectToAction(nameof(Index));
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<List<SelectListItem>> PopulateDepartmentDropDownAsync()
+    {
+        return await _context.Departments.Select(d => new SelectListItem
+        {
+            Value = d.Id.ToString(),
+            Text = d.Name
+        })
+        .ToListAsync();
+    }
+
+    public async Task<List<SelectListItem>> PopulateJobRoleDropDownAsync()
+    {
+        return await _context.JobRoles.Select(d => new SelectListItem
+        {
+            Value = d.Id.ToString(),
+            Text = d.Name
+        })
+        .ToListAsync();
+    }
+
+
+    private static string GenerateReferenceNumber(string tag, int id, string? middleTag = null)
+    {
+        middleTag = string.IsNullOrEmpty(middleTag) ? DateTime.UtcNow.Year.ToString() : middleTag;
+
+        return $"{tag}-{middleTag}-{id:D6}";
+    }
+
+    private static string GenerateWorkerReferenceNumber(int id, Department? department)
+    {
+        string name = department != null ? department.Name : "Unemployed";
+        // WIT = Worker Identity Tag
+        return GenerateReferenceNumber("WIT", id, name);
+    }
+
+
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null) {
+            return BadRequest();
         }
 
-        public async Task<List<SelectListItem>> PopulateDepartmentDropDownAsync()
-        {
-            return await _context.Departments.Select(d => new SelectListItem
-            {
-                Value = d.Id.ToString(),
-                Text = d.Name
-            })
-            .ToListAsync();
+        var workerToEdit = await _context.Workers.FindAsync(id);
+
+        if (workerToEdit == null) {
+            return NotFound();
         }
 
-        public async Task<List<SelectListItem>> PopulateJobRoleDropDownAsync()
+        if (!IsOwnerOrAdmin(workerToEdit.ApplicationUserId))
+            return Forbid();
+
+        var workerVM = new WorkerEditViewModel
         {
-            return await _context.JobRoles.Select(d => new SelectListItem
-            {
-                Value = d.Id.ToString(),
-                Text = d.Name
-            })
-            .ToListAsync();
-        }
+            Id = workerToEdit.Id,
+            ReferenceNumber = workerToEdit.ReferenceNumber,
+            Name = workerToEdit.Name,
+            PhoneNumber = workerToEdit.PhoneNumber,
+            Email = workerToEdit.Email,
+            Departments = await PopulateDepartmentDropDownAsync(),
+            JobRoles = await PopulateJobRoleDropDownAsync(),
+            SkillLevel = workerToEdit.SkillLevel,
+            AvailabilityStatus = workerToEdit.AvailabilityStatus,
+            //Services = workerToEdit.Services,
+        };
 
+        return View(workerVM);
+    }
 
-        private static string GenerateReferenceNumber(string tag, int id, string? middleTag = null)
+    [HttpPost]
+    public async Task<IActionResult> Edit(WorkerEditViewModel workerVM)
+    {
+        if (!ModelState.IsValid)
         {
-            middleTag = string.IsNullOrEmpty(middleTag) ? DateTime.UtcNow.Year.ToString() : middleTag;
-
-            return $"{tag}-{middleTag}-{id:D6}";
-        }
-
-        private static string GenerateWorkerReferenceNumber(int id, Department? department)
-        {
-            string name = department != null ? department.Name : "Unemployed";
-            // WIT = Worker Identity Tag
-            return GenerateReferenceNumber("WIT", id, name);
-        }
-
-
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) {
-                return BadRequest();
-            }
-
-            var workerToEdit = await _context.Workers.FindAsync(id);
-
-            if (workerToEdit == null) {
-                return NotFound();
-            }
-
-            var workerVM = new WorkerEditViewModel
-            {
-                Id = workerToEdit.Id,
-                ReferenceNumber = workerToEdit.ReferenceNumber,
-                Name = workerToEdit.Name,
-                PhoneNumber = workerToEdit.PhoneNumber,
-                Email = workerToEdit.Email,
-                Departments = await PopulateDepartmentDropDownAsync(),
-                JobRoles = await PopulateJobRoleDropDownAsync(),
-                SkillLevel = workerToEdit.SkillLevel,
-                AvailabilityStatus = workerToEdit.AvailabilityStatus,
-                //Services = workerToEdit.Services,
-            };
-
+            workerVM.Departments = await PopulateDepartmentDropDownAsync();
+            workerVM.JobRoles = await PopulateJobRoleDropDownAsync();
             return View(workerVM);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(WorkerEditViewModel workerVM)
+        var workerToEdit = await _context.Workers.FindAsync(workerVM.Id);
+
+        if (workerToEdit == null)
         {
-            if (!ModelState.IsValid)
-            {
-                workerVM.Departments = await PopulateDepartmentDropDownAsync();
-                workerVM.JobRoles = await PopulateJobRoleDropDownAsync();
-                return View(workerVM);
-            }
-
-            var workerToEdit = await _context.Workers.FindAsync(workerVM.Id);
-
-            if (workerToEdit == null)
-            {
-                return NotFound();
-            }
-
-            workerToEdit.Name = workerVM.Name;
-            workerToEdit.PhoneNumber = workerVM.PhoneNumber;
-            workerToEdit.Email = workerVM.Email;
-            workerToEdit.DepartmentId = workerVM.DepartmentId;
-            workerToEdit.JobRoleId = workerVM.JobRoleId;
-            workerToEdit.SkillLevel = workerVM.SkillLevel;
-            workerToEdit.AvailabilityStatus = workerVM.AvailabilityStatus;
-            //workerToEdit.Services = workerVM.Services;
-
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Details), new {id = workerToEdit.Id});
+            return NotFound();
         }
 
+        if (!IsOwnerOrAdmin(workerToEdit.ApplicationUserId))
+            return Forbid();
 
-        public async Task<IActionResult> Details(int? id)
+        workerToEdit.Name = workerVM.Name;
+        workerToEdit.PhoneNumber = workerVM.PhoneNumber;
+        workerToEdit.Email = workerVM.Email;
+        workerToEdit.DepartmentId = workerVM.DepartmentId;
+        workerToEdit.JobRoleId = workerVM.JobRoleId;
+        workerToEdit.SkillLevel = workerVM.SkillLevel;
+        workerToEdit.AvailabilityStatus = workerVM.AvailabilityStatus;
+        //workerToEdit.Services = workerVM.Services;
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Details), new {id = workerToEdit.Id});
+    }
+
+
+    public async Task<IActionResult> Details(int? id)
+    {
+        if (id == null)
+            return BadRequest();
+
+        var worker = await _context.Workers
+            .Include(w => w.Department)
+            .Include(w => w.JobRole)
+            .FirstOrDefaultAsync(w => w.Id == id);
+
+        if (worker == null)
+            return NotFound();
+
+        var workerVM = new WorkerViewModel
         {
-            if (id == null)
-            {
-                return BadRequest();
-            }
+            Id = worker.Id,
+            ReferenceNumber = worker.ReferenceNumber,
+            Name = worker.Name,
+            AvailabilityStatus = worker.AvailabilityStatus.ToString(),
+            PhoneNumber = worker.PhoneNumber,
+            Email = worker.Email,
+            DepartmentName = worker.Department?.Name,
+            JobRoleName = worker.JobRole?.Name,
+            SkillLevel = worker.SkillLevel.ToString(),
+            Services = worker.Services,
+        };
 
-            var worker = await _context.Workers
-                .Include(w => w.Department)
-                .Include(w => w.JobRole)
-                .FirstOrDefaultAsync(w => w.Id == id);
+        return View(workerVM);
+    }
 
-            if (worker == null)
-            {
-                return NotFound();
-            }
+    [HttpGet]
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if(id == null)
+            return BadRequest();
 
-            var workerVM = new WorkerViewModel
-            {
-                Id = worker.Id,
-                ReferenceNumber = worker.ReferenceNumber,
-                Name = worker.Name,
-                AvailabilityStatus = worker.AvailabilityStatus.ToString(),
-                PhoneNumber = worker.PhoneNumber,
-                Email = worker.Email,
-                DepartmentName = worker.Department?.Name,
-                JobRoleName = worker.JobRole?.Name,
-                SkillLevel = worker.SkillLevel.ToString(),
-                Services = worker.Services,
-            };
+        var worker = await _context.Workers.FindAsync(id);
 
-            return View(workerVM);
-        }
+        if (worker == null)
+            return NotFound();
 
-        [HttpGet]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if(id == null)
-            {
-                return BadRequest();
-            }
+        if (!IsOwnerOrAdmin(worker.ApplicationUserId))
+            return Forbid();
 
-            return View();
-        }
+        return View();
+    }
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var deletedRows = await _context.Workers.Where(w => w.Id == id).ExecuteDeleteAsync();
-            if (deletedRows == 0)
-            {
-                return NotFound();
-            }
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var workerToDetele = await _context.Workers.FindAsync(id);
+        if(workerToDetele == null) { return NotFound(); }
+        if (!IsOwnerOrAdmin(workerToDetele.ApplicationUserId))
+            return Forbid();
 
-            //var workerToDetele = _context.Workers.Find(id);
-            //if (workerToDetele == null)
-            //{
-            //    return NotFound();
-            //}
-            //_context.Workers.Remove(workerToDetele);
-            //await _context.SaveChangesAsync();
+        //var deletedRows = await _context.Workers.Where(w => w.Id == id).ExecuteDeleteAsync();
+        //if (deletedRows == 0)
+        //{
+        //    return NotFound();
+        //}
 
-            //retu1`rn Ok(deletedRows);
-            return RedirectToAction(nameof(Index));
-        }
+        _context.Workers.Remove(workerToDetele);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    private bool IsOwnerOrAdmin(string? ownerId)
+    {
+        var userId = _userManager.GetUserId(User);
+        bool isAdmin = User.IsInRole(AppRoles.Administrator);
+        bool isOwner = ownerId == userId;
+        return isAdmin | isOwner;
     }
 }

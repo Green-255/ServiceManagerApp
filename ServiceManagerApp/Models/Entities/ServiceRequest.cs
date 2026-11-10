@@ -1,4 +1,6 @@
-﻿using ServiceManagerApp.Models.Enums;
+﻿using Microsoft.AspNetCore.Identity;
+using ServiceManagerApp.Data;
+using ServiceManagerApp.Models.Enums;
 
 namespace ServiceManagerApp.Models.Entities
 {
@@ -12,5 +14,8 @@ namespace ServiceManagerApp.Models.Entities
         public ServiceRequestStatus Status { get; set; } = ServiceRequestStatus.Pending;
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
         public DateTime? RequestedDueUtc { get; set; }
+
+        public string? CustomerUserId { get; set; }
+        public ApplicationUser? CustomerUser { get; set; }
     }
 }

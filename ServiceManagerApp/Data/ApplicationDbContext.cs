@@ -5,7 +5,7 @@ using ServiceManagerApp.Models.Entities;
 
 namespace ServiceManagerApp.Data
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
         public DbSet<ServiceRequest> ServiceRequests { get; set; } = default!;
         public DbSet<Service> Services { get; set; } = default!;
@@ -26,6 +26,12 @@ namespace ServiceManagerApp.Data
                 .HasOne(jr => jr.Department)
                 .WithMany(d => d.JobRoles)
                 .HasForeignKey(jr => jr.DepartmentId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<Worker>()
+                .HasOne(w => w.ApplicationUser)
+                .WithOne()
+                .HasForeignKey<Worker>(w => w.ApplicationUserId)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }
