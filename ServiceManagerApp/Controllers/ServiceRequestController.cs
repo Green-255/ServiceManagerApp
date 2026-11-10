@@ -11,6 +11,7 @@ using System.Net;
 
 namespace ServiceManagerApp.Controllers;
 
+[Authorize(Roles = AppRoles.Customer + "," + AppRoles.Administrator)]
 public class ServiceRequestController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -54,22 +55,20 @@ public class ServiceRequestController : Controller
     }
 
     [HttpGet]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create()
     {
         return View();
     }
 
-    [Authorize(Roles = AppRoles.Customer)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ServiceRequestCreateViewModel request)
     {
-        var createdAtUtc = DateTime.UtcNow;
-        
         if (!ModelState.IsValid)
-        {
             return View(request);
-        }
+        
+        var createdAtUtc = DateTime.UtcNow;
 
         var newRequest = new ServiceRequest
         {
@@ -93,11 +92,6 @@ public class ServiceRequestController : Controller
         newService.ReferenceNumber = GenerateServiceReferenceNumber(newService.Id);
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index));
-    }
-
-    public async Task<IActionResult> Cancel()
-    {
         return RedirectToAction(nameof(Index));
     }
 
@@ -136,7 +130,6 @@ public class ServiceRequestController : Controller
     {
         // REQ = Request
         return GenerateReferenceNumber("REQ", id);
-
     }
 
     [HttpGet]
@@ -147,10 +140,7 @@ public class ServiceRequestController : Controller
         if (serviceRequest == null)
             return NotFound();
 
-        var userId = _userManager.GetUserId(User);
-        bool isAdmin = User.IsInRole(AppRoles.Administrator);
-        bool isOwner = serviceRequest.CustomerUserId == userId;
-        if (!isAdmin && !isOwner)
+        if (IsOwnerOrAdmin(serviceRequest.CustomerUserId))
             return Forbid(); // or NotFound() to avoid disclosing that another customer's record exists.
 
         var serviceRequestDetailsViewModel = new ServiceRequestDetailsViewModel
@@ -171,16 +161,12 @@ public class ServiceRequestController : Controller
     public async Task<IActionResult> Delete (int? id)
     {
         if (id == null)
-        {
             return BadRequest();
-        }
 
         var serviceRequest = await _context.ServiceRequests.FindAsync(id);
 
         if (serviceRequest == null)
-        {
             return NotFound();
-        }
 
         return View(serviceRequest);
     }
@@ -189,13 +175,15 @@ public class ServiceRequestController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        //var serviceRequestToDetele = await _context.ServiceRequests.FindAsync(id);
-        var serviceRequestToDetele = _context.ServiceRequests.Find(id);
+        var serviceRequestToDetele = await _context.ServiceRequests.FindAsync(id);
+
         if (serviceRequestToDetele == null)
-        {
             return NotFound();
             //return RedirectToAction(nameof(Index));
-        }
+
+        if (IsOwnerOrAdmin(serviceRequestToDetele.CustomerUserId))
+            return Forbid();
+
         _context.ServiceRequests.Remove(serviceRequestToDetele);
         await _context.SaveChangesAsync();
 
@@ -207,9 +195,11 @@ public class ServiceRequestController : Controller
     {
         var serviceRequest = await _context.ServiceRequests.FindAsync(id);
         if (serviceRequest == null)
-        {
             return NotFound();
-        }
+
+        if (IsOwnerOrAdmin(serviceRequest.CustomerUserId))
+            return Forbid();
+
         var serviceRequestEditViewModel = new ServiceRequestEditViewModel
         {
             Id                 = serviceRequest.Id,
@@ -228,15 +218,14 @@ public class ServiceRequestController : Controller
     public async Task<IActionResult> Edit (ServiceRequestEditViewModel newRequest)
     {
         if (!ModelState.IsValid)
-        {
             return View(newRequest);
-        }
 
         var requestToUpdate = await _context.ServiceRequests.FindAsync(newRequest.Id);
         if (requestToUpdate == null)
-        {
             return NotFound();
-        }
+
+        if (IsOwnerOrAdmin(requestToUpdate.CustomerUserId))
+            return Forbid();
 
         requestToUpdate.ServiceRequestType = newRequest.ServiceRequestType;
         requestToUpdate.Title              = newRequest.Title;
@@ -248,4 +237,11 @@ public class ServiceRequestController : Controller
         return RedirectToAction(nameof(Details), new {id = requestToUpdate.Id});
     }
 
+    private bool IsOwnerOrAdmin(string? CustomerId)
+    {
+        var userId = _userManager.GetUserId(User);
+        bool IsOwner = CustomerId == userId;
+        bool IsAdmin = User.IsInRole(AppRoles.Administrator);
+        return !IsOwner && !IsAdmin;
+    }
 }
