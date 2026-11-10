@@ -140,7 +140,7 @@ public class ServiceRequestController : Controller
         if (serviceRequest == null)
             return NotFound();
 
-        if (IsOwnerOrAdmin(serviceRequest.CustomerUserId))
+        if (!IsOwnerOrAdmin(serviceRequest.CustomerUserId))
             return Forbid(); // or NotFound() to avoid disclosing that another customer's record exists.
 
         var serviceRequestDetailsViewModel = new ServiceRequestDetailsViewModel
@@ -168,6 +168,9 @@ public class ServiceRequestController : Controller
         if (serviceRequest == null)
             return NotFound();
 
+        if (!IsOwnerOrAdmin(serviceRequest.CustomerUserId))
+            return Forbid();
+
         return View(serviceRequest);
     }
 
@@ -181,7 +184,7 @@ public class ServiceRequestController : Controller
             return NotFound();
             //return RedirectToAction(nameof(Index));
 
-        if (IsOwnerOrAdmin(serviceRequestToDetele.CustomerUserId))
+        if (!IsOwnerOrAdmin(serviceRequestToDetele.CustomerUserId))
             return Forbid();
 
         _context.ServiceRequests.Remove(serviceRequestToDetele);
@@ -197,7 +200,7 @@ public class ServiceRequestController : Controller
         if (serviceRequest == null)
             return NotFound();
 
-        if (IsOwnerOrAdmin(serviceRequest.CustomerUserId))
+        if (!IsOwnerOrAdmin(serviceRequest.CustomerUserId))
             return Forbid();
 
         var serviceRequestEditViewModel = new ServiceRequestEditViewModel
@@ -224,7 +227,7 @@ public class ServiceRequestController : Controller
         if (requestToUpdate == null)
             return NotFound();
 
-        if (IsOwnerOrAdmin(requestToUpdate.CustomerUserId))
+        if (!IsOwnerOrAdmin(requestToUpdate.CustomerUserId))
             return Forbid();
 
         requestToUpdate.ServiceRequestType = newRequest.ServiceRequestType;
@@ -242,6 +245,6 @@ public class ServiceRequestController : Controller
         var userId = _userManager.GetUserId(User);
         bool IsOwner = CustomerId == userId;
         bool IsAdmin = User.IsInRole(AppRoles.Administrator);
-        return !IsOwner && !IsAdmin;
+        return IsOwner || IsAdmin;
     }
 }

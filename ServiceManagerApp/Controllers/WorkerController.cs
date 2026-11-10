@@ -66,6 +66,7 @@ public class WorkerController : Controller
             return View(workerVM);
         }
 
+
         var workerToAdd = new Worker
         {
             Name = newWorker.Name,
@@ -75,7 +76,15 @@ public class WorkerController : Controller
             JobRoleId = newWorker.JobRoleId,
             SkillLevel = newWorker.SkillLevel,
             AvailabilityStatus = newWorker.AvailabilityStatus,
+
         };
+
+        //if (User.IsInRole(AppRoles.Worker))
+        //{
+        //    var userId = _userManager.GetUserId(User);
+        //    workerToAdd.ApplicationUserId = userId;
+        //}
+
 
         await _context.AddAsync(workerToAdd);
         await _context.SaveChangesAsync();
@@ -136,6 +145,9 @@ public class WorkerController : Controller
             return NotFound();
         }
 
+        if (!IsOwnerOrAdmin(workerToEdit.ApplicationUserId))
+            return Forbid();
+
         var workerVM = new WorkerEditViewModel
         {
             Id = workerToEdit.Id,
@@ -170,6 +182,9 @@ public class WorkerController : Controller
             return NotFound();
         }
 
+        if (!IsOwnerOrAdmin(workerToEdit.ApplicationUserId))
+            return Forbid();
+
         workerToEdit.Name = workerVM.Name;
         workerToEdit.PhoneNumber = workerVM.PhoneNumber;
         workerToEdit.Email = workerVM.Email;
@@ -188,9 +203,7 @@ public class WorkerController : Controller
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
-        {
             return BadRequest();
-        }
 
         var worker = await _context.Workers
             .Include(w => w.Department)
@@ -198,9 +211,7 @@ public class WorkerController : Controller
             .FirstOrDefaultAsync(w => w.Id == id);
 
         if (worker == null)
-        {
             return NotFound();
-        }
 
         var workerVM = new WorkerViewModel
         {
@@ -225,6 +236,14 @@ public class WorkerController : Controller
         if(id == null)
             return BadRequest();
 
+        var worker = await _context.Workers.FindAsync(id);
+
+        if (worker == null)
+            return NotFound();
+
+        if (!IsOwnerOrAdmin(worker.ApplicationUserId))
+            return Forbid();
+
         return View();
     }
 
@@ -234,7 +253,7 @@ public class WorkerController : Controller
     {
         var workerToDetele = await _context.Workers.FindAsync(id);
         if(workerToDetele == null) { return NotFound(); }
-        if (IsOwnerOrAdmin(workerToDetele.ApplicationUserId))
+        if (!IsOwnerOrAdmin(workerToDetele.ApplicationUserId))
             return Forbid();
 
         //var deletedRows = await _context.Workers.Where(w => w.Id == id).ExecuteDeleteAsync();
@@ -254,6 +273,6 @@ public class WorkerController : Controller
         var userId = _userManager.GetUserId(User);
         bool isAdmin = User.IsInRole(AppRoles.Administrator);
         bool isOwner = ownerId == userId;
-        return !isAdmin &&  isOwner;
+        return isAdmin | isOwner;
     }
 }
