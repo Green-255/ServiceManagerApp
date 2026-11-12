@@ -42,6 +42,17 @@ public class WorkerController : Controller
 
     public async Task<IActionResult> Create()
     {
+        var userId = _userManager.GetUserId(User);
+        var existingWorker = await _context.Workers.FirstOrDefaultAsync(w => w.ApplicationUserId == userId);
+        if (existingWorker != null)
+        {
+            TempData["Info"] = "You already have a Worker profile.";
+
+            return RedirectToAction(
+                nameof(Details),
+                new { id = existingWorker.Id });
+        }
+
         var workerVM = new WorkerCreateViewModel
         {
             Departments = await PopulateDepartmentDropDownAsync(),
@@ -66,6 +77,29 @@ public class WorkerController : Controller
             return View(workerVM);
         }
 
+        var userId = _userManager.GetUserId(User);
+
+        if (userId == null)
+            return Challenge(); ///// dont know that is wha ??@
+
+        bool exists = await _context.Workers
+            .AnyAsync(w => w.ApplicationUserId == userId);
+
+        if (exists)
+        {
+            ModelState.AddModelError(
+                "",
+                "Your account already has a Worker profile.");
+
+            var workerVM = new WorkerCreateViewModel
+            {
+                Departments = await PopulateDepartmentDropDownAsync(),
+                JobRoles = await PopulateJobRoleDropDownAsync(),
+            };
+
+            return View(workerVM);
+        }
+
 
         var workerToAdd = new Worker
         {
@@ -77,14 +111,8 @@ public class WorkerController : Controller
             SkillLevel = newWorker.SkillLevel,
             AvailabilityStatus = newWorker.AvailabilityStatus,
 
+            ApplicationUserId = User.IsInRole(AppRoles.Worker) ? userId : null,
         };
-
-        //if (User.IsInRole(AppRoles.Worker))
-        //{
-        //    var userId = _userManager.GetUserId(User);
-        //    workerToAdd.ApplicationUserId = userId;
-        //}
-
 
         await _context.AddAsync(workerToAdd);
         await _context.SaveChangesAsync();
