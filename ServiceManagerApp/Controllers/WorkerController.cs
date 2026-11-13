@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using ServiceManagerApp.Authorization;
 using ServiceManagerApp.Services.Interfaces;
+using ServiceManagerApp.Services.Utilities;
 
 namespace ServiceManagerApp.Controllers;
 
@@ -121,27 +122,12 @@ public class WorkerController : Controller
         await _context.AddAsync(workerToAdd);
         await _context.SaveChangesAsync();
 
-        workerToAdd.ReferenceNumber =
-            GenerateWorkerReferenceNumber(workerToAdd.Id, workerToAdd.Department);
+        string middleTag = workerToAdd.Department != null ? workerToAdd.Department.Name : "Unemployed";
+        workerToAdd.ReferenceNumber = ReferenceNumberGenerator.Generate("WIT", workerToAdd.Id, middleTag);
 
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
-    }    
-
-
-    private static string GenerateReferenceNumber(string tag, int id, string? middleTag = null)
-    {
-        middleTag = string.IsNullOrEmpty(middleTag) ? DateTime.UtcNow.Year.ToString() : middleTag;
-
-        return $"{tag}-{middleTag}-{id:D6}";
-    }
-
-    private static string GenerateWorkerReferenceNumber(int id, Department? department)
-    {
-        string name = department != null ? department.Name : "Unemployed";
-        // WIT = Worker Identity Tag
-        return GenerateReferenceNumber("WIT", id, name);
     }
 
 
