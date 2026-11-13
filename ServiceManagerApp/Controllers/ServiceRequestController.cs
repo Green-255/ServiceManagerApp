@@ -28,16 +28,20 @@ public class ServiceRequestController : Controller
     {
         var userId = _userManager.GetUserId(User);
 
-        var serviceRequests = await _context.ServiceRequests
-            .Where(sr => sr.CustomerUserId == userId)
-            .OrderByDescending(sr => sr.CreatedAtUtc)
-            .ToListAsync();
+        IQueryable<ServiceRequest> query = _context.ServiceRequests.AsNoTracking();
 
-        var serviceRequestsList = new List<ServiceRequestIndexViewModel>();
-
-        foreach (var sr in serviceRequests)
+        if (User.IsInRole(AppRoles.Customer) && userId != null)
         {
-            var srViewModel = new ServiceRequestIndexViewModel
+            query = query.Where(sr => sr.CustomerUserId == userId);
+        }
+        else if (!User.IsInRole(AppRoles.Administrator))
+        {
+            return View(new List<ServiceRequestIndexViewModel>());
+        }
+
+        var serviceRequestsList = await query
+            .OrderByDescending(sr => sr.CreatedAtUtc)
+            .Select(sr => new ServiceRequestIndexViewModel
             {
                 Id = sr.Id,
                 ServiceRequestType = sr.ServiceRequestType,
@@ -45,11 +49,8 @@ public class ServiceRequestController : Controller
                 Description = sr.Description,
                 Status = sr.Status,
                 RequestedDueUtc = sr.RequestedDueUtc,
-                ReferenceNumber = sr.ReferenceNumber
-            };
-
-            serviceRequestsList.Add(srViewModel);
-        };
+            })
+            .ToListAsync();
 
         return View(serviceRequestsList);
     }
