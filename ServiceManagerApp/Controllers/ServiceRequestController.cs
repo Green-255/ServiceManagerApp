@@ -8,6 +8,8 @@ using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.ServiceRequests;
 using System.Net;
+using ServiceManagerApp.Services.Utilities;
+
 
 namespace ServiceManagerApp.Controllers;
 
@@ -44,6 +46,7 @@ public class ServiceRequestController : Controller
             .Select(sr => new ServiceRequestIndexViewModel
             {
                 Id = sr.Id,
+                ReferenceNumber = sr.ReferenceNumber,
                 ServiceRequestType = sr.ServiceRequestType,
                 Title = sr.Title,
                 Description = sr.Description,
@@ -89,8 +92,8 @@ public class ServiceRequestController : Controller
 
         await _context.SaveChangesAsync();
         
-        newRequest.ReferenceNumber = GenerateServiceRequestReferenceNumber(newRequest.Id);
-        newService.ReferenceNumber = GenerateServiceReferenceNumber(newService.Id);
+        newRequest.ReferenceNumber = ReferenceNumberGenerator.Generate("REQ", newRequest.Id);
+        newService.ReferenceNumber = ReferenceNumberGenerator.Generate("WO", newService.Id);
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
@@ -116,22 +119,6 @@ public class ServiceRequestController : Controller
         return newService;
     }
 
-    private static string GenerateReferenceNumber(string tag, int id)
-    {
-        return $"{tag}-{DateTime.UtcNow.Year}-{id:D6}";
-    }
-
-    private static string GenerateServiceReferenceNumber(int id)
-    {
-        // WO = Work Order
-        return GenerateReferenceNumber("WO", id);
-    }
-
-    private static string GenerateServiceRequestReferenceNumber(int id)
-    {
-        // REQ = Request
-        return GenerateReferenceNumber("REQ", id);
-    }
 
     [HttpGet]
     public async Task<IActionResult> Details(int id)

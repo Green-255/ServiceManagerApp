@@ -8,17 +8,17 @@ using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.Services;
 using ServiceManagerApp.Models.ViewModels.Services.Review;
 using System;
+using ServiceManagerApp.Services.Utilities;
 
 namespace ServiceManagerApp.Controllers;
 public class ServiceController : Controller
 {
     private readonly ApplicationDbContext _context;
-
     private static readonly ServiceStatus[] UnreviewedStatuses =
-    {
-        ServiceStatus.NeedsReview,
-        ServiceStatus.Draft,
-    };
+        {
+            ServiceStatus.NeedsReview,
+            ServiceStatus.Draft,
+        };
 
     public ServiceController(ApplicationDbContext context)
     {
@@ -53,6 +53,8 @@ public class ServiceController : Controller
                 needReviewServices.Add(s);
             }
         }
+
+
 
         // WHICH APPROACH IS BETTER?
 
@@ -116,7 +118,7 @@ public class ServiceController : Controller
             ServiceRequestType = newService.ServiceRequestType,
             Status = ServiceStatus.NeedsReview,
             DueAtUtc = newService.DueAtUtc,
-            Duration = CalculateDuration(newService.DurationHours, newService.DurationMinutes),
+            Duration = DateTimeHelper.CalculateDuration(newService.DurationHours, newService.DurationMinutes),
             Location = newService.Location,
             //Workers = await GetWorkers(newService.WorkersIds),
             Comments = ParseComments(newService.Comments),
@@ -126,33 +128,12 @@ public class ServiceController : Controller
         _context.Services.Add(serviceToAdd);
         await _context.SaveChangesAsync();
 
-        serviceToAdd.ReferenceNumber = GenerateServiceReferenceNumber(serviceToAdd.Id);
+        serviceToAdd.ReferenceNumber = ReferenceNumberGenerator.Generate("WO", serviceToAdd.Id);
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
     }
 
-    private static string GenerateReferenceNumber(string tag, int id)
-    {
-        return $"{tag}-{DateTime.UtcNow.Year}-{id:D6}";
-    }
-
-    private static string GenerateServiceReferenceNumber(int id)
-    {
-        // WO = Work Order
-        return GenerateReferenceNumber("WO", id);
-    }
-
-    private TimeSpan CalculateDuration(int? hours, int? minutes)
-    {
-        int totalMinutes = (hours ?? 0) * 60 + (minutes ?? 0);
-        return TimeSpan.FromMinutes(totalMinutes);
-    }
-
-    private int GetMinutesFromTimeSpan(TimeSpan? duration)
-    {
-        return duration == null ? 0 : (int) duration.Value.TotalMinutes;
-    }
 
     public async Task<IActionResult> Edit(int id)
     {
@@ -225,7 +206,8 @@ public class ServiceController : Controller
         serviceToUpdate.ServiceRequestType = serviceEdited.ServiceRequestType;
         serviceToUpdate.Status = serviceEdited.Status;
         serviceToUpdate.DueAtUtc = serviceEdited.DueAtUtc;
-        serviceToUpdate.Duration = CalculateDuration(serviceEdited.DurationHours, serviceEdited.DurationMinutes);
+        serviceToUpdate.Duration = DateTimeHelper.CalculateDuration(
+            serviceEdited.DurationHours, serviceEdited.DurationMinutes);
         serviceToUpdate.Location = serviceEdited.Location;
         serviceToUpdate.Workers = workers;
         serviceToUpdate.Comments = serviceEdited.Comments;
@@ -234,13 +216,6 @@ public class ServiceController : Controller
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Details), new {id = serviceToUpdate.Id});
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> NeedsReview()
-    {
-        var serviceList = await PopulateServicesFromRequests();
-        return View(serviceList);
     }
 
     [HttpPost]
@@ -263,19 +238,6 @@ public class ServiceController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task<List<Service>> PopulateServicesFromRequests()
-    {
-        return await _context.Services
-            .Where(s => UnreviewedStatuses.Contains(s.Status))
-            .ToListAsync();
-    }
-
-    private async Task<List<Service>> PopulateServicesInProgress()
-    {
-        return await _context.Services
-            .Where(s => s.Status == ServiceStatus.InProgress)
-            .ToListAsync();
-    }
 
     private string[] ParseComments(string commentsToParse)
     {
@@ -389,7 +351,7 @@ public class ServiceController : Controller
 
         service.ServiceRequestType = serviceVM.ServiceRequestType;
         service.DueAtUtc = serviceVM.DueAtUtc;
-        service.Duration = CalculateDuration(serviceVM.DurationHours, serviceVM.DurationMinutes);
+        service.Duration = DateTimeHelper.CalculateDuration(serviceVM.DurationHours, serviceVM.DurationMinutes);
         service.Location = serviceVM.Location;
         service.SkillLevel = serviceVM.SkillLevel;
         service.Comments = serviceVM.Comments;
@@ -450,7 +412,7 @@ public class ServiceController : Controller
             })
             .ToListAsync();
 
-        int minutes = GetMinutesFromTimeSpan(service.Duration);
+        int minutes = DateTimeHelper.GetMinutesFromTimeSpan(service.Duration);
 
         var serviceVM = new ServiceReviewViewModel
         {
