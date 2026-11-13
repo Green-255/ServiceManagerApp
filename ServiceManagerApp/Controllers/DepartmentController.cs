@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.ViewModels.Departments;
+using ServiceManagerApp.Services.Interfaces;
 
 
 namespace ServiceManagerApp.Controllers
@@ -13,10 +14,12 @@ namespace ServiceManagerApp.Controllers
     public class DepartmentController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly LookupService _lookupService;
 
-        public DepartmentController(ApplicationDbContext context)
+        public DepartmentController(ApplicationDbContext context, LookupService lookupService)
         {
             _context = context;
+            _lookupService = lookupService;
         }
 
         public async Task<IActionResult> Index()
@@ -29,7 +32,7 @@ namespace ServiceManagerApp.Controllers
         {
             var viewModel = new DepartmentCreateEditViewModel
             {
-                JobRoles = await GetJobRoleCheckboxesAsync(),
+                JobRoles = await _lookupService.GetJobRoleCheckboxesAsync(),
             };
 
             return View(viewModel);
@@ -40,7 +43,7 @@ namespace ServiceManagerApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                viewModel.JobRoles = await GetJobRoleCheckboxesAsync(viewModel.Id, viewModel.JobRoleIds);
+                viewModel.JobRoles = await _lookupService.GetJobRoleCheckboxesAsync(viewModel.Id, viewModel.JobRoleIds);
                 return View(viewModel);
             }
 
@@ -114,7 +117,7 @@ namespace ServiceManagerApp.Controllers
                 Name = department.Name,
                 Description = department.Description,
                 JobRoleIds = jobRoleIds,
-                JobRoles = await GetJobRoleCheckboxesAsync(department.Id, selectedIds),
+                JobRoles = await _lookupService.GetJobRoleCheckboxesAsync(department.Id, selectedIds),
             };
 
             return View(viewModel);
@@ -177,23 +180,6 @@ namespace ServiceManagerApp.Controllers
             }
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private async Task<List<JobRoleCheckboxViewModel>> GetJobRoleCheckboxesAsync(
-            int? id = null,
-            List<int>? selectedJobRoleIds = null)
-        {
-            selectedJobRoleIds ??= [];
-
-            return await _context.JobRoles
-                .Where(jr => jr.DepartmentId == null || jr.DepartmentId == id)
-                .Select(jr => new JobRoleCheckboxViewModel
-                {
-                    Id = jr.Id,
-                    Name = jr.Name,
-                    IsSelected = selectedJobRoleIds.Contains(jr.Id)
-                })
-                .ToListAsync();
         }
 
     }
