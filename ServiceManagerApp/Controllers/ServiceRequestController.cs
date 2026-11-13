@@ -44,6 +44,7 @@ public class ServiceRequestController : Controller
             .Select(sr => new ServiceRequestIndexViewModel
             {
                 Id = sr.Id,
+                ReferenceNumber = sr.ReferenceNumber,
                 ServiceRequestType = sr.ServiceRequestType,
                 Title = sr.Title,
                 Description = sr.Description,

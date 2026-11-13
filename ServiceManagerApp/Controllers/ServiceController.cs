@@ -13,12 +13,11 @@ namespace ServiceManagerApp.Controllers;
 public class ServiceController : Controller
 {
     private readonly ApplicationDbContext _context;
-
     private static readonly ServiceStatus[] UnreviewedStatuses =
-    {
-        ServiceStatus.NeedsReview,
-        ServiceStatus.Draft,
-    };
+        {
+            ServiceStatus.NeedsReview,
+            ServiceStatus.Draft,
+        };
 
     public ServiceController(ApplicationDbContext context)
     {
@@ -53,6 +52,8 @@ public class ServiceController : Controller
                 needReviewServices.Add(s);
             }
         }
+
+
 
         // WHICH APPROACH IS BETTER?
 
@@ -236,13 +237,6 @@ public class ServiceController : Controller
         return RedirectToAction(nameof(Details), new {id = serviceToUpdate.Id});
     }
 
-    [HttpGet]
-    public async Task<IActionResult> NeedsReview()
-    {
-        var serviceList = await PopulateServicesFromRequests();
-        return View(serviceList);
-    }
-
     [HttpPost]
     public async Task<IActionResult> delete(int? id)
     {
@@ -263,19 +257,6 @@ public class ServiceController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task<List<Service>> PopulateServicesFromRequests()
-    {
-        return await _context.Services
-            .Where(s => UnreviewedStatuses.Contains(s.Status))
-            .ToListAsync();
-    }
-
-    private async Task<List<Service>> PopulateServicesInProgress()
-    {
-        return await _context.Services
-            .Where(s => s.Status == ServiceStatus.InProgress)
-            .ToListAsync();
-    }
 
     private string[] ParseComments(string commentsToParse)
     {

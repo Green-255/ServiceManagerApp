@@ -7,6 +7,7 @@ using ServiceManagerApp.Models.ViewModels.Workers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using ServiceManagerApp.Authorization;
+using ServiceManagerApp.Services.Interfaces;
 
 namespace ServiceManagerApp.Controllers;
 
@@ -15,10 +16,13 @@ public class WorkerController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
-    public WorkerController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    private readonly LookupService _lookupService;
+    public WorkerController(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+        LookupService lookupService)
     {
         _context = context;
         _userManager = userManager;
+        _lookupService = lookupService;
     }
 
     public async Task<IActionResult> Index()
@@ -55,8 +59,8 @@ public class WorkerController : Controller
 
         var workerVM = new WorkerCreateViewModel
         {
-            Departments = await PopulateDepartmentDropDownAsync(),
-            JobRoles = await PopulateJobRoleDropDownAsync(),
+            Departments = await _lookupService.PopulateDepartmentDropDownAsync(),
+            JobRoles = await _lookupService.PopulateJobRoleDropDownAsync(),
         };
 
         return View(workerVM);
@@ -70,8 +74,8 @@ public class WorkerController : Controller
         {
             var workerVM = new WorkerCreateViewModel
             {
-                Departments = await PopulateDepartmentDropDownAsync(),
-                JobRoles = await PopulateJobRoleDropDownAsync(),
+                Departments = await _lookupService.PopulateDepartmentDropDownAsync(),
+                JobRoles = await _lookupService.PopulateJobRoleDropDownAsync(),
             };
 
             return View(workerVM);
@@ -93,8 +97,8 @@ public class WorkerController : Controller
 
             var workerVM = new WorkerCreateViewModel
             {
-                Departments = await PopulateDepartmentDropDownAsync(),
-                JobRoles = await PopulateJobRoleDropDownAsync(),
+                Departments = await _lookupService.PopulateDepartmentDropDownAsync(),
+                JobRoles = await _lookupService.PopulateJobRoleDropDownAsync(),
             };
 
             return View(workerVM);
@@ -123,27 +127,7 @@ public class WorkerController : Controller
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
-    }
-
-    public async Task<List<SelectListItem>> PopulateDepartmentDropDownAsync()
-    {
-        return await _context.Departments.Select(d => new SelectListItem
-        {
-            Value = d.Id.ToString(),
-            Text = d.Name
-        })
-        .ToListAsync();
-    }
-
-    public async Task<List<SelectListItem>> PopulateJobRoleDropDownAsync()
-    {
-        return await _context.JobRoles.Select(d => new SelectListItem
-        {
-            Value = d.Id.ToString(),
-            Text = d.Name
-        })
-        .ToListAsync();
-    }
+    }    
 
 
     private static string GenerateReferenceNumber(string tag, int id, string? middleTag = null)
@@ -183,8 +167,8 @@ public class WorkerController : Controller
             Name = workerToEdit.Name,
             PhoneNumber = workerToEdit.PhoneNumber,
             Email = workerToEdit.Email,
-            Departments = await PopulateDepartmentDropDownAsync(),
-            JobRoles = await PopulateJobRoleDropDownAsync(),
+            Departments = await _lookupService.PopulateDepartmentDropDownAsync(),
+            JobRoles = await _lookupService.PopulateJobRoleDropDownAsync(),
             SkillLevel = workerToEdit.SkillLevel,
             AvailabilityStatus = workerToEdit.AvailabilityStatus,
             //Services = workerToEdit.Services,
@@ -198,8 +182,8 @@ public class WorkerController : Controller
     {
         if (!ModelState.IsValid)
         {
-            workerVM.Departments = await PopulateDepartmentDropDownAsync();
-            workerVM.JobRoles = await PopulateJobRoleDropDownAsync();
+            workerVM.Departments = await _lookupService.PopulateDepartmentDropDownAsync();
+            workerVM.JobRoles = await _lookupService.PopulateJobRoleDropDownAsync();
             return View(workerVM);
         }
 

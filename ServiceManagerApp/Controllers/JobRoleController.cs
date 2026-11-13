@@ -4,16 +4,19 @@ using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.ViewModels.JobRoles;
+using ServiceManagerApp.Services.Interfaces;
 
 namespace ServiceManagerApp.Controllers
 {
     public class JobRoleController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly LookupService _lookupService;
 
-        public JobRoleController (ApplicationDbContext context)
+        public JobRoleController (ApplicationDbContext context, LookupService lookupService)
         {
             _context = context;
+            _lookupService = lookupService;
         }
 
 
@@ -29,28 +32,19 @@ namespace ServiceManagerApp.Controllers
         {
             var model = new JobRoleCreateEditViewModel
             {
-                Departments = await PopulateDepartmentDropDownAsync()
+                Departments = await _lookupService.PopulateDepartmentDropDownAsync()
             };
 
             return View(model);
         }
 
-        public async Task<List<SelectListItem>> PopulateDepartmentDropDownAsync()
-        {
-            return await _context.Departments.Select(d => new SelectListItem
-            {
-                Value = d.Id.ToString(),
-                Text = d.Name
-            })
-            .ToListAsync();
-        }
 
         [HttpPost]
         public async Task<IActionResult> Create(JobRoleCreateEditViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                model.Departments = await PopulateDepartmentDropDownAsync();
+                model.Departments = await _lookupService.PopulateDepartmentDropDownAsync();
                 return View(model);
             }
 
@@ -106,7 +100,7 @@ namespace ServiceManagerApp.Controllers
                 Name = role.Name,
                 Description = role.Description,
                 DepartmentId = role.DepartmentId,
-                Departments = await PopulateDepartmentDropDownAsync(),
+                Departments = await _lookupService.PopulateDepartmentDropDownAsync(),
             };
 
             return View(roleVM);
@@ -117,7 +111,7 @@ namespace ServiceManagerApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model.Departments = await PopulateDepartmentDropDownAsync();
+                model.Departments = await _lookupService.PopulateDepartmentDropDownAsync();
                 return View(model);
             }
 
