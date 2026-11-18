@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.ViewModels.Departments;
-using ServiceManagerApp.Services.Interfaces;
-
+using ServiceManagerApp.Services;
 
 namespace ServiceManagerApp.Controllers
 {

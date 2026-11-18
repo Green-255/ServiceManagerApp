@@ -7,8 +7,8 @@ using ServiceManagerApp.Models.ViewModels.Workers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using ServiceManagerApp.Authorization;
-using ServiceManagerApp.Services.Interfaces;
-using ServiceManagerApp.Services.Utilities;
+using ServiceManagerApp.Services;
+using ServiceManagerApp.Utilities;
 
 namespace ServiceManagerApp.Controllers;
 

@@ -8,7 +8,7 @@ using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.Services;
 using ServiceManagerApp.Models.ViewModels.Services.Review;
 using System;
-using ServiceManagerApp.Services.Utilities;
+using ServiceManagerApp.Utilities;
 
 namespace ServiceManagerApp.Controllers;
 public class ServiceController : Controller

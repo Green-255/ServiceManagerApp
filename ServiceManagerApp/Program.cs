@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
-using ServiceManagerApp.Services.Interfaces;
+using ServiceManagerApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
