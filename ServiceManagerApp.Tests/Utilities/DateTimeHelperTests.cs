@@ -1,5 +1,5 @@
 ﻿using Xunit;
-using ServiceManagerApp.Services.Utilities;
+using ServiceManagerApp.Utilities;
 
 namespace ServiceManagerApp.Tests.Utilities
 {
@@ -41,26 +41,25 @@ namespace ServiceManagerApp.Tests.Utilities
 
 
         [Theory]
-        [InlineData(2, 30, 150)]
-        [InlineData(0, 0, 0)]
-        [InlineData(-1, -1, 0)]
+        [InlineData(0)]
+        [InlineData(150)]
         public void GetMinutesFromTimeSpan_ValidInput_ReturnsExpectedMinutes(
-            int hours, int minutes, int expectedMinutes)
+            int expectedMinutes)
         {
-            TimeSpan timeSpan;
-            int actual;
-
-            if(hours < 0 || minutes < 0)
-            {
-                actual = DateTimeHelper.GetMinutesFromTimeSpan(null);
-            }
-            else
-            {
-                timeSpan = new TimeSpan(hours, minutes, 0);
-                actual = DateTimeHelper.GetMinutesFromTimeSpan(timeSpan);
-            }
+            TimeSpan expected = TimeSpan.FromMinutes(expectedMinutes);
+                
+            int actual = DateTimeHelper.GetMinutesFromTimeSpan(expected);
 
             Assert.Equal(expectedMinutes, actual);
+        }
+
+
+        [Fact]
+        public void GetMinutesFromTimeSpan_Null_ReturnsZero()
+        {
+            int actual = DateTimeHelper.GetMinutesFromTimeSpan(null);
+
+            Assert.Equal (0, actual);
         }
     }
 }
