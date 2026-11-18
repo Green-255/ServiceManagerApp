@@ -1,4 +1,4 @@
-﻿namespace ServiceManagerApp.Services.Utilities
+﻿namespace ServiceManagerApp.Utilities
 {
     public static class ReferenceNumberGenerator
     {

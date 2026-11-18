@@ -5,7 +5,7 @@ using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.Departments;
 
-namespace ServiceManagerApp.Services.Interfaces
+namespace ServiceManagerApp.Services
 {
     public class LookupService
     {
