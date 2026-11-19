@@ -107,7 +107,7 @@ public class ServiceRequestController : Controller
             //ServiceRequestId = newRequest.Id, // Id is not created, 'cause Changes not saved yet.
             ServiceRequest = newRequest,
             ServiceRequestType = newRequest.ServiceRequestType,
-            Status         = ServiceStatus.Draft,
+            Status         = ServiceStatus.NeedsReview,
             DueAtUtc       = newRequest.RequestedDueUtc,
             //Duration = 
             //Location = 

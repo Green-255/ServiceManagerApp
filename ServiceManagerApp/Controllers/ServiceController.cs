@@ -116,13 +116,13 @@ public class ServiceController : Controller
         {
             ServiceRequest = newService.ServiceRequest,
             ServiceRequestType = newService.ServiceRequestType,
-            Status = ServiceStatus.NeedsReview,
+            Status = ServiceStatus.Draft,
             DueAtUtc = newService.DueAtUtc,
             Duration = DateTimeHelper.CalculateDuration(newService.DurationHours, newService.DurationMinutes),
             Location = newService.Location,
             //Workers = await GetWorkers(newService.WorkersIds),
             Comments = ParseComments(newService.Comments),
-            Cost     = newService.Cost,
+            Cost     = (float) newService.Cost,
         };
 
         _context.Services.Add(serviceToAdd);
