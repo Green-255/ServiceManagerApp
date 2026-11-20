@@ -55,14 +55,14 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label asp-for="DepartmentId" class="form-label fw-semibold">Department</label>
-                        <select asp-for="DepartmentId" asp-items="Model.Departments" class="form-select">
+                        <select asp-for="DepartmentId" asp-items="@Model.Departments" class="form-select">
                             <option value="">No department</option>
                         </select>
                         <span asp-validation-for="DepartmentId" class="text-danger small"></span>
                     </div>
                     <div class="col-md-6">
                         <label asp-for="JobRoleId" class="form-label fw-semibold">Job role</label>
-                        <select asp-for="JobRoleId" asp-items="Model.JobRoles" class="form-select">
+                        <select asp-for="JobRoleId" asp-items="@Model.JobRoles" class="form-select">
                             <option value="">No job role</option>
                         </select>
                         <span asp-validation-for="JobRoleId" class="text-danger small"></span>

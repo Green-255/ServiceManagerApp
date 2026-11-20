@@ -189,7 +189,7 @@
                         Cancel
                 </button>
 
-                <form asp-action="ReviewRejected" asp-route-id="Model.Id" method="post">
+                <form asp-action="ReviewRejected" asp-route-id="@Model.Id" method="post">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-danger">Confirm rejection</button>
                 </form>
