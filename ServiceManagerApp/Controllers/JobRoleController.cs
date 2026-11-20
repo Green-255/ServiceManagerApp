@@ -25,6 +25,7 @@ namespace ServiceManagerApp.Controllers
         {
             var roles = await _context.JobRoles
                 .Include(jr => jr.Department)
+                .Include(jr => jr.Workers)
                 .ToListAsync();
             return View(roles);
         }
