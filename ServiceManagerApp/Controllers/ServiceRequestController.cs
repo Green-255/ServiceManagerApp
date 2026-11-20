@@ -59,8 +59,7 @@ public class ServiceRequestController : Controller
     }
 
     [HttpGet]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create()
+    public IActionResult Create()
     {
         return View();
     }
@@ -182,6 +181,7 @@ public class ServiceRequestController : Controller
     }
 
 
+    [HttpGet]
     public async Task<IActionResult> Edit (int id)
     {
         var serviceRequest = await _context.ServiceRequests.FindAsync(id);
