@@ -21,12 +21,14 @@ namespace ServiceManagerApp.Controllers
             _lookupService = lookupService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var departments = await _context.Departments.ToListAsync();
             return View(departments);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             var viewModel = new DepartmentCreateEditViewModel
@@ -38,6 +40,7 @@ namespace ServiceManagerApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DepartmentCreateEditViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -70,6 +73,7 @@ namespace ServiceManagerApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -90,6 +94,7 @@ namespace ServiceManagerApp.Controllers
             return View(department);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -123,6 +128,7 @@ namespace ServiceManagerApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(DepartmentCreateEditViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -165,6 +171,7 @@ namespace ServiceManagerApp.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {
             if(id == null)

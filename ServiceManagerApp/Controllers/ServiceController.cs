@@ -24,6 +24,8 @@ public class ServiceController : Controller
     {
         _context = context;
     }
+
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         var services = await _context.Services
@@ -105,6 +107,7 @@ public class ServiceController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ServiceCreateViewModel newService)
     {
         if (!ModelState.IsValid)
@@ -134,7 +137,7 @@ public class ServiceController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         var serviceToEdit = await _context.Services
@@ -182,6 +185,7 @@ public class ServiceController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(ServiceEditViewModel serviceEdited)
     {
         if (!ModelState.IsValid)
@@ -219,6 +223,7 @@ public class ServiceController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> delete(int? id)
     {
         if(id == null)
@@ -246,7 +251,7 @@ public class ServiceController : Controller
         return comments;
     }
 
-
+    [HttpGet]
     public async Task<IActionResult> Details(int? id)
     {
         if(id == null)
@@ -276,6 +281,7 @@ public class ServiceController : Controller
         return View(viewModel);
     }
 
+    [HttpGet]
     public async Task<IActionResult> Review(int? id)
     {
         if (id == null)
@@ -304,6 +310,7 @@ public class ServiceController : Controller
     }
 
     [HttpPost, ActionName("Review")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ReviewAccepted(ServiceReviewViewModel serviceVM)
     {
         if (!ModelState.IsValid)

@@ -26,6 +26,7 @@ public class WorkerController : Controller
         _lookupService = lookupService;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         var workersList = await _context.Workers
@@ -45,6 +46,7 @@ public class WorkerController : Controller
         return View(workersList);
     }
 
+    [HttpGet]
     public async Task<IActionResult> Create()
     {
         var userId = _userManager.GetUserId(User);
@@ -67,8 +69,8 @@ public class WorkerController : Controller
         return View(workerVM);
     }
 
-
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(WorkerCreateViewModel newWorker)
     {
         if (!ModelState.IsValid)
@@ -130,7 +132,7 @@ public class WorkerController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
+    [HttpGet]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) {
@@ -166,6 +168,7 @@ public class WorkerController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(WorkerEditViewModel workerVM)
     {
         if (!ModelState.IsValid)
@@ -198,8 +201,8 @@ public class WorkerController : Controller
 
         return RedirectToAction(nameof(Details), new {id = workerToEdit.Id});
     }
-
-
+    
+    [HttpGet]
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
