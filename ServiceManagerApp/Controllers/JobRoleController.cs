@@ -19,7 +19,7 @@ namespace ServiceManagerApp.Controllers
             _lookupService = lookupService;
         }
 
-
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var roles = await _context.JobRoles
@@ -28,6 +28,7 @@ namespace ServiceManagerApp.Controllers
             return View(roles);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             var model = new JobRoleCreateEditViewModel
@@ -40,6 +41,7 @@ namespace ServiceManagerApp.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(JobRoleCreateEditViewModel model)
         {
             if (!ModelState.IsValid)
@@ -61,6 +63,7 @@ namespace ServiceManagerApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -80,6 +83,7 @@ namespace ServiceManagerApp.Controllers
             return View(role);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -107,6 +111,7 @@ namespace ServiceManagerApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(JobRoleCreateEditViewModel model)
         {
             if (!ModelState.IsValid)
@@ -133,6 +138,7 @@ namespace ServiceManagerApp.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {
             if (id == null)
