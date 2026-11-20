@@ -41,7 +41,7 @@
 
                 <div style="max-width: 430px;">
                     <label asp-for="DepartmentId" class="form-label fw-medium">Department</label>
-                    <select asp-for="DepartmentId" asp-items="Model.Departments" class="form-select">
+                    <select asp-for="DepartmentId" asp-items="@Model.Departments" class="form-select">
                         <option value="">No department</option>
                     </select>
                     <span asp-validation-for="DepartmentId" class="text-danger small d-block mt-1"></span>
