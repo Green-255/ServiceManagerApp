@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
+using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.JobRoles;
 using ServiceManagerApp.Services;
 
@@ -72,8 +73,33 @@ namespace ServiceManagerApp.Controllers
             }
 
             var role = await _context.JobRoles
-                .Include(jr => jr.Department)
-                .FirstOrDefaultAsync(jr => jr.Id == id);
+                .Where(jr =>  jr.Id == id)
+                //.Include(jr => jr.Department) // can remove .Include() calls, since you're projecting 
+                //.Include(jr => jr.Workers)    // the required properties directly using .Select().
+                .Select(jr => new JobRoleDetailsViewModel
+                {
+                    Id = jr.Id,
+                    Name = jr.Name,
+                    Description = jr.Description,
+                    DepartmentId = jr.DepartmentId != null
+                        ? jr.DepartmentId
+                        : null,
+                    DepartmentName = jr.Department != null
+                        ? jr.Department.Name
+                        : null,
+                    Workers = jr.Workers.Select(w => new WorkerForJobRoleViewModel
+                    {
+                        Id = w.Id,
+                        ReferenceNumber = w.ReferenceNumber,
+                        Name = w.Name,
+                        AvailabilityStatus = w.AvailabilityStatus.ToString(),
+                        SkillLevel = w.SkillLevel.HasValue
+                            ? w.SkillLevel.Value.ToString()
+                            : string.Empty
+                    })
+                    .ToList()
+                })
+                .FirstOrDefaultAsync();
 
             if (role == null)
             {
