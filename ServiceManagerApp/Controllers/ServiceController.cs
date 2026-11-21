@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ServiceManagerApp.Data;
-using ServiceManagerApp.Models;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.Services;
 using ServiceManagerApp.Models.ViewModels.Services.Review;
-using System;
 using ServiceManagerApp.Utilities;
 
 namespace ServiceManagerApp.Controllers;
@@ -124,7 +121,7 @@ public class ServiceController : Controller
             Duration = DateTimeHelper.CalculateDuration(newService.DurationHours, newService.DurationMinutes),
             Location = newService.Location,
             //Workers = await GetWorkers(newService.WorkersIds),
-            Comments = ParseComments(newService.Comments),
+            Comments = ParseDescription(newService.Description),
             Cost     = (float) newService.Cost,
         };
 
@@ -171,7 +168,7 @@ public class ServiceController : Controller
             Location = serviceToEdit.Location,
             WorkerIds = assignedWorkerIds,
             Workers = workersAssignStatus,
-            Comments = serviceToEdit.Comments,
+            Description = GetDescriptionFromComments(serviceToEdit.Comments),
             Cost = serviceToEdit.Cost,
         };
 
@@ -211,10 +208,10 @@ public class ServiceController : Controller
         serviceToUpdate.Status = serviceEdited.Status;
         serviceToUpdate.DueAtUtc = serviceEdited.DueAtUtc;
         serviceToUpdate.Duration = DateTimeHelper.CalculateDuration(
-            serviceEdited.DurationHours, serviceEdited.DurationMinutes);
+                serviceEdited.DurationHours, serviceEdited.DurationMinutes);
         serviceToUpdate.Location = serviceEdited.Location;
         serviceToUpdate.Workers = workers;
-        serviceToUpdate.Comments = serviceEdited.Comments;
+        serviceToUpdate.Comments = ParseDescription(serviceEdited.Description);
         serviceToUpdate.Cost = serviceEdited.Cost;
 
         await _context.SaveChangesAsync();
@@ -244,11 +241,14 @@ public class ServiceController : Controller
     }
 
 
-    private string[] ParseComments(string commentsToParse)
+    private string GetDescriptionFromComments (ICollection<string> commentsToParse) // needs renaming
     {
-        string[] comments = commentsToParse.Split(".");
+        return string.Join("\n", commentsToParse);
+    }
 
-        return comments;
+    private ICollection<string> ParseDescription(string description)
+    {
+        return description.Split();
     }
 
     [HttpGet]
@@ -276,6 +276,7 @@ public class ServiceController : Controller
             DueAtUtc = service.DueAtUtc,
             Duration = service.Duration,
             Location = service.Location,
+            Description = GetDescriptionFromComments(service.Comments),
             Cost = service.Cost
         };
         return View(viewModel);

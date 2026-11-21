@@ -21,7 +21,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services
         public List<ServiceReviewWorkerViewModel> Workers { get; set; } = [];
 
         //[Required(ErrorMessage = "Service needs a thourough description.")]
-        public ICollection<string> Comments { get; set; } = [];
+        public string Description { get; set; } = string.Empty;
         public float Cost { get; set; } = 0.0f;
     }
 }

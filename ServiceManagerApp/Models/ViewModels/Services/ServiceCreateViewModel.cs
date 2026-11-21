@@ -20,7 +20,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services
 
         [Required(ErrorMessage = "Service needs a thourough description.")]
         [StringLength(300, MinimumLength = 2)]
-        public string Comments { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Please enter cost.")]
         public decimal Cost { get; set; } = decimal.Zero;

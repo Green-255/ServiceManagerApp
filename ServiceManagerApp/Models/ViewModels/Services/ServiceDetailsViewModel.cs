@@ -1,5 +1,4 @@
-﻿using ServiceManagerApp.Models.Entities;
-using ServiceManagerApp.Models.Enums;
+﻿using ServiceManagerApp.Models.Enums;
 
 namespace ServiceManagerApp.Models.ViewModels.Services
 {
@@ -18,7 +17,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services
 
         // assigned time | role | who assigned the worker | whether the worker accepted | completion status
         //public ICollection<ServiceAssignment> Assignments { get; set; } = [];
-        //public ICollection<string> Comments { get; set; } = [];
+        public string Description { get; set; } = string.Empty;
         public float Cost { get; set; } = 0.0f;
     }
 }
