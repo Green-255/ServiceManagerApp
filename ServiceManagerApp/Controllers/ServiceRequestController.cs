@@ -103,17 +103,14 @@ public class ServiceRequestController : Controller
     {
         var newService = new Service
         {
-            //ServiceRequestId = newRequest.Id, // Id is not created, 'cause Changes not saved yet.
             ServiceRequest = newRequest,
             ServiceRequestType = newRequest.ServiceRequestType,
             Status         = ServiceStatus.NeedsReview,
             DueAtUtc       = newRequest.RequestedDueUtc,
             //Duration = 
             //Location = 
+            Comments = newRequest.Description.Split()
         };
-
-        //string[] Comments = ParseServiceRequestComments(newRequest.Description);
-        //newService.Comments = Comments;
 
         return newService;
     }
