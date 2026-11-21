@@ -3,6 +3,13 @@
 
 @{
     ViewData["Title"] = "Log in";
+
+    if (TempData["StatusMessage"] is string message)
+    {
+        <div class="alert alert-success" role="alert">
+            @message
+        </div>
+    }
 }
 
 <h1>@ViewData["Title"]</h1>
