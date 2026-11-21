@@ -1,13 +1,13 @@
-﻿@model IReadOnlyList<ServiceManagerApp.Models.Entities.JobRole>
+﻿@model IReadOnlyList<ServiceManagerApp.Models.ViewModels.JobRoles.JobRoleIndexViewModel>
+@* @model IReadOnlyList<ServiceManagerApp.Models.Entities.JobRole> *@
 @{
     ViewData["Title"] = "Job roles";
     var roles = Model.OrderBy(r => r.Name).ToList();
-    var departmentNames = roles.Where(r => r.Department != null)
-                               .Select(r => r.Department!.Name)
+    var departmentNames = roles.Select(r => r.DepartmentName!)
                                .Distinct()
                                .OrderBy(n => n)
                                .ToList();
-    var hasUnassignedRoles = roles.Any(r => r.Department == null);
+    var hasUnassignedRoles = roles.Any(r => r.DepartmentId == null);
 }
 
 <div class="container py-4" style="max-width: 1120px;">
@@ -81,9 +81,9 @@
                     <tbody>
                         @foreach (var role in roles)
                         {
-                            var departmentName = role.Department?.Name ?? string.Empty;
+                            var departmentName = role.DepartmentName ?? string.Empty;
                             var searchText = $"{role.Name} {role.Description} {departmentName}";
-                            var workerCount = role.Workers?.Count ?? 0;
+                            var workerCount = role.NumberOfWorkers;
                             <tr data-role-row data-search="@searchText" data-department="@departmentName">
                                 <th scope="row" class="ps-3 ps-md-4 py-3 fw-semibold">
                                     <a asp-action="Details" asp-route-id="@role.Id"
@@ -102,13 +102,13 @@
                                     }
                                 </td>
                                 <td class="py-3">
-                                    @if (role.Department == null)
+                                    @if (role.DepartmentId == null)
                                     {
                                         <span class="badge bg-secondary bg-opacity-10 text-secondary border">Not assigned</span>
                                     }
                                     else
                                     {
-                                        <a asp-controller="Department" asp-action="Details" asp-route-id="@role.Department.Id"
+                                        <a asp-controller="Department" asp-action="Details" asp-route-id="@role.DepartmentId"
                                            class="text-decoration-none">@departmentName</a>
                                     }
                                 </td>

@@ -24,9 +24,19 @@ namespace ServiceManagerApp.Controllers
         public async Task<IActionResult> Index()
         {
             var roles = await _context.JobRoles
-                .Include(jr => jr.Department)
-                .Include(jr => jr.Workers)
+                .Select(jr => new JobRoleIndexViewModel
+                {
+                    Id = jr.Id,
+                    Name = jr.Name,
+                    Description = jr.Description,
+                    DepartmentId = jr.DepartmentId,
+                    DepartmentName = jr.Department != null
+                        ? jr.Department.Name
+                        : null,
+                    NumberOfWorkers = jr.Workers.Count()
+                })
                 .ToListAsync();
+
             return View(roles);
         }
 
