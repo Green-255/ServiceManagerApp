@@ -1,4 +1,4 @@
-﻿@model ServiceManagerApp.Models.Entities.JobRole
+﻿@model ServiceManagerApp.Models.ViewModels.JobRoles.JobRoleDetailsViewModel
 @{
     ViewData["Title"] = Model.Name;
     var workerCount = Model.Workers?.Count ?? 0;
@@ -38,14 +38,18 @@
                 <div class="col-12">
                     <dt class="small text-muted fw-normal mb-1">Department</dt>
                     <dd class="mb-0 fw-semibold">
-                        @if (Model.Department == null)
+                        @if (Model.DepartmentName != null && Model.DepartmentId != null)
                         {
-                            <span class="badge bg-secondary bg-opacity-10 text-secondary border">Not assigned</span>
+                            <a asp-controller="Department" asp-action="Details" asp-route-id="@Model.DepartmentId"
+                            class="text-decoration-none">@Model.DepartmentName</a>
+                        }
+                        else if (Model.DepartmentId == null)
+                        {
+                            <span class="text-decoration-none">@Model.DepartmentName</span>
                         }
                         else
                         {
-                            <a asp-controller="Department" asp-action="Details" asp-route-id="@Model.Department.Id"
-                               class="text-decoration-none">@Model.Department.Name</a>
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary border">Not assigned</span>
                         }
                     </dd>
                 </div>
@@ -80,13 +84,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var worker in Model.Workers.OrderBy(w => w.Name))
+                        @foreach (var worker in Model.Workers!)
                         {
                             <tr>
                                 <th scope="row" class="ps-4 py-3 fw-semibold">@worker.Name</th>
                                 <td class="text-end pe-4 py-3">
                                     <a asp-controller="Worker" asp-action="Details" asp-route-id="@worker.Id"
-                                       class="btn btn-sm btn-outline-primary">View worker</a>
+                                    class="btn btn-sm btn-outline-primary">View worker</a>
                                 </td>
                             </tr>
                         }
