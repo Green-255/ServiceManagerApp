@@ -33,7 +33,7 @@ namespace ServiceManagerApp.Tests.Utilities
             int hours, int minutes)
         {
             // Assert
-            Assert.Throws<Exception>(
+            Assert.Throws<ArgumentOutOfRangeException>(
                 () => DateTimeHelper.CalculateDuration(hours, minutes)
             );
         }
