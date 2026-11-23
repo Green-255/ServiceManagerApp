@@ -1,9 +1,19 @@
-﻿namespace ServiceManagerApp.Utilities
+﻿using Microsoft.Identity.Client.NativeInterop;
+
+namespace ServiceManagerApp.Utilities
 {
     public static class ReferenceNumberGenerator
     {
         public static string Generate(string tag, int id, string? middleTag = null)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
+            if(tag.Length > 8)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(tag), tag, $"{nameof(tag)} cannot exceed 8 characters.");
+            }
+
             middleTag ??= DateTime.UtcNow.Year.ToString();
 
             return $"{tag}-{middleTag}-{id:D6}";
