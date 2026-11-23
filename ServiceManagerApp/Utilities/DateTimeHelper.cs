@@ -19,7 +19,12 @@
 
         public static int GetMinutesFromTimeSpan(TimeSpan? duration)
         {
-            return duration == null ? 0 : (int)duration.Value.TotalMinutes;
+            if (duration is { } value && value < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(duration), value, "Duration cannot be negative.");
+            }
+
+            return duration is null ? 0 : (int)duration.Value.TotalMinutes;
         }
     }
 }
