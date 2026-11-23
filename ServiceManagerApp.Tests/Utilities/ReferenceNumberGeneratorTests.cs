@@ -28,8 +28,18 @@ namespace ServiceManagerApp.Tests.Utilities
         public void Generate_NegativeId_ThrowsException(
             string tag, int id, string? middleTag)
         {
-            Assert.Throws<Exception>(
+            Assert.Throws<ArgumentOutOfRangeException>(
                 () => ReferenceNumberGenerator.Generate(tag, id, middleTag)
+            );
+        }
+
+        [Fact]
+        public void Generate_TagToLong_ThrowsException()
+        {
+            string tag = "123456789";
+            int id = 42;
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => ReferenceNumberGenerator.Generate(tag, id)
             );
         }
 
