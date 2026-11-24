@@ -14,16 +14,19 @@
                 @if (User.IsInRole(AppRoles.Administrator))
                 {
                     <text>Administrator</text>
+                    <i class="bi bi-shield-shaded"></i>
                 }
                 else
                 {
                     if (User.IsInRole(AppRoles.Worker))
                     {
                         <text>Worker</text>
+                        <i class="bi bi-wrench-adjustable"></i>
                     }
                     else
                     {
                         <text>Customer</text>
+                        <i class="bi bi-person"></i>
                     }
                 }
             </span>
