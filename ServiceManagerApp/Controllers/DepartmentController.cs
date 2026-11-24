@@ -81,9 +81,18 @@ namespace ServiceManagerApp.Controllers
                 return BadRequest();
             }
 
-            //var department = await _context.Departments.FindAsync(id);
             var department = await _context.Departments
-                .Include(d => d.JobRoles)
+                .Select(d => new DepartmentDetailsViewModel
+                {
+                    Id = d.Id,
+                    Name = d.Name,
+                    Description = d.Description,
+                    NumberOfJobRoles = d.JobRoles.Count(),
+                    JobRoleSummaries = d.JobRoles
+                        .OrderBy(jr => jr.Name)
+                        .Select(jr => new JobRoleSummaryItem(jr.Name, jr.Workers.Count()))
+                        .ToList()
+                })
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (department == null)

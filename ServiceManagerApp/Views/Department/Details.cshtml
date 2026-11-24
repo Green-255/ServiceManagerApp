@@ -1,7 +1,6 @@
-﻿@model ServiceManagerApp.Models.Entities.Department
+﻿@model ServiceManagerApp.Models.ViewModels.Departments.DepartmentDetailsViewModel
 @{
     ViewData["Title"] = Model.Name;
-    var roleCount = Model.JobRoles?.Count ?? 0;
 }
 
 <div class="mx-auto" style="max-width: 960px;">
@@ -39,10 +38,10 @@
                 <h2 id="rolesHeading" class="h5 fw-semibold mb-1">Assigned job roles</h2>
                 <p class="small text-muted mb-0">Roles belonging to this department</p>
             </div>
-            <span class="badge text-bg-light border text-secondary">@roleCount @(roleCount == 1 ? "role" : "roles")</span>
+            <span class="badge text-bg-light border text-secondary">@Model.NumberOfJobRoles @(Model.NumberOfJobRoles == 1 ? "role" : "roles")</span>
         </div>
 
-        @if (roleCount == 0)
+        @if (Model.NumberOfJobRoles == 0)
         {
             <div class="card-body text-center py-5">
                 <p class="fw-semibold mb-1">No assigned job roles</p>
@@ -61,12 +60,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var role in Model.JobRoles.OrderBy(r => r.Name))
+                        @foreach (var role in Model.JobRoleSummaries)
                         {
                             <tr>
-                                <td class="ps-4 fw-semibold">@role.Name</td>
+                                <td class="ps-4 fw-semibold">@role.RoleName</td>
                                 <td class="text-end pe-4">
-                                    <span class="badge text-bg-light border text-secondary">@role.Workers.Count</span>
+                                    <span class="badge text-bg-light border text-secondary">@role.WorkersCount</span>
                                 </td>
                             </tr>
                         }
