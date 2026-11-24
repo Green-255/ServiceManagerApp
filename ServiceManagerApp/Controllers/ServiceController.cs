@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ServiceManagerApp.Authorization;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
@@ -8,6 +10,8 @@ using ServiceManagerApp.Models.ViewModels.Services.Review;
 using ServiceManagerApp.Utilities;
 
 namespace ServiceManagerApp.Controllers;
+
+[Authorize(Roles = AppRoles.Administrator + "," + AppRoles.Worker)]
 public class ServiceController : Controller
 {
     private readonly ApplicationDbContext _context;

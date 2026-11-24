@@ -7,7 +7,6 @@ using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.ServiceRequests;
-using System.Net;
 using ServiceManagerApp.Utilities;
 
 
