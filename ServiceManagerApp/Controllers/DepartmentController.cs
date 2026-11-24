@@ -6,10 +6,11 @@ using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.ViewModels.Departments;
 using ServiceManagerApp.Services;
+using ServiceManagerApp.Authorization;
 
 namespace ServiceManagerApp.Controllers
 {
-    [Authorize(Roles="Administrator,Worker")]
+    [Authorize(Roles=AppRoles.Administrator)]
     public class DepartmentController : Controller
     {
         private readonly ApplicationDbContext _context;
