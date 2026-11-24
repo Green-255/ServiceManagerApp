@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
-using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.JobRoles;
 using ServiceManagerApp.Services;
+using ServiceManagerApp.Authorization;
 
 namespace ServiceManagerApp.Controllers
 {
+    [Authorize(Roles = AppRoles.Administrator + "," + AppRoles.Worker)]
     public class JobRoleController : Controller
     {
         private readonly ApplicationDbContext _context;
