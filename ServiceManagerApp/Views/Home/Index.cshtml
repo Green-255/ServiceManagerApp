@@ -1,8 +1,191 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Hero section -->
+<section class="bg-light rounded-4 text-center py-5 px-4 my-4">
+
+    <p class="text-primary fw-semibold small text-uppercase mb-3">
+        Service management platform
+    </p>
+
+    <h1 class="display-4 fw-bold mb-3">
+        Service management, simplified.
+    </h1>
+
+    <p class="lead text-muted mx-auto mb-4" style="max-width: 650px;">
+        Submit service requests, coordinate work and manage
+        service operations — all in one place.
+    </p>
+
+    @if (User.Identity?.IsAuthenticated != true)
+    {
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a asp-area="Identity"
+               asp-page="/Account/Register"
+               class="btn btn-primary btn-lg px-4">
+                Create an account
+            </a>
+
+            <a asp-area="Identity"
+               asp-page="/Account/Login"
+               class="btn btn-outline-secondary btn-lg px-4">
+                Log in
+            </a>
+        </div>
+
+        <p class="small text-muted mt-3 mb-0">
+            An account is required to access the platform.
+        </p>
+    }
+    else
+    {
+        <h5 class="mt-4">
+            Welcome back, @User.Identity?.Name
+        </h5>
+    }
+
+</section>
+
+
+<!-- Features section -->
+<section class="py-5">
+
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">
+            Built for efficient service operations
+        </h2>
+        <p class="text-muted">
+            Everything you need to organize and manage services.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="card h-100 border shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h4 class="h5 fw-semibold">
+                        Service requests
+                    </h4>
+                    <p class="text-muted mb-0">
+                        Submit requests, provide service details
+                        and track their progress from one place.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h4 class="h5 fw-semibold">
+                        Service management
+                    </h4>
+                    <p class="text-muted mb-0">
+                        Review, schedule and coordinate services,
+                        manage deadlines and monitor their status.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h4 class="h5 fw-semibold">
+                        Workforce management
+                    </h4>
+                    <p class="text-muted mb-0">
+                        Organize workers, departments and job roles,
+                        and assign workers to services.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- How it works section -->
+<section class="border-top py-5">
+
+    <h2 class="text-center fw-bold mb-5">
+        How it works
+    </h2>
+
+    <div class="row g-4 text-center">
+
+        <div class="col-md-4">
+            <span class="d-inline-flex align-items-center
+                justify-content-center rounded-circle
+                bg-primary text-white fw-bold mb-3"
+                  style="width: 48px; height: 48px;">
+                1
+            </span>
+
+            <h5>Create an account</h5>
+            <p class="text-muted">
+                Register, confirm your account and log in.
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <span class="d-inline-flex align-items-center
+                justify-content-center rounded-circle
+                bg-primary text-white fw-bold mb-3"
+                  style="width: 48px; height: 48px;">
+                2
+            </span>
+
+            <h5>Submit a request</h5>
+            <p class="text-muted">
+                Describe the service you need and provide
+                the relevant details.
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <span class="d-inline-flex align-items-center
+                justify-content-center rounded-circle
+                bg-primary text-white fw-bold mb-3"
+                  style="width: 48px; height: 48px;">
+                3
+            </span>
+
+            <h5>Track progress</h5>
+            <p class="text-muted">
+                Follow your request as it is reviewed
+                and processed.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Call to action -->
+@if (User.Identity?.IsAuthenticated != true)
+{
+    <section class="bg-dark text-white rounded-4
+        text-center py-5 px-4 mb-5">
+
+        <h2 class="fw-bold mb-3">
+            Ready to get started?
+        </h2>
+
+        <p class="text-white-50 mb-4">
+            Create an account to submit your first service request.
+        </p>
+
+        <a asp-area="Identity"
+           asp-page="/Account/Register"
+           class="btn btn-light btn-lg px-4">
+            Get started
+        </a>
+
+    </section>
+}
