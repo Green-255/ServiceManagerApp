@@ -13,6 +13,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services
         public DateTime? DueAtUtc { get; set; }
         public TimeSpan? Duration { get; set; }
         public string Location { get; set; } = string.Empty;
+        public ServicePriority Priority { get; set; } = ServicePriority.None;
         //public ICollection<Worker> Workers { get; set; } = [];
 
         // assigned time | role | who assigned the worker | whether the worker accepted | completion status

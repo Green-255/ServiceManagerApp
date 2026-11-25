@@ -43,11 +43,12 @@ public class ServiceController : Controller
             var s = new ServiceIndexListViewModel
             {
                 Id = service.Id,
-                ServiceRequest = service.ServiceRequest,
+                ServiceRequest = service.ServiceRequest!,
                 ReferenceNumber = service.ReferenceNumber,
                 ServiceRequestType = service.ServiceRequestType,
                 Status = service.Status,
                 DueAtUtc = service.DueAtUtc,
+                Priority = service.Priority,
             };
 
             allServices.Add(s);
@@ -124,6 +125,7 @@ public class ServiceController : Controller
             DueAtUtc = newService.DueAtUtc,
             Duration = DateTimeHelper.CalculateDuration(newService.DurationHours, newService.DurationMinutes),
             Location = newService.Location,
+            Priority = newService.Priority,
             //Workers = await GetWorkers(newService.WorkersIds),
             Comments = ParseDescription(newService.Description),
             Cost     = (float) newService.Cost,
@@ -156,7 +158,7 @@ public class ServiceController : Controller
             {
                 Id = w.Id,
                 Name = w.Name,
-                SkillLevel = w.SkillLevel.ToString(),
+                SkillLevel = w.SkillLevel.ToString()!,
                 IsSelected = assignedWorkerIds.Contains(w.Id)
             })
             .ToListAsync();
@@ -170,6 +172,7 @@ public class ServiceController : Controller
             Status = serviceToEdit.Status,
             DueAtUtc = serviceToEdit.DueAtUtc,
             Location = serviceToEdit.Location,
+            Priority = serviceToEdit.Priority,
             WorkerIds = assignedWorkerIds,
             Workers = workersAssignStatus,
             Description = GetDescriptionFromComments(serviceToEdit.Comments),
@@ -213,6 +216,7 @@ public class ServiceController : Controller
         serviceToUpdate.DueAtUtc = serviceEdited.DueAtUtc;
         serviceToUpdate.Duration = DateTimeHelper.CalculateDuration(
                 serviceEdited.DurationHours, serviceEdited.DurationMinutes);
+        serviceToUpdate.Priority = serviceEdited.Priority;
         serviceToUpdate.Location = serviceEdited.Location;
         serviceToUpdate.Workers = workers;
         serviceToUpdate.Comments = ParseDescription(serviceEdited.Description);
@@ -244,17 +248,6 @@ public class ServiceController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
-    private string GetDescriptionFromComments (ICollection<string> commentsToParse) // needs renaming
-    {
-        return string.Join("\n", commentsToParse);
-    }
-
-    private ICollection<string> ParseDescription(string description)
-    {
-        return description.Split();
-    }
-
     [HttpGet]
     public async Task<IActionResult> Details(int? id)
     {
@@ -278,6 +271,7 @@ public class ServiceController : Controller
             ServiceRequestType = service.ServiceRequestType,
             Status = service.Status,
             DueAtUtc = service.DueAtUtc,
+            Priority = service.Priority,
             Duration = service.Duration,
             Location = service.Location,
             Description = GetDescriptionFromComments(service.Comments),
@@ -337,7 +331,7 @@ public class ServiceController : Controller
                 {
                     Id = w.Id,
                     Name = w.Name,
-                    SkillLevel = w.SkillLevel.ToString(),
+                    SkillLevel = w.SkillLevel.ToString()!,
                     IsSelected = serviceVM.WorkerIds.Contains(w.Id)
                 })
                 .ToListAsync();
@@ -363,6 +357,7 @@ public class ServiceController : Controller
 
         service.ServiceRequestType = serviceVM.ServiceRequestType;
         service.DueAtUtc = serviceVM.DueAtUtc;
+        service.Priority = serviceVM.Priority;
         service.Duration = DateTimeHelper.CalculateDuration(serviceVM.DurationHours, serviceVM.DurationMinutes);
         service.Location = serviceVM.Location;
         service.SkillLevel = serviceVM.SkillLevel;
@@ -419,7 +414,7 @@ public class ServiceController : Controller
             {
                 Id = w.Id,
                 Name = w.Name,
-                SkillLevel = w.SkillLevel == null ? string.Empty : w.SkillLevel.ToString(),
+                SkillLevel = w.SkillLevel == null ? string.Empty : w.SkillLevel.ToString()!,
                 //IsSelected = service.Workers.Any(sw => sw.Id == w.Id)
             })
             .ToListAsync();
@@ -436,6 +431,7 @@ public class ServiceController : Controller
             DueAtUtc = service.DueAtUtc,
             DurationHours = minutes / 60,
             DurationMinutes = minutes % 60,
+            Priority = service.Priority,
             Location = service.Location,
             Workers = workersAvailable,
             SkillLevel = service.SkillLevel,
@@ -444,5 +440,15 @@ public class ServiceController : Controller
         };
 
         return serviceVM;
+    }
+
+    private string GetDescriptionFromComments(ICollection<string> commentsToParse) // needs renaming
+    {
+        return string.Join("\n", commentsToParse);
+    }
+
+    private ICollection<string> ParseDescription(string description)
+    {
+        return description.Split();
     }
 }

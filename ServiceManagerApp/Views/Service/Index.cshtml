@@ -63,6 +63,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th scope="col" class="ps-4 py-3">Reference number</th>
+                                <th scope="col" class="py-3">Priority</th>
                                 <th scope="col" class="py-3">Type</th>
                                 <th scope="col" class="py-3">Status</th>
                                 <th scope="col" class="py-3">Due date</th>
@@ -77,6 +78,7 @@
                                     <th scope="row" class="ps-4 py-3 fw-semibold">
                                         @service.ReferenceNumber
                                     </th>
+                                    <td class="py-3">@ReadableLabel(service.Priority.ToString())</td>
                                     <td class="py-3">@ReadableLabel(service.ServiceRequestType.ToString())</td>
                                     <td class="py-3">
                                         <span class="badge rounded-pill fw-semibold @StatusBadgeClass(status)">
@@ -145,6 +147,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th scope="col" class="ps-4 py-3">Reference number</th>
+                                <th scope="col" class="py-3">Priority</th>
                                 <th scope="col" class="py-3">Type</th>
                                 <th scope="col" class="py-3">Status</th>
                                 <th scope="col" class="py-3">Due date</th>
@@ -161,6 +164,7 @@
                                         <a asp-action="Details" asp-route-id="@service.Id"
                                            class="text-decoration-none">@service.ReferenceNumber</a>
                                     </th>
+                                    <td class="py-3">@ReadableLabel(service.Priority.ToString())</td>
                                     <td class="py-3">@ReadableLabel(service.ServiceRequestType.ToString())</td>
                                     <td class="py-3">
                                         <span class="badge rounded-pill fw-semibold @StatusBadgeClass(status)">

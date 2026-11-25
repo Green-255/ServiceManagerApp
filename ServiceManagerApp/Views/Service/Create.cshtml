@@ -124,21 +124,37 @@
             </div>
         </div> *@
 
-        <!-- Cost -->
+        <!-- Cost ans Priority -->
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
-                @* <h2 class="h6 mb-1">Requirements and cost</h2>
-                <p class="small text-muted mb-4">Calculate estimated service cost.</p> *@
-
-                <div class="row g-3">
-                    <div class="col-md-2">
-                        <label asp-for="Cost" class="form-label fw-semibold"></label>
-                        <input asp-for="Cost" type="number" min="0" step="any" class="form-control" placeholder="0.00" />
-                        <span asp-validation-for="Cost" class="text-danger small"></span>
+                <div class="row g-3 justify-content-between">
+                    <!-- Cost -->
+                    <div class="col-md-3">
+                        <label asp-for="Cost"
+                               class="form-label fw-semibold"></label>
+                        <input asp-for="Cost"
+                               type="number" min="0" step="any"
+                               class="form-control" placeholder="0.00" />
+                        <span asp-validation-for="Cost"
+                              class="text-danger small"></span>
+                    </div>
+                    <!-- Priority -->
+                    <div class="col-md-3">
+                        <label asp-for="Priority"
+                               class="form-label fw-semibold">
+                            Service priority
+                           </label>
+                        <select asp-for="Priority"
+                                asp-items="Html.GetEnumSelectList<ServicePriority>()"
+                                class="form-select">
+                        </select>
+                        <span asp-validation-for="Priority"
+                              class="text-danger small"></span>
                     </div>
                 </div>
             </div>
         </div>
+
 
 
         <!-- Actions -->
