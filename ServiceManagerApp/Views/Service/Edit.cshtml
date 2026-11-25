@@ -75,18 +75,20 @@
         </div>
 
 
-        <!-- Workers -->
+        <!-- Workers and skill level -->
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
                 <h2 class="h6 mb-1">Assigned workers</h2>
                 <p class="small text-muted mb-3">Select the workers who should be assigned to this service.</p>
 
-                @* <div class="col-md-3 mb-3">
+                <div class="col-md-3 mb-3">
                     <label asp-for="SkillLevel" class="form-label fw-semibold"></label>
                     <select asp-for="SkillLevel" asp-items="Html.GetEnumSelectList<SkillLevel>()"
-                            class="form-select"></select>
+                            class="form-select">
+                        <option value="">No skill level</option>
+                    </select>
                     <span asp-validation-for="SkillLevel" class="text-danger small"></span>
-                </div> *@
+                </div>
 
                 @if (Model.Workers.Any())
                 {

@@ -1,5 +1,6 @@
 ﻿using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
+using ServiceManagerApp.Models.ViewModels.Services.Review;
 using System.ComponentModel.DataAnnotations;
 
 namespace ServiceManagerApp.Models.ViewModels.Services
@@ -18,6 +19,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services
         public ServicePriority Priority { get; set; } = ServicePriority.None;
 
         public string Location { get; set; } = null!;
+        public SkillLevel? SkillLevel { get; set; }
 
         [Required(ErrorMessage = "Service needs a thourough description.")]
         [StringLength(300, MinimumLength = 2)]
@@ -25,8 +27,8 @@ namespace ServiceManagerApp.Models.ViewModels.Services
 
         [Required(ErrorMessage = "Please enter cost.")]
         public decimal Cost { get; set; } = decimal.Zero;
-        public int[] WorkersIds { get; set; } = [];
-
+        public int[] WorkerIds { get; set; } = [];
+        public List<ServiceReviewWorkerViewModel> Workers { get; set; } = [];
         // assigned time | role | who assigned the worker | whether the worker accepted | completion status
         //public ICollection<ServiceAssignment> Assignments { get; set; } = [];
     }

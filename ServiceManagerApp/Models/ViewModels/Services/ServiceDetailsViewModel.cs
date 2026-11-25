@@ -12,9 +12,10 @@ namespace ServiceManagerApp.Models.ViewModels.Services
         public ServiceStatus Status { get; set; }
         public DateTime? DueAtUtc { get; set; }
         public TimeSpan? Duration { get; set; }
-        public string Location { get; set; } = string.Empty;
         public ServicePriority Priority { get; set; } = ServicePriority.None;
+        public string Location { get; set; } = string.Empty;
         //public ICollection<Worker> Workers { get; set; } = [];
+        public string SkillLevel { get; set; } = string.Empty;
 
         // assigned time | role | who assigned the worker | whether the worker accepted | completion status
         //public ICollection<ServiceAssignment> Assignments { get; set; } = [];

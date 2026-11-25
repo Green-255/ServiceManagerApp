@@ -91,7 +91,9 @@
                 <div class="col-md-3 mb-3">
                     <label asp-for="SkillLevel" class="form-label fw-semibold"></label>
                     <select asp-for="SkillLevel" asp-items="Html.GetEnumSelectList<SkillLevel>()"
-                            class="form-select"></select>
+                            class="form-select">
+                        <option value="">No skill level</option>
+                    </select>
                     <span asp-validation-for="SkillLevel" class="text-danger small"></span>
                 </div>
 

@@ -105,7 +105,20 @@ public class ServiceController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        return View();
+        var service = new ServiceCreateViewModel
+        {
+            Workers = await _context.Workers
+            .Select(w => new ServiceReviewWorkerViewModel
+            {
+                Id = w.Id,
+                Name = w.Name,
+                SkillLevel = w.SkillLevel.ToString()!,
+                IsSelected = false
+            })
+            .ToListAsync()
+        };
+
+        return View(service);
     }
 
     [HttpPost]
@@ -117,6 +130,10 @@ public class ServiceController : Controller
             return View(newService);
         }
 
+        var workers = await _context.Workers
+            .Where(w => newService.WorkerIds.Contains(w.Id))
+            .ToListAsync();
+
         var serviceToAdd = new Service
         {
             ServiceRequest = newService.ServiceRequest,
@@ -126,7 +143,7 @@ public class ServiceController : Controller
             Duration = DateTimeHelper.CalculateDuration(newService.DurationHours, newService.DurationMinutes),
             Location = newService.Location,
             Priority = newService.Priority,
-            //Workers = await GetWorkers(newService.WorkersIds),
+            Workers  = workers,
             Comments = ParseDescription(newService.Description),
             Cost     = (float) newService.Cost,
         };
@@ -175,6 +192,7 @@ public class ServiceController : Controller
             Priority = serviceToEdit.Priority,
             WorkerIds = assignedWorkerIds,
             Workers = workersAssignStatus,
+            SkillLevel = serviceToEdit.SkillLevel,
             Description = GetDescriptionFromComments(serviceToEdit.Comments),
             Cost = serviceToEdit.Cost,
         };
@@ -219,6 +237,7 @@ public class ServiceController : Controller
         serviceToUpdate.Priority = serviceEdited.Priority;
         serviceToUpdate.Location = serviceEdited.Location;
         serviceToUpdate.Workers = workers;
+        serviceToUpdate.SkillLevel = serviceEdited.SkillLevel;
         serviceToUpdate.Comments = ParseDescription(serviceEdited.Description);
         serviceToUpdate.Cost = serviceEdited.Cost;
 
@@ -274,6 +293,7 @@ public class ServiceController : Controller
             Priority = service.Priority,
             Duration = service.Duration,
             Location = service.Location,
+            SkillLevel = service.SkillLevel?.ToString() ?? "Not set",
             Description = GetDescriptionFromComments(service.Comments),
             Cost = service.Cost
         };
@@ -344,12 +364,6 @@ public class ServiceController : Controller
             .Include(s => s.Workers)
             .FirstOrDefaultAsync(s => s.Id == serviceVM.Id);
 
-        //var service = _context.Services
-        //    .Include(s => s.ServiceRequest)
-            //.Include(s => s.Workers)
-        //    .Where(s => s.Id == serviceVM.Id)
-        //    .Select(s => { });
-
         if (service == null)
         {
             return NotFound();
@@ -408,16 +422,25 @@ public class ServiceController : Controller
 
     private async Task<ServiceReviewViewModel> PopulateServiceRequestReviewViewModel(Service service)
     {
+        //var assignedWorkerIds = service.Workers
+        //    .Select(sw => sw.Id)
+        //    .ToList();
+
         var workersAvailable = await _context.Workers
             .Where(w => w.AvailabilityStatus == AvailabilityStatus.Available)
             .Select(w => new ServiceReviewWorkerViewModel
             {
                 Id = w.Id,
                 Name = w.Name,
-                SkillLevel = w.SkillLevel == null ? string.Empty : w.SkillLevel.ToString()!,
-                //IsSelected = service.Workers.Any(sw => sw.Id == w.Id)
+                SkillLevel = w.SkillLevel.HasValue
+                    ? w.SkillLevel.Value.ToString()
+                    : "Not set",
+
+                IsSelected = false,
+                //IsSelected = assignedWorkerIds.Contains(w.Id)
             })
             .ToListAsync();
+
 
         int minutes = DateTimeHelper.GetMinutesFromTimeSpan(service.Duration);
 
