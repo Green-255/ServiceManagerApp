@@ -12,13 +12,14 @@ namespace ServiceManagerApp.Models.Entities
         public ServiceStatus Status { get; set; }
         public DateTime? DueAtUtc { get; set; }
         public TimeSpan? Duration { get; set; }
+        public ServicePriority Priority { get; set; } = ServicePriority.None;
         public string Location { get; set; } = string.Empty;
+        public ICollection<string> Comments { get; set; } = [];
         public ICollection<Worker> Workers { get; set; } = [];
         public SkillLevel? SkillLevel { get; set; }
 
         // assigned time | role | who assigned the worker | whether the worker accepted | completion status
         //public ICollection<ServiceAssignment> Assignments { get; set; } = [];
-        public ICollection<string> Comments { get; set; } = [];
         public float Cost { get; set; } = 0.0f;
 
     }

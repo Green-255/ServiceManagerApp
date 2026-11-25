@@ -18,6 +18,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services.Review
 
         [Required]
         public string Location { get; set; } = string.Empty;
+        public ServicePriority Priority { get; set; } = ServicePriority.None;
         public List<int> WorkerIds { get; set; } = [];
         public List<ServiceReviewWorkerViewModel> Workers { get; set; } = [];
         public SkillLevel? SkillLevel { get; set; }

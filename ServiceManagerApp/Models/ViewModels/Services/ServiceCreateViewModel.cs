@@ -15,6 +15,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services
 
         [Range(0, 59, ErrorMessage = "Minutes must be between 0 and 59.")]
         public int? DurationMinutes { get; set; }
+        public ServicePriority Priority { get; set; } = ServicePriority.None;
 
         public string Location { get; set; } = null!;
 

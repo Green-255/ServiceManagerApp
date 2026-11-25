@@ -17,6 +17,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services
         public int? DurationHours { get; set; }
         public int? DurationMinutes { get; set; }
         public string Location { get; set; } = string.Empty;
+        public ServicePriority Priority { get; set; } = ServicePriority.None;
         public List<int> WorkerIds { get; set; } = [];
         public List<ServiceReviewWorkerViewModel> Workers { get; set; } = [];
 
