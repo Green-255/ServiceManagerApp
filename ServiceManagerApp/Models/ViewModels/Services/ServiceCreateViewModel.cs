@@ -17,9 +17,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services
         [Range(0, 59, ErrorMessage = "Minutes must be between 0 and 59.")]
         public int? DurationMinutes { get; set; }
         public ServicePriority Priority { get; set; } = ServicePriority.None;
-
         public string Location { get; set; } = null!;
-        public SkillLevel? SkillLevel { get; set; }
 
         [Required(ErrorMessage = "Service needs a thourough description.")]
         [StringLength(300, MinimumLength = 2)]
@@ -27,6 +25,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services
 
         [Required(ErrorMessage = "Please enter cost.")]
         public decimal Cost { get; set; } = decimal.Zero;
+        public SkillLevel? SkillLevel { get; set; }
         public int[] WorkerIds { get; set; } = [];
         public List<ServiceReviewWorkerViewModel> Workers { get; set; } = [];
         // assigned time | role | who assigned the worker | whether the worker accepted | completion status

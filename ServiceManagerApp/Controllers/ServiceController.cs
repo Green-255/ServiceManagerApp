@@ -30,76 +30,43 @@ public class ServiceController : Controller
     public async Task<IActionResult> Index()
     {
         var services = await _context.Services
-            .OrderByDescending(s => s.DueAtUtc).ToListAsync();
-        var serviceRequests = await _context.ServiceRequests
-            .OrderByDescending(sr => sr.CreatedAtUtc).ToListAsync();
-
+            .AsNoTracking()
+            .OrderByDescending(s => s.Priority)
+            .ThenBy(s => s.DueAtUtc)
+            .Select(s => new ServiceIndexListViewModel
+            {
+                Id = s.Id,
+                ServiceRequest = s.ServiceRequest!,
+                ReferenceNumber = s.ReferenceNumber,
+                ServiceRequestType = s.ServiceRequestType,
+                Status = s.Status,
+                DueAtUtc = s.DueAtUtc,
+                Priority = s.Priority,
+            })
+            .ToListAsync();
 
         var allServices = new List<ServiceIndexListViewModel>();
         var needReviewServices = new List<ServiceIndexListViewModel>();
 
         foreach (var service in services)
         {
-            var s = new ServiceIndexListViewModel
+
+            if (UnreviewedStatuses.Contains(service.Status)){
+                needReviewServices.Add(service);
+            }
+            else
             {
-                Id = service.Id,
-                ServiceRequest = service.ServiceRequest!,
-                ReferenceNumber = service.ReferenceNumber,
-                ServiceRequestType = service.ServiceRequestType,
-                Status = service.Status,
-                DueAtUtc = service.DueAtUtc,
-                Priority = service.Priority,
-            };
-
-            allServices.Add(s);
-
-            if (UnreviewedStatuses.Contains(s.Status)){
-                needReviewServices.Add(s);
+                allServices.Add(service);
             }
         }
 
-
-
-        // WHICH APPROACH IS BETTER?
-
-        //var allServices = await _context.Services
-        //    .OrderByDescending(s => s.DueAtUtc)
-        //    .Select(s => new ServiceListItemViewModel
-        //    {
-        //        Id = s.Id,
-        //        ServiceType = s.ServiceType,
-        //        Status = s.Status,
-        //        DueAtUtc = s.DueAtUtc,
-        //        Duration = s.Duration,
-        //        Location = s.Location
-        //    })
-        //    .ToListAsync(); 
-
-        //var servicesNeedingReview = await _context.Services
-        //    .Where(s => reviewStatuses.Contains(s.Status))
-        //    .OrderByDescending(s => s.DueAtUtc)
-        //    .Select(s => new ServiceListItemViewModel
-        //    {
-        //        Id = s.Id,
-        //        ServiceType = s.ServiceType,
-        //        Status = s.Status,
-        //        DueAtUtc = s.DueAtUtc,
-        //        Duration = s.Duration,
-        //        Location = s.Location
-        //    })
-        //    .ToListAsync(); 
-
         var servicesViewModel = new ServiceIndexViewModel
         {
-            //AllServices = [],
-            //ServicesNeedingReview = []
-            AllServices = allServices.Except(needReviewServices).ToList(),
+            AllServices = allServices,
             ServicesNeedingReview = needReviewServices
         };
 
-
         return View(servicesViewModel);
-
     }
 
     [HttpGet]
@@ -144,7 +111,8 @@ public class ServiceController : Controller
             Location = newService.Location,
             Priority = newService.Priority,
             Workers  = workers,
-            Comments = ParseDescription(newService.Description),
+            SkillLevel = newService.SkillLevel,
+            Description = newService.Description,
             Cost     = (float) newService.Cost,
         };
 
@@ -193,7 +161,7 @@ public class ServiceController : Controller
             WorkerIds = assignedWorkerIds,
             Workers = workersAssignStatus,
             SkillLevel = serviceToEdit.SkillLevel,
-            Description = GetDescriptionFromComments(serviceToEdit.Comments),
+            Description = serviceToEdit.Description,
             Cost = serviceToEdit.Cost,
         };
 
@@ -238,7 +206,7 @@ public class ServiceController : Controller
         serviceToUpdate.Location = serviceEdited.Location;
         serviceToUpdate.Workers = workers;
         serviceToUpdate.SkillLevel = serviceEdited.SkillLevel;
-        serviceToUpdate.Comments = ParseDescription(serviceEdited.Description);
+        serviceToUpdate.Description = serviceEdited.Description;
         serviceToUpdate.Cost = serviceEdited.Cost;
 
         await _context.SaveChangesAsync();
@@ -294,7 +262,7 @@ public class ServiceController : Controller
             Duration = service.Duration,
             Location = service.Location,
             SkillLevel = service.SkillLevel?.ToString() ?? "Not set",
-            Description = GetDescriptionFromComments(service.Comments),
+            Description = service.Description,
             Cost = service.Cost
         };
         return View(viewModel);
@@ -375,7 +343,7 @@ public class ServiceController : Controller
         service.Duration = DateTimeHelper.CalculateDuration(serviceVM.DurationHours, serviceVM.DurationMinutes);
         service.Location = serviceVM.Location;
         service.SkillLevel = serviceVM.SkillLevel;
-        service.Comments = serviceVM.Comments;
+        service.Description = serviceVM.Description;
         service.Cost = serviceVM.Cost;
 
         service.Workers = await _context.Workers
@@ -422,12 +390,11 @@ public class ServiceController : Controller
 
     private async Task<ServiceReviewViewModel> PopulateServiceRequestReviewViewModel(Service service)
     {
-        //var assignedWorkerIds = service.Workers
-        //    .Select(sw => sw.Id)
-        //    .ToList();
+        var assignedWorkerIds = service.Workers
+            .Select(sw => sw.Id)
+            .ToList();
 
         var workersAvailable = await _context.Workers
-            .Where(w => w.AvailabilityStatus == AvailabilityStatus.Available)
             .Select(w => new ServiceReviewWorkerViewModel
             {
                 Id = w.Id,
@@ -436,8 +403,8 @@ public class ServiceController : Controller
                     ? w.SkillLevel.Value.ToString()
                     : "Not set",
 
-                IsSelected = false,
-                //IsSelected = assignedWorkerIds.Contains(w.Id)
+                Status = w.AvailabilityStatus.ToString(),
+                IsSelected = assignedWorkerIds.Contains(w.Id)
             })
             .ToListAsync();
 
@@ -447,8 +414,14 @@ public class ServiceController : Controller
         var serviceVM = new ServiceReviewViewModel
         {
             Id = service.Id,
-            ServiceRequestId = service.ServiceRequestId,
-            ServiceRequest = service.ServiceRequest,
+            ServiceRequest = service.ServiceRequest == null
+            ? null
+            : new ServiceRequestDetailsViewModel
+            {
+                Id = service.ServiceRequest.Id,
+                ReferenceNumber = service.ServiceRequest.ReferenceNumber,
+                Title = service.ServiceRequest.Title,
+            },
             ReferenceNumber = service.ReferenceNumber,
             ServiceRequestType = service.ServiceRequestType,
             DueAtUtc = service.DueAtUtc,
@@ -458,20 +431,10 @@ public class ServiceController : Controller
             Location = service.Location,
             Workers = workersAvailable,
             SkillLevel = service.SkillLevel,
-            Comments = service.Comments,
+            Description = service.Description,
             Cost = service.Cost,
         };
 
         return serviceVM;
-    }
-
-    private string GetDescriptionFromComments(ICollection<string> commentsToParse) // needs renaming
-    {
-        return string.Join("\n", commentsToParse);
-    }
-
-    private ICollection<string> ParseDescription(string description)
-    {
-        return description.Split();
     }
 }

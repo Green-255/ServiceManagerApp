@@ -108,7 +108,7 @@ public class ServiceRequestController : Controller
             DueAtUtc       = newRequest.RequestedDueUtc,
             //Duration = 
             //Location = 
-            Comments = newRequest.Description.Split()
+            Description = newRequest.Description
         };
 
         return newService;

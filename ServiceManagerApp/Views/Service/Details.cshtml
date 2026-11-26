@@ -67,7 +67,14 @@
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
                 <h2 class="h5 mb-0">Description</h2>
-                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                @if (string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <div>
+                        <span class="">No description provided</span>
+                        <button type="button" class="btn btn-outline-primary">Edit service</button>
+                    </div>
+                }
+                else
                 {
                     <p class="text-muted mb-0 mt-2" style="white-space: pre-wrap;">@Model.Description</p>
                 }

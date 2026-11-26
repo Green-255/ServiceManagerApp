@@ -3,9 +3,6 @@
 
 @{
     ViewData["Title"] = $"Review service {Model.ReferenceNumber}";
-    var requestTitle = string.IsNullOrWhiteSpace(Model.ServiceRequest?.Title)
-        ? "Untitled service request"
-        : Model.ServiceRequest.Title;
 }
 
 <div class="container py-4" style="max-width: 960px;">
@@ -23,25 +20,74 @@
         </div>
         <span class="badge rounded-pill bg-warning text-dark mt-1">Needs review</span>
     </div>
-
-    <!-- Description -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body p-4">
-            <div class="text-muted small mb-1">Related service request</div>
-            <h2 class="h5 mb-0">@requestTitle</h2>
-            @if (!string.IsNullOrWhiteSpace(Model.ServiceRequest?.Description))
-            {
-                <p class="text-muted mb-0 mt-2" style="white-space: pre-wrap;">@Model.ServiceRequest.Description</p>
-            }
-        </div>
-    </div>
-
+    
+    <!-- Edit fields -->
     <form asp-action="Review" method="post" asp-antiforgery="true">
         <input asp-for="Id" type="hidden" />
         <input asp-for="ReferenceNumber" type="hidden" />
-        <input asp-for="ServiceRequestId" type="hidden" />
+        <input asp-for="ServiceRequest.Id" type="hidden" />
 
         <div asp-validation-summary="ModelOnly" class="text-danger small mb-3" role="alert"></div>
+
+        <!-- Description -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <!-- Description field -->
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-semibold"></label>
+                    <textarea asp-for="Description"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Describe the service, instructions and relevant details"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>                
+                <!-- Related service request -->
+                <div class="border-top pt-3 mt-4">
+                    <div class="text-muted small mb-2">
+                        Related service request
+                    </div>
+
+                    @if (Model.ServiceRequest == null)
+                    {
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                            <span class="badge bg-light text-secondary border fw-normal">
+                                Not linked
+                            </span>
+
+                            <span class="text-muted small">
+                                This service was created independently.
+                            </span>
+
+                            @* <a asp-action="LinkRequest"
+                               asp-route-id="@Model.Id"
+                               class="btn btn-sm btn-outline-primary ms-sm-auto">
+                                Select request
+                            </a> *@
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                            <span class="badge bg-success bg-opacity-10 text-opacity-75 text-success border border-success-subtle">
+                                Linked
+                            </span>
+
+                            <a asp-controller="ServiceRequest"
+                               asp-action="Details"
+                               asp-route-id="@Model.ServiceRequest.Id"
+                               class="text-decoration-none fw-semibold">
+                                @Model.ServiceRequest.ReferenceNumber
+                            </a>
+
+                            <span class="text-muted small">
+                                @Model.ServiceRequest.Title
+                            </span>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
 
         <!-- Location, Date and Time -->
         <div class="card border-0 shadow-sm mb-4">

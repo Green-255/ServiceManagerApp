@@ -8,9 +8,8 @@ namespace ServiceManagerApp.Models.ViewModels.Services.Review
     public class ServiceReviewViewModel
     {
         public int Id { get; set; }
-        public int? ServiceRequestId { get; set; }
-        public ServiceRequest? ServiceRequest { get; set; }
-        public string ReferenceNumber { get; init; } = null!;
+        public string ReferenceNumber { get; set; } = null!;
+        public ServiceRequestDetailsViewModel? ServiceRequest { get; set; }
         public ServiceRequestType ServiceRequestType { get; init; }
         public DateTime? DueAtUtc { get; set; }
         public int DurationHours { get; set; }
@@ -25,7 +24,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services.Review
 
         //[Required(ErrorMessage = "Service needs a thourough description.")]
         //[StringLength(300, MinimumLength = 2)]
-        public ICollection<string> Comments { get; set; } = [];
+        public string Description { get; set; } = string.Empty;
         public float Cost { get; set; } = 0.0f;
     }
 }
