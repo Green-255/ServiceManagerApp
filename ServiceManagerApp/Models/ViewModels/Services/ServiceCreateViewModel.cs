@@ -8,7 +8,6 @@ namespace ServiceManagerApp.Models.ViewModels.Services
     public class ServiceCreateViewModel
     {
         public ServiceRequest? ServiceRequest { get; set; } = null;
-        public ServiceRequestType ServiceRequestType { get; set; } = ServiceRequestType.NewService;
         public DateTime? DueAtUtc { get; set; }
 
         [Range(0, int.MaxValue, ErrorMessage = "Hours cannot be negative.")]

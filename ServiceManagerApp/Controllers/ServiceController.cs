@@ -38,7 +38,6 @@ public class ServiceController : Controller
                 Id = s.Id,
                 ServiceRequest = s.ServiceRequest!,
                 ReferenceNumber = s.ReferenceNumber,
-                ServiceRequestType = s.ServiceRequestType,
                 Status = s.Status,
                 DueAtUtc = s.DueAtUtc,
                 Priority = s.Priority,
@@ -104,7 +103,6 @@ public class ServiceController : Controller
         var serviceToAdd = new Service
         {
             ServiceRequest = newService.ServiceRequest,
-            ServiceRequestType = newService.ServiceRequestType,
             Status = ServiceStatus.Draft,
             DueAtUtc = newService.DueAtUtc,
             Duration = DateTimeHelper.CalculateDuration(newService.DurationHours, newService.DurationMinutes),
@@ -153,7 +151,6 @@ public class ServiceController : Controller
             Id = id,
             ServiceRequest = serviceToEdit.ServiceRequest,
             ReferenceNumber = serviceToEdit.ReferenceNumber,
-            ServiceRequestType = serviceToEdit.ServiceRequestType,
             Status = serviceToEdit.Status,
             DueAtUtc = serviceToEdit.DueAtUtc,
             Location = serviceToEdit.Location,
@@ -197,7 +194,6 @@ public class ServiceController : Controller
             .ToListAsync();
 
         serviceToUpdate.ServiceRequest = serviceEdited.ServiceRequest;
-        serviceToUpdate.ServiceRequestType = serviceEdited.ServiceRequestType;
         serviceToUpdate.Status = serviceEdited.Status;
         serviceToUpdate.DueAtUtc = serviceEdited.DueAtUtc;
         serviceToUpdate.Duration = DateTimeHelper.CalculateDuration(
@@ -255,7 +251,6 @@ public class ServiceController : Controller
         {
             Id = service.Id,
             ReferenceNumber = service.ReferenceNumber,
-            ServiceRequestType = service.ServiceRequestType,
             Status = service.Status,
             DueAtUtc = service.DueAtUtc,
             Priority = service.Priority,
@@ -337,7 +332,6 @@ public class ServiceController : Controller
             return NotFound();
         }
 
-        service.ServiceRequestType = serviceVM.ServiceRequestType;
         service.DueAtUtc = serviceVM.DueAtUtc;
         service.Priority = serviceVM.Priority;
         service.Duration = DateTimeHelper.CalculateDuration(serviceVM.DurationHours, serviceVM.DurationMinutes);
@@ -423,7 +417,6 @@ public class ServiceController : Controller
                 Title = service.ServiceRequest.Title,
             },
             ReferenceNumber = service.ReferenceNumber,
-            ServiceRequestType = service.ServiceRequestType,
             DueAtUtc = service.DueAtUtc,
             DurationHours = minutes / 60,
             DurationMinutes = minutes % 60,

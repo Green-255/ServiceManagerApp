@@ -19,13 +19,13 @@
     <form asp-action="Create" method="post" asp-antiforgery="true">
         <div asp-validation-summary="ModelOnly" class="text-danger small mb-3" role="alert"></div>
 
-        <div class="mb-4 ms-4 col-2">
+        @* <div class="mb-4 ms-4 col-2">
             <label asp-for="ServiceRequestType" class="form-label fw-semibold">Request type</label>
             <select asp-for="ServiceRequestType"
                     asp-items="Html.GetEnumSelectList<ServiceRequestType>()"
                     class="form-select"></select>
             <span asp-validation-for="ServiceRequestType" class="text-danger small"></span>
-        </div>
+        </div> *@
 
         <!-- Description -->
         <div class="card border-0 shadow-sm mb-4">
