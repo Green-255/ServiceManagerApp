@@ -7,8 +7,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services
     public class ServiceEditViewModel
     {
         public int Id { get; set; }
-        //public int ServiceRequestId { get; set; }
-        public ServiceRequest? ServiceRequest { get; set; }
+        public ServiceRequestSelectionDetailsViewModel? ServiceRequest { get; set; }
         public string ReferenceNumber { get; set; } = string.Empty;
         public ServiceStatus Status { get; set; }
         public DateTime? DueAtUtc { get; set; }

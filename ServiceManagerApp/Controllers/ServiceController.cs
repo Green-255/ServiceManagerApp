@@ -8,6 +8,7 @@ using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.Services;
 using ServiceManagerApp.Models.ViewModels.Services.Review;
 using ServiceManagerApp.Utilities;
+using ServiceManagerApp.Services;
 
 namespace ServiceManagerApp.Controllers;
 
@@ -15,15 +16,17 @@ namespace ServiceManagerApp.Controllers;
 public class ServiceController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly LookupService _lookup;
     private static readonly ServiceStatus[] UnreviewedStatuses =
         {
             ServiceStatus.NeedsReview,
             ServiceStatus.Draft,
         };
 
-    public ServiceController(ApplicationDbContext context)
+    public ServiceController(ApplicationDbContext context, LookupService lookup)
     {
         _context = context;
+        _lookup = lookup;
     }
 
     [HttpGet]
@@ -71,7 +74,7 @@ public class ServiceController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        var service = new ServiceCreateViewModel
+        var viewModel = new ServiceCreateViewModel
         {
             Workers = await _context.Workers
             .Select(w => new ServiceReviewWorkerViewModel
@@ -81,10 +84,12 @@ public class ServiceController : Controller
                 SkillLevel = w.SkillLevel.ToString()!,
                 IsSelected = false
             })
-            .ToListAsync()
+            .ToListAsync(),
+
+            AvailableRequests = await _lookup.GetServiceRequestsAsync()
         };
 
-        return View(service);
+        return View(viewModel);
     }
 
     [HttpPost]
@@ -100,9 +105,14 @@ public class ServiceController : Controller
             .Where(w => newService.WorkerIds.Contains(w.Id))
             .ToListAsync();
 
+
+
         var serviceToAdd = new Service
         {
-            ServiceRequest = newService.ServiceRequest,
+            /// EF Core uses this foreign key to establish the relationship with the existing ServiceRequest.
+            /// There is no need to retrieve the entire entity simply to establish the relationship.
+            ServiceRequestId = newService.ServiceRequestId,
+
             Status = ServiceStatus.Draft,
             DueAtUtc = newService.DueAtUtc,
             Duration = DateTimeHelper.CalculateDuration(newService.DurationHours, newService.DurationMinutes),
@@ -149,7 +159,7 @@ public class ServiceController : Controller
         var viewModel = new ServiceEditViewModel
         {
             Id = id,
-            ServiceRequest = serviceToEdit.ServiceRequest,
+            ServiceRequest = PopulateServiceRequestDetails(serviceToEdit.ServiceRequest),
             ReferenceNumber = serviceToEdit.ReferenceNumber,
             Status = serviceToEdit.Status,
             DueAtUtc = serviceToEdit.DueAtUtc,
@@ -193,7 +203,10 @@ public class ServiceController : Controller
             .Where(w => serviceEdited.WorkerIds.Contains(w.Id))
             .ToListAsync();
 
-        serviceToUpdate.ServiceRequest = serviceEdited.ServiceRequest;
+        serviceToUpdate.ServiceRequest = serviceEdited.ServiceRequest == null
+            ? null
+            : await _context.ServiceRequests.FindAsync(serviceEdited.ServiceRequest.Id);
+
         serviceToUpdate.Status = serviceEdited.Status;
         serviceToUpdate.DueAtUtc = serviceEdited.DueAtUtc;
         serviceToUpdate.Duration = DateTimeHelper.CalculateDuration(
@@ -251,6 +264,7 @@ public class ServiceController : Controller
         {
             Id = service.Id,
             ReferenceNumber = service.ReferenceNumber,
+            ServiceRequest = PopulateServiceRequestDetails(service.ServiceRequest),
             Status = service.Status,
             DueAtUtc = service.DueAtUtc,
             Priority = service.Priority,
@@ -408,14 +422,7 @@ public class ServiceController : Controller
         var serviceVM = new ServiceReviewViewModel
         {
             Id = service.Id,
-            ServiceRequest = service.ServiceRequest == null
-            ? null
-            : new ServiceRequestDetailsViewModel
-            {
-                Id = service.ServiceRequest.Id,
-                ReferenceNumber = service.ServiceRequest.ReferenceNumber,
-                Title = service.ServiceRequest.Title,
-            },
+            ServiceRequest = PopulateServiceRequestDetails(service.ServiceRequest),
             ReferenceNumber = service.ReferenceNumber,
             DueAtUtc = service.DueAtUtc,
             DurationHours = minutes / 60,
@@ -429,5 +436,17 @@ public class ServiceController : Controller
         };
 
         return serviceVM;
+    }
+
+    private ServiceRequestSelectionDetailsViewModel? PopulateServiceRequestDetails(ServiceRequest? sr)
+    {
+        return sr == null
+            ? null
+            : new ServiceRequestSelectionDetailsViewModel
+            {
+                Id = sr.Id,
+                ReferenceNumber = sr.ReferenceNumber,
+                Title = sr.Title,
+            };
     }
 }

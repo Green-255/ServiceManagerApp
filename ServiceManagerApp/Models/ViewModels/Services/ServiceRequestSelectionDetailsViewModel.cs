@@ -1,6 +1,6 @@
 ﻿namespace ServiceManagerApp.Models.ViewModels.Services
 {
-    public class ServiceRequestDetailsViewModel
+    public class ServiceRequestSelectionDetailsViewModel
     {
         public int Id { get; set; }
         public string ReferenceNumber { get; set; } = null!;

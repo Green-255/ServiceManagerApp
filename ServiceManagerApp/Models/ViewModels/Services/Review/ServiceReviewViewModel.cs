@@ -9,7 +9,7 @@ namespace ServiceManagerApp.Models.ViewModels.Services.Review
     {
         public int Id { get; set; }
         public string ReferenceNumber { get; set; } = null!;
-        public ServiceRequestDetailsViewModel? ServiceRequest { get; set; }
+        public ServiceRequestSelectionDetailsViewModel? ServiceRequest { get; set; }
         public DateTime? DueAtUtc { get; set; }
         public int DurationHours { get; set; }
         public int DurationMinutes { get; set; }
