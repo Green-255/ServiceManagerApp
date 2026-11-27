@@ -8,13 +8,13 @@ namespace ServiceManagerApp.Models.Entities
         public int? ServiceRequestId { get; set; }
         public ServiceRequest? ServiceRequest { get; set; }
         public string ReferenceNumber { get; set; } = string.Empty;
-        public ServiceRequestType ServiceRequestType { get; set; }
         public ServiceStatus Status { get; set; }
         public DateTime? DueAtUtc { get; set; }
         public TimeSpan? Duration { get; set; }
         public ServicePriority Priority { get; set; } = ServicePriority.None;
         public string Location { get; set; } = string.Empty;
-        public ICollection<string> Comments { get; set; } = [];
+        //public ICollection<string> Comments { get; set; } = [];
+        public string Description { get; set; } = string.Empty;
         public ICollection<Worker> Workers { get; set; } = [];
         public SkillLevel? SkillLevel { get; set; }
 

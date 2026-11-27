@@ -8,7 +8,6 @@ namespace ServiceManagerApp.Models.ViewModels.Services
         public int Id { get; set; }
         public ServiceRequest ServiceRequest { get; set; } = null!;
         public string ReferenceNumber { get; set; } = string.Empty;
-        public ServiceRequestType ServiceRequestType { get; set; }
         public ServicePriority Priority { get; set; } = ServicePriority.None;
         public ServiceStatus Status { get; set; }
         public DateTime? DueAtUtc { get; set; }

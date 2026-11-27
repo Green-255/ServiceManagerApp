@@ -277,12 +277,12 @@ namespace ServiceManagerApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.PrimitiveCollection<string>("Comments")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<float>("Cost")
                         .HasColumnType("real");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DueAtUtc")
                         .HasColumnType("datetime2");
@@ -302,9 +302,6 @@ namespace ServiceManagerApp.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ServiceRequestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServiceRequestType")
                         .HasColumnType("int");
 
                     b.Property<int?>("SkillLevel")

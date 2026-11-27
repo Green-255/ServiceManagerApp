@@ -103,12 +103,11 @@ public class ServiceRequestController : Controller
         var newService = new Service
         {
             ServiceRequest = newRequest,
-            ServiceRequestType = newRequest.ServiceRequestType,
             Status         = ServiceStatus.NeedsReview,
             DueAtUtc       = newRequest.RequestedDueUtc,
             //Duration = 
             //Location = 
-            Comments = newRequest.Description.Split()
+            Description = newRequest.Description
         };
 
         return newService;

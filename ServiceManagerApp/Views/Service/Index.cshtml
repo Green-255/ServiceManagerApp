@@ -64,7 +64,7 @@
                             <tr>
                                 <th scope="col" class="ps-4 py-3">Reference number</th>
                                 <th scope="col" class="py-3">Priority</th>
-                                <th scope="col" class="py-3">Type</th>
+                                @* <th scope="col" class="py-3">Type</th> *@
                                 <th scope="col" class="py-3">Status</th>
                                 <th scope="col" class="py-3">Due date</th>
                                 <th scope="col" class="text-end pe-4 py-3">Action</th>
@@ -79,7 +79,7 @@
                                         @service.ReferenceNumber
                                     </th>
                                     <td class="py-3">@ReadableLabel(service.Priority.ToString())</td>
-                                    <td class="py-3">@ReadableLabel(service.ServiceRequestType.ToString())</td>
+                                    @* <td class="py-3">@ReadableLabel(service.ServiceRequestType.ToString())</td> *@
                                     <td class="py-3">
                                         <span class="badge rounded-pill fw-semibold @StatusBadgeClass(status)">
                                             @ReadableLabel(status)
@@ -93,7 +93,7 @@
                                         }
                                         else
                                         {
-                                            <span class="text-muted">Not set</span>
+                                            <span class="small text-muted">Not set</span>
                                         }
                                     </td>
                                     <td class="text-end pe-4 py-3">
@@ -148,7 +148,7 @@
                             <tr>
                                 <th scope="col" class="ps-4 py-3">Reference number</th>
                                 <th scope="col" class="py-3">Priority</th>
-                                <th scope="col" class="py-3">Type</th>
+                                @* <th scope="col" class="py-3">Type</th> *@
                                 <th scope="col" class="py-3">Status</th>
                                 <th scope="col" class="py-3">Due date</th>
                                 <th scope="col" class="text-end pe-4 py-3">Actions</th>
@@ -158,14 +158,14 @@
                             @foreach (var service in allServices)
                             {
                                 var status = service.Status.ToString();
-                                var searchTerms = $"{service.ReferenceNumber} {service.ServiceRequestType} {ReadableLabel(service.ServiceRequestType.ToString())} {status} {ReadableLabel(status)}";
+                                var searchTerms = $"{service.ReferenceNumber} {status} {ReadableLabel(status)}"; //{service.ServiceRequestType} {ReadableLabel(service.ServiceRequestType.ToString())}
                                 <tr data-search="@searchTerms">
                                     <th scope="row" class="ps-4 py-3 fw-semibold">
                                         <a asp-action="Details" asp-route-id="@service.Id"
                                            class="text-decoration-none">@service.ReferenceNumber</a>
                                     </th>
                                     <td class="py-3">@ReadableLabel(service.Priority.ToString())</td>
-                                    <td class="py-3">@ReadableLabel(service.ServiceRequestType.ToString())</td>
+                                    @* <td class="py-3">@ReadableLabel(service.ServiceRequestType.ToString())</td> *@
                                     <td class="py-3">
                                         <span class="badge rounded-pill fw-semibold @StatusBadgeClass(status)">
                                             @ReadableLabel(status)
@@ -179,7 +179,7 @@
                                         }
                                         else
                                         {
-                                            <span class="text-muted">Not set</span>
+                                            <span class="small text-muted">Not set</span>
                                         }
                                     </td>
                                     <td class="text-end pe-4 py-3">

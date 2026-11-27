@@ -4,6 +4,7 @@ using ServiceManagerApp.Data;
 using ServiceManagerApp.Models.Entities;
 using ServiceManagerApp.Models.Enums;
 using ServiceManagerApp.Models.ViewModels.Departments;
+using ServiceManagerApp.Models.ViewModels.Services;
 
 namespace ServiceManagerApp.Services
 {
@@ -74,5 +75,19 @@ namespace ServiceManagerApp.Services
                 .ToListAsync();
         }
 
+
+        public async Task<List<ServiceRequestSelectionDetailsViewModel>>GetServiceRequestsAsync()
+        {
+            return await _context.ServiceRequests
+                .AsNoTracking()
+                .OrderByDescending(sr => sr.CreatedAtUtc)
+                .Select(sr => new ServiceRequestSelectionDetailsViewModel
+                {
+                    Id = sr.Id,
+                    ReferenceNumber = sr.ReferenceNumber,
+                    Title = sr.Title
+                })
+                .ToListAsync();
+        }
     }
 }

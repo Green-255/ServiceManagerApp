@@ -3,6 +3,8 @@
 
 @{
     ViewData["Title"] = "Add service";
+    var selectedRequest = Model.AvailableRequests
+        .FirstOrDefault(r => r.Id == Model.ServiceRequestId);
 }
 
 <div class="container py-4" style="max-width: 960px;">
@@ -19,13 +21,13 @@
     <form asp-action="Create" method="post" asp-antiforgery="true">
         <div asp-validation-summary="ModelOnly" class="text-danger small mb-3" role="alert"></div>
 
-        <div class="mb-4 ms-4 col-2">
+        @* <div class="mb-4 ms-4 col-2">
             <label asp-for="ServiceRequestType" class="form-label fw-semibold">Request type</label>
             <select asp-for="ServiceRequestType"
                     asp-items="Html.GetEnumSelectList<ServiceRequestType>()"
                     class="form-select"></select>
             <span asp-validation-for="ServiceRequestType" class="text-danger small"></span>
-        </div>
+        </div> *@
 
         <!-- Description -->
         <div class="card border-0 shadow-sm mb-4">
@@ -34,6 +36,58 @@
                 <textarea asp-for="Description" class="form-control" rows="3"
                           placeholder="Fully discribe the service needed, instructions and useful details"></textarea>
                 <span asp-validation-for="Description" class="text-danger small"></span>
+  
+                <!-- Related service request -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+
+                        <h2 class="h5 fw-semibold mb-3">
+                            Related service request
+                        </h2>
+
+                        <input type="hidden" asp-for="ServiceRequestId" />
+
+                        <div class="d-flex align-items-center
+                            justify-content-between flex-wrap gap-3">
+
+                            <div>
+                                <span id="selectedRequestReference"
+                                      class="fw-semibold text-primary">
+                                    @selectedRequest?.ReferenceNumber
+                                </span>
+
+                                <div id="selectedRequestTitle"
+                                     class="text-muted small">
+                                    @(selectedRequest?.Title ?? "No request linked.")
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+
+                                <button type="button"
+                                        class="btn btn-outline-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#requestSelectionModal">
+                                    <i class="bi bi-link-45deg"></i>
+                                    Select request
+                                </button>
+
+                                <button type="button"
+                                        id="removeRequestButton"
+                                        class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-x-lg"></i>
+                                    Remove
+                                </button>
+
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="ServiceRequestId"
+                              class="text-danger small"></span>
+
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -80,7 +134,7 @@
             </div>
         </div>
 
-        @* <!-- Workers and skill level -->
+        <!-- Workers and skill level -->
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
                 <h2 class="h6 mb-1">Assign workers</h2>
@@ -89,7 +143,9 @@
                 <div class="col-md-3 mb-3">
                     <label asp-for="SkillLevel" class="form-label fw-semibold"></label>
                     <select asp-for="SkillLevel" asp-items="Html.GetEnumSelectList<SkillLevel>()"
-                            class="form-select"></select>
+                            class="form-select">
+                        <option value="">No skill level</option>
+                    </select>
                     <span asp-validation-for="SkillLevel" class="text-danger small"></span>
                 </div>
 
@@ -122,7 +178,7 @@
                     <p class="text-muted mb-0">No workers are available to assign.</p>
                 }
             </div>
-        </div> *@
+        </div>
 
         <!-- Cost ans Priority -->
         <div class="card border-0 shadow-sm mb-4">
@@ -165,6 +221,122 @@
     </form>
 </div>
 
+
+<div class="modal fade"
+     id="requestSelectionModal"
+     tabindex="-1"
+     aria-labelledby="requestSelectionModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-lg
+        modal-dialog-centered modal-dialog-scrollable">
+
+        <div class="modal-content">
+
+            <!-- Header -->
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="requestSelectionModalLabel">
+                    Select service request
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+
+                @if (Model.AvailableRequests.Any())
+                {
+                    <div class="list-group">
+
+                        @foreach (var request in Model.AvailableRequests)
+                        {
+                            <button type="button"
+                                    class="list-group-item
+                                list-group-item-action
+                                request-option p-3"
+                                    data-request-id="@request.Id"
+                                    data-request-reference="@request.ReferenceNumber"
+                                    data-request-title="@request.Title"
+                                    data-bs-dismiss="modal">
+
+                                <div class="fw-semibold text-primary">
+                                    @request.ReferenceNumber
+                                </div>
+
+                                <div class="text-muted small">
+                                    @request.Title
+                                </div>
+
+                            </button>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center my-4">
+                        No service requests are available.
+                    </p>
+                }
+
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const requestIdInput =
+            document.getElementById("ServiceRequestId");
+
+        const referenceDisplay =
+            document.getElementById("selectedRequestReference");
+
+        const titleDisplay =
+            document.getElementById("selectedRequestTitle");
+
+        document.querySelectorAll(".request-option")
+            .forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    requestIdInput.value =
+                        button.dataset.requestId;
+
+                    referenceDisplay.textContent =
+                        button.dataset.requestReference;
+
+                    titleDisplay.textContent =
+                        button.dataset.requestTitle;
+                });
+            });
+
+        document.getElementById("removeRequestButton")
+            .addEventListener("click", () => {
+
+                requestIdInput.value = "";
+                referenceDisplay.textContent = "";
+                titleDisplay.textContent = "No request linked.";
+            });
+    </script>
 }
+

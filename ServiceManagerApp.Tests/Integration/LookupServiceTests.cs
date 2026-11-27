@@ -97,7 +97,6 @@ namespace ServiceManagerApp.Tests.Integration
         [Fact]
         public async Task PopulateServicesFromRequests_EveryTypeJobRoles_Returns()
         {
-
             // Arrange
             await using var connection = new SqliteConnection("Data Source=:memory:");
 
@@ -114,37 +113,30 @@ namespace ServiceManagerApp.Tests.Integration
             context.Services.AddRange(
                 new Service
                 {
-                    ServiceRequestType = ServiceRequestType.NewService,
                     Status = ServiceStatus.Scheduled,
                 },
                 new Service
                 {
-                    ServiceRequestType = ServiceRequestType.ReDo,
                     Status = ServiceStatus.InProgress,
                 },
                 new Service
                 {
-                    ServiceRequestType = ServiceRequestType.NewService,
                     Status = ServiceStatus.Draft,
                 },
                 new Service
                 {
-                    ServiceRequestType = ServiceRequestType.NewService,
                     Status = ServiceStatus.Completed,
                 },
                 new Service
                 {
-                    ServiceRequestType = ServiceRequestType.NewService,
                     Status = ServiceStatus.Cancelled,
                 },
                 new Service
                 {
-                    ServiceRequestType = ServiceRequestType.NewService,
                     Status = ServiceStatus.NeedsReview,
                 },
                 new Service
                 {
-                    ServiceRequestType = ServiceRequestType.ReDo,
                     Status = ServiceStatus.Draft,
                 }
             );
@@ -160,14 +152,11 @@ namespace ServiceManagerApp.Tests.Integration
             Assert.Equal(3, result.Count());
 
             Assert.Contains(result,
-                service => service.ServiceRequestType == ServiceRequestType.NewService
-                && service.Status == ServiceStatus.Draft);
+                service => service.Status == ServiceStatus.Draft);
             Assert.Contains(result,
-                service => service.ServiceRequestType == ServiceRequestType.ReDo
-                && service.Status == ServiceStatus.Draft);
+                service => service.Status == ServiceStatus.Draft);
             Assert.Contains(result,
-                service => service.ServiceRequestType == ServiceRequestType.NewService
-                && service.Status == ServiceStatus.NeedsReview);
+                service => service.Status == ServiceStatus.NeedsReview);
         }
     }
 }

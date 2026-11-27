@@ -29,6 +29,51 @@
                 <textarea asp-for="Description" class="form-control" rows="3"
                           placeholder="Fully discribe the service needed, instructions and useful details"></textarea>
                 <span asp-validation-for="Description" class="text-danger small"></span>
+                                
+                <!-- Related service request -->
+                <div class="border-top pt-3 mt-4">
+                    <div class="text-muted small mb-2">
+                        Related service request
+                    </div>
+
+                    @if (Model.ServiceRequest == null)
+                    {
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                            <span class="badge bg-light text-secondary border fw-normal">
+                                Not linked
+                            </span>
+
+                            <span class="text-muted small">
+                                This service was created independently.
+                            </span>
+
+                            @* <a asp-action="LinkRequest"
+                               asp-route-id="@Model.Id"
+                               class="btn btn-sm btn-outline-primary ms-sm-auto">
+                                Select request
+                            </a> *@
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                            <span class="badge bg-success bg-opacity-10 text-opacity-75 text-success border border-success-subtle">
+                                Linked
+                            </span>
+
+                            <a asp-controller="ServiceRequest"
+                               asp-action="Details"
+                               asp-route-id="@Model.ServiceRequest.Id"
+                               class="text-decoration-none fw-semibold">
+                                @Model.ServiceRequest.ReferenceNumber
+                            </a>
+
+                            <span class="text-muted small">
+                                @Model.ServiceRequest.Title
+                            </span>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
 
@@ -75,18 +120,20 @@
         </div>
 
 
-        <!-- Workers -->
+        <!-- Workers and skill level -->
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-4">
                 <h2 class="h6 mb-1">Assigned workers</h2>
                 <p class="small text-muted mb-3">Select the workers who should be assigned to this service.</p>
 
-                @* <div class="col-md-3 mb-3">
+                <div class="col-md-3 mb-3">
                     <label asp-for="SkillLevel" class="form-label fw-semibold"></label>
                     <select asp-for="SkillLevel" asp-items="Html.GetEnumSelectList<SkillLevel>()"
-                            class="form-select"></select>
+                            class="form-select">
+                        <option value="">No skill level</option>
+                    </select>
                     <span asp-validation-for="SkillLevel" class="text-danger small"></span>
-                </div> *@
+                </div>
 
                 @if (Model.Workers.Any())
                 {
