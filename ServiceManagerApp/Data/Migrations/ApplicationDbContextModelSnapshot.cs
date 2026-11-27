@@ -304,9 +304,6 @@ namespace ServiceManagerApp.Data.Migrations
                     b.Property<int?>("ServiceRequestId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ServiceRequestType")
-                        .HasColumnType("int");
-
                     b.Property<int?>("SkillLevel")
                         .HasColumnType("int");
 
